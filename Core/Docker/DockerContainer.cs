@@ -1,5 +1,4 @@
-﻿using Core.Models;
-using Docker.DotNet;
+﻿using Docker.DotNet;
 using Docker.DotNet.Models;
 
 namespace Core.Docker;
@@ -66,7 +65,7 @@ public class DockerContainer : IDockerContainer
             {
                 PortBindings = new Dictionary<string, IList<PortBinding>>
                 {
-                    { "80", new List<PortBinding> { new PortBinding { HostPort = "8080" } } }
+                    { "80", new List<PortBinding> { new PortBinding { HostPort = _configuration.ContainerPortProvider.CurrentPort } } }
                 }
             }
         };
@@ -95,5 +94,6 @@ public class DockerContainer : IDockerContainer
 
         await _dockerClient.Containers.StopContainerAsync(_containerId, new ContainerStopParameters());
         await _dockerClient.Containers.RemoveContainerAsync(_containerId, new ContainerRemoveParameters { Force = true });
+        _configuration.ContainerPortProvider.ReleasePort();
     }
 }
