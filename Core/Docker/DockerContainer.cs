@@ -36,6 +36,35 @@ public class DockerContainer : IDockerContainer
         _containerId = container.ID;
         await _dockerClient.Containers.StartContainerAsync(container.ID, new ContainerStartParameters(), cancellationToken);
     }
+    
+    public async Task WaitToBeReadyAsync(CancellationToken cancellationToken = default)
+    {
+        const int retries = 5;
+
+        var delayTask = Task.Delay(1000, cancellationToken);
+        using var httpClient = new HttpClient();
+        for (int i = 0; i < retries; i++)
+        {
+            try
+            {
+                var healthCheckResponse = await httpClient.GetAsync($"http://localhost:{_configuration.ContainerPortProvider.CurrentPort}/health", cancellationToken);
+                
+                if (healthCheckResponse.IsSuccessStatusCode)
+                {
+                    return;
+                }
+
+                await delayTask;
+            }
+            catch (Exception)
+            {
+                await delayTask;
+            }
+        }
+
+        // TODO: Add custom exception
+        throw new Exception("Failed to connect to the server");
+    }
 
     private async Task<bool> ImageExistsAsync(CancellationToken cancellationToken = default)
     {
@@ -65,7 +94,14 @@ public class DockerContainer : IDockerContainer
             {
                 PortBindings = new Dictionary<string, IList<PortBinding>>
                 {
-                    { "80", new List<PortBinding> { new PortBinding { HostPort = _configuration.ContainerPortProvider.CurrentPort } } }
+                    { "80", new List<PortBinding>
+                        { new()
+                            {
+                                HostPort = _configuration.ContainerPortProvider.CurrentPort.ToString()
+                                
+                            } 
+                        }
+                    }
                 }
             }
         };

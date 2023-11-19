@@ -1,14 +1,13 @@
-﻿using System.Collections.Concurrent;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 
 namespace Core.Docker.Providers;
 
 public class DockerContainerPortProvider : IDockerContainerPortProvider
 {
-    private static readonly HashSet<string> Ports = new();
+    private static readonly HashSet<int> Ports = new();
     
-    public string CurrentPort { get; }
+    public int CurrentPort { get; }
     
     public DockerContainerPortProvider()
     {
@@ -17,14 +16,13 @@ public class DockerContainerPortProvider : IDockerContainerPortProvider
         {
             throw new Exception("All ports are mapped");
         }
-
-        var currentPort = freePort.ToString();
+        
         lock (Ports)
         {
-            Ports.Add(currentPort);   
+            Ports.Add(freePort);   
         }
 
-        CurrentPort = currentPort;
+        CurrentPort = freePort;
     }
 
     public void ReleasePort()
@@ -43,7 +41,7 @@ public class DockerContainerPortProvider : IDockerContainerPortProvider
 
         lock (Ports)
         {
-            if (Ports.TryGetValue(port.ToString(), out _))
+            if (Ports.TryGetValue(port, out _))
             {
                 return default;
             }

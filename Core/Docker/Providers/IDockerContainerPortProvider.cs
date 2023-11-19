@@ -2,6 +2,6 @@
 
 public interface IDockerContainerPortProvider
 {
-    string CurrentPort { get; }
+    int CurrentPort { get; }
     void ReleasePort();
 }

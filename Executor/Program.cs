@@ -13,8 +13,8 @@ using (IDockerContainer dockerContainer = new DockerContainer(configuration))
     {
         await dockerContainer.StartAsync();
 
-        await Task.Delay(5000);
-        
+        await dockerContainer.WaitToBeReadyAsync();
+
         var httpClient = new HttpClient();
 
         var res = await httpClient.GetStringAsync($"http://localhost:{configuration.ContainerPortProvider.CurrentPort}/WeatherForecast");
