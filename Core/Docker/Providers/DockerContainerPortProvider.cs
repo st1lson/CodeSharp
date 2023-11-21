@@ -7,9 +7,9 @@ public class DockerContainerPortProvider : IDockerContainerPortProvider
 {
     private static readonly HashSet<int> Ports = new();
     
-    public int CurrentPort { get; }
-    
-    public DockerContainerPortProvider()
+    public int CurrentPort { get; private set; }
+
+    public void AcquirePort()
     {
         var freePort= FindFreePort();
         if (freePort == 0)

@@ -1,6 +1,4 @@
-﻿using Core.Models;
-
-namespace Core.Docker;
+﻿namespace Core.Docker;
 
 public interface IDockerContainer : IDisposable
 {

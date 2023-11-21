@@ -47,7 +47,7 @@ public class DockerContainer : IDockerContainer
         {
             try
             {
-                var healthCheckEndpoint = _configuration.DockerContainerEndpointProvider.GetHealthCheckEndpoint();
+                var healthCheckEndpoint = _configuration.ContainerEndpointProvider.GetHealthCheckEndpoint();
                 
                 var healthCheckResponse = await httpClient.GetAsync(healthCheckEndpoint, cancellationToken);
                 
@@ -84,6 +84,8 @@ public class DockerContainer : IDockerContainer
 
     private Task<CreateContainerResponse?> CreateContainerAsync(CancellationToken cancellationToken = default)
     {
+        _configuration.ContainerPortProvider.AcquirePort();
+        
         var createContainerParameters = new CreateContainerParameters
         {
             Image = _configuration.Image.ToString(),
@@ -100,7 +102,6 @@ public class DockerContainer : IDockerContainer
                         { new()
                             {
                                 HostPort = _configuration.ContainerPortProvider.CurrentPort.ToString()
-                                
                             } 
                         }
                     }
