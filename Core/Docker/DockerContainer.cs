@@ -47,7 +47,9 @@ public class DockerContainer : IDockerContainer
         {
             try
             {
-                var healthCheckResponse = await httpClient.GetAsync($"http://localhost:{_configuration.ContainerPortProvider.CurrentPort}/health", cancellationToken);
+                var healthCheckEndpoint = _configuration.DockerContainerEndpointProvider.GetHealthCheckEndpoint();
+                
+                var healthCheckResponse = await httpClient.GetAsync(healthCheckEndpoint, cancellationToken);
                 
                 if (healthCheckResponse.IsSuccessStatusCode)
                 {

@@ -8,4 +8,5 @@ public interface IDockerConfiguration
     Image Image { get; }
     IDockerContainerNameProvider ContainerNameProvider { get; }
     IDockerContainerPortProvider ContainerPortProvider { get; }
+    IDockerContainerEndpointProvider DockerContainerEndpointProvider { get; }
 }
