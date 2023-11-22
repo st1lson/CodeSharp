@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Core.Models;
+namespace Core.Docker.Models;
 
 public record Image(string Registry, string Name, string Tag)
 {

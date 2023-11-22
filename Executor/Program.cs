@@ -1,6 +1,6 @@
 ﻿using Core.Docker;
+using Core.Docker.Models;
 using Core.Docker.Providers;
-using Core.Models;
 
 IDockerConfiguration configuration = new DockerConfiguration(
     Image.CreateImage("codesharp.executor:dev"),

@@ -1,5 +1,5 @@
-﻿using Core.Docker.Providers;
-using Core.Models;
+﻿using Core.Docker.Models;
+using Core.Docker.Providers;
 
 namespace Core.Docker;
 

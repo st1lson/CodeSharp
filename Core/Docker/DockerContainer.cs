@@ -26,17 +26,17 @@ public class DockerContainer : IDockerContainer
         {
             await PullRunnerImageAsync(cancellationToken);
         }
-        
+
         var container = await CreateContainerAsync(cancellationToken);
         if (container is null)
         {
             return;
         }
-        
+
         _containerId = container.ID;
         await _dockerClient.Containers.StartContainerAsync(container.ID, new ContainerStartParameters(), cancellationToken);
     }
-    
+
     public async Task WaitToBeReadyAsync(CancellationToken cancellationToken = default)
     {
         const int retries = 5;
@@ -48,9 +48,9 @@ public class DockerContainer : IDockerContainer
             try
             {
                 var healthCheckEndpoint = _configuration.ContainerEndpointProvider.GetHealthCheckEndpoint();
-                
+
                 var healthCheckResponse = await httpClient.GetAsync(healthCheckEndpoint, cancellationToken);
-                
+
                 if (healthCheckResponse.IsSuccessStatusCode)
                 {
                     return;
@@ -73,7 +73,7 @@ public class DockerContainer : IDockerContainer
         var imagesList = await _dockerClient!.Images.ListImagesAsync(new ImagesListParameters(), cancellationToken);
         return imagesList.Any(image => image.RepoTags.Contains(_configuration.Image.ToString()));
     }
-    
+
     private Task PullRunnerImageAsync(CancellationToken cancellationToken = default)
     {
         return _dockerClient!.Images.CreateImageAsync(new ImagesCreateParameters
@@ -85,7 +85,7 @@ public class DockerContainer : IDockerContainer
     private Task<CreateContainerResponse?> CreateContainerAsync(CancellationToken cancellationToken = default)
     {
         _configuration.ContainerPortProvider.AcquirePort();
-        
+
         var createContainerParameters = new CreateContainerParameters
         {
             Image = _configuration.Image.ToString(),
@@ -102,7 +102,7 @@ public class DockerContainer : IDockerContainer
                         { new()
                             {
                                 HostPort = _configuration.ContainerPortProvider.CurrentPort.ToString()
-                            } 
+                            }
                         }
                     }
                 }
@@ -110,6 +110,17 @@ public class DockerContainer : IDockerContainer
         };
 
         return _dockerClient!.Containers.CreateContainerAsync(createContainerParameters, cancellationToken);
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken = default)
+    {
+        if (_dockerClient is null)
+        {
+            // TODO: Add custom exception
+            throw new Exception("The container is not running");
+        }
+
+        return _dockerClient.Containers.StopContainerAsync(_containerId, new ContainerStopParameters(), cancellationToken);
     }
 
     // TODO: Implement disposable pattern
@@ -131,7 +142,7 @@ public class DockerContainer : IDockerContainer
             return;
         }
 
-        await _dockerClient.Containers.StopContainerAsync(_containerId, new ContainerStopParameters());
+        await StopAsync();
         await _dockerClient.Containers.RemoveContainerAsync(_containerId, new ContainerRemoveParameters { Force = true });
         _configuration.ContainerPortProvider.ReleasePort();
     }
