@@ -1,4 +1,5 @@
-﻿using Docker.DotNet;
+﻿using Core.Docker.Exceptions;
+using Docker.DotNet;
 using Docker.DotNet.Models;
 
 namespace Core.Docker;
@@ -64,8 +65,7 @@ public class DockerContainer : IDockerContainer
             }
         }
 
-        // TODO: Add custom exception
-        throw new Exception("Failed to connect to the server");
+        throw new HealthcheckFailedException("Failed to connect to the server");
     }
 
     private async Task<bool> ImageExistsAsync(CancellationToken cancellationToken = default)
@@ -123,16 +123,33 @@ public class DockerContainer : IDockerContainer
         return _dockerClient.Containers.StopContainerAsync(_containerId, new ContainerStopParameters(), cancellationToken);
     }
 
-    // TODO: Implement disposable pattern
+    private bool _disposed;
+
     public void Dispose()
     {
-        var containerName = _configuration.ContainerNameProvider.GetName();
-        if (!string.IsNullOrEmpty(containerName))
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (_disposed)
         {
-            CleanupAsync().Wait();
+            return;
         }
 
-        _dockerClient?.Dispose();
+        if (disposing)
+        {
+            var containerName = _configuration.ContainerNameProvider.GetName();
+            if (!string.IsNullOrEmpty(containerName))
+            {
+                CleanupAsync().Wait();
+            }
+
+            _dockerClient?.Dispose();
+        }
+
+        _disposed = true;
     }
 
     private async Task CleanupAsync()
