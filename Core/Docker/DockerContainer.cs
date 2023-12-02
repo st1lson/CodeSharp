@@ -31,7 +31,7 @@ public class DockerContainer : IDockerContainer
         var container = await CreateContainerAsync(cancellationToken);
         if (container is null)
         {
-            return;
+            throw new DockerContainerException("Failed to create docker container");
         }
 
         _containerId = container.ID;
@@ -71,7 +71,9 @@ public class DockerContainer : IDockerContainer
     private async Task<bool> ImageExistsAsync(CancellationToken cancellationToken = default)
     {
         var imagesList = await _dockerClient!.Images.ListImagesAsync(new ImagesListParameters(), cancellationToken);
-        return imagesList.Any(image => image.RepoTags.Contains(_configuration.Image.ToString()));
+
+        var imageName = _configuration.Image.ToString();
+        return imagesList.Any(image => image.RepoTags.Contains(imageName));
     }
 
     private Task PullRunnerImageAsync(CancellationToken cancellationToken = default)
@@ -116,8 +118,7 @@ public class DockerContainer : IDockerContainer
     {
         if (_dockerClient is null)
         {
-            // TODO: Add custom exception
-            throw new Exception("The container is not running");
+            throw new DockerContainerException("The container is not running");
         }
 
         return _dockerClient.Containers.StopContainerAsync(_containerId, new ContainerStopParameters(), cancellationToken);

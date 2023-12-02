@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using Core.Docker.Exceptions;
 
 namespace Core.Docker.Providers;
 
@@ -14,7 +15,7 @@ public class ContainerPortProvider : IContainerPortProvider
         var freePort= FindFreePort();
         if (freePort == 0)
         {
-            throw new Exception("All ports are mapped");
+            throw new DockerContainerException("All ports are mapped");
         }
         
         lock (Ports)
