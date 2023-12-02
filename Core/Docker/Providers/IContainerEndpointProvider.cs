@@ -1,6 +1,6 @@
 ﻿namespace Core.Docker.Providers;
 
-public interface IDockerContainerEndpointProvider
+public interface IContainerEndpointProvider
 {
     string GetHealthCheckEndpoint();
 }

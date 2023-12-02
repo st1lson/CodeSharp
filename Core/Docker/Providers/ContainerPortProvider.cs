@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace Core.Docker.Providers;
 
-public class DockerContainerPortProvider : IDockerContainerPortProvider
+public class ContainerPortProvider : IContainerPortProvider
 {
     private static readonly HashSet<int> Ports = new();
     

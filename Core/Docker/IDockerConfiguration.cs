@@ -6,7 +6,7 @@ namespace Core.Docker;
 public interface IDockerConfiguration
 {
     Image Image { get; }
-    IDockerContainerNameProvider ContainerNameProvider { get; }
-    IDockerContainerPortProvider ContainerPortProvider { get; }
-    IDockerContainerEndpointProvider ContainerEndpointProvider { get; }
+    IContainerNameProvider ContainerNameProvider { get; }
+    IContainerPortProvider ContainerPortProvider { get; }
+    IContainerEndpointProvider ContainerEndpointProvider { get; }
 }

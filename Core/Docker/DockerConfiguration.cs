@@ -6,15 +6,15 @@ namespace Core.Docker;
 public class DockerConfiguration : IDockerConfiguration
 {
     public Image Image { get; }
-    public IDockerContainerNameProvider ContainerNameProvider { get; }
-    public IDockerContainerPortProvider ContainerPortProvider { get; }
-    public IDockerContainerEndpointProvider ContainerEndpointProvider { get; }
+    public IContainerNameProvider ContainerNameProvider { get; }
+    public IContainerPortProvider ContainerPortProvider { get; }
+    public IContainerEndpointProvider ContainerEndpointProvider { get; }
 
     public DockerConfiguration(
         Image image,
-        IDockerContainerNameProvider containerNameProvider,
-        IDockerContainerPortProvider containerPortProvider,
-        IDockerContainerEndpointProvider containerEndpointProvider)
+        IContainerNameProvider containerNameProvider,
+        IContainerPortProvider containerPortProvider,
+        IContainerEndpointProvider containerEndpointProvider)
     {
         Image = image ?? throw new ArgumentNullException(nameof(image));
         ContainerNameProvider = containerNameProvider ?? throw new ArgumentNullException(nameof(containerNameProvider));

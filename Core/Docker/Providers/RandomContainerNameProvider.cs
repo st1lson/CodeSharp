@@ -1,6 +1,6 @@
 ﻿namespace Core.Docker.Providers;
 
-public class RandomDockerContainerNameProvider : IDockerContainerNameProvider
+public class RandomContainerNameProvider : IContainerNameProvider
 {
     private string? _containerName;
 

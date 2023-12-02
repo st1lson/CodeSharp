@@ -1,6 +1,6 @@
 ﻿namespace Core.Docker.Providers;
 
-public interface IDockerContainerPortProvider
+public interface IContainerPortProvider
 {
     int CurrentPort { get; }
     void AcquirePort();

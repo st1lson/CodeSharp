@@ -1,6 +1,6 @@
 ﻿namespace Core.Docker.Providers;
 
-public interface IDockerContainerNameProvider
+public interface IContainerNameProvider
 {
     string GetName();
 }
