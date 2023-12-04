@@ -9,16 +9,19 @@ public class DockerConfiguration : IDockerConfiguration
     public IContainerNameProvider ContainerNameProvider { get; }
     public IContainerPortProvider ContainerPortProvider { get; }
     public IContainerEndpointProvider ContainerEndpointProvider { get; }
+    public IContainerHealthCheckProvider ContainerHealthCheckProvider { get; }
 
     public DockerConfiguration(
         Image image,
         IContainerNameProvider containerNameProvider,
         IContainerPortProvider containerPortProvider,
-        IContainerEndpointProvider containerEndpointProvider)
+        IContainerEndpointProvider containerEndpointProvider,
+        IContainerHealthCheckProvider containerHealthCheckProvider)
     {
         Image = image ?? throw new ArgumentNullException(nameof(image));
         ContainerNameProvider = containerNameProvider ?? throw new ArgumentNullException(nameof(containerNameProvider));
         ContainerPortProvider = containerPortProvider ?? throw new ArgumentNullException(nameof(containerPortProvider));
         ContainerEndpointProvider = containerEndpointProvider ?? throw new ArgumentNullException(nameof(containerEndpointProvider));
+        ContainerHealthCheckProvider = containerHealthCheckProvider ?? throw new ArgumentNullException(nameof(containerHealthCheckProvider));
     }
 }

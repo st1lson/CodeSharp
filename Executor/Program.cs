@@ -3,17 +3,20 @@ using Core.Docker.Models;
 using Core.Docker.Providers;
 
 IContainerPortProvider portProvider = new ContainerPortProvider();
+IContainerEndpointProvider endpointProvider = new ContainerEndpointProvider(portProvider);
+IContainerHealthCheckProvider healthCheckProvider = new HttpContainerHealthCheckProvider(endpointProvider);
 
 IDockerConfiguration configuration = new DockerConfiguration(
-    Image.CreateImage("codesharp.executor:dev"),
+    Image.CreateImage("codesharp.executor:latest"),
     new RandomContainerNameProvider(),
     portProvider,
-    new ContainerEndpointProvider(portProvider));
+    endpointProvider,
+    healthCheckProvider);
 
 using IDockerContainer dockerContainer = new DockerContainer(configuration);
 await dockerContainer.StartAsync();
 
-await dockerContainer.WaitToBeReadyAsync();
+await dockerContainer.EnsureCreatedAsync();
 
 var httpClient = new HttpClient();
 

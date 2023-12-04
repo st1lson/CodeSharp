@@ -9,4 +9,5 @@ public interface IDockerConfiguration
     IContainerNameProvider ContainerNameProvider { get; }
     IContainerPortProvider ContainerPortProvider { get; }
     IContainerEndpointProvider ContainerEndpointProvider { get; }
+    IContainerHealthCheckProvider ContainerHealthCheckProvider { get; }
 }

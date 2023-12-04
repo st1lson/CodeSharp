@@ -3,6 +3,6 @@
 public interface IDockerContainer : IDisposable
 {
     Task StartAsync(CancellationToken cancellationToken = default);
-    Task WaitToBeReadyAsync(CancellationToken cancellationToken = default);
+    Task EnsureCreatedAsync(CancellationToken cancellationToken = default);
     Task StopAsync(CancellationToken cancellationToken = default);
 }

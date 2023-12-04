@@ -28,44 +28,23 @@ public class DockerContainer : IDockerContainer
             await PullRunnerImageAsync(cancellationToken);
         }
 
-        var container = await CreateContainerAsync(cancellationToken);
-        if (container is null)
-        {
-            throw new DockerContainerException("Failed to create docker container");
-        }
+        var container = await CreateContainerAsync(cancellationToken)
+            ?? throw new DockerContainerException("Failed to create docker container");
 
         _containerId = container.ID;
         await _dockerClient.Containers.StartContainerAsync(container.ID, new ContainerStartParameters(), cancellationToken);
+
+        await _configuration.ContainerHealthCheckProvider.EnsureCreatedAsync(cancellationToken);
     }
 
-    public async Task WaitToBeReadyAsync(CancellationToken cancellationToken = default)
+    public Task EnsureCreatedAsync(CancellationToken cancellationToken = default)
     {
-        const int retries = 5;
-
-        var delayTask = Task.Delay(1000, cancellationToken);
-        using var httpClient = new HttpClient();
-        for (int i = 0; i < retries; i++)
+        if (_dockerClient is null)
         {
-            try
-            {
-                var healthCheckEndpoint = _configuration.ContainerEndpointProvider.GetHealthCheckEndpoint();
-
-                var healthCheckResponse = await httpClient.GetAsync(healthCheckEndpoint, cancellationToken);
-
-                if (healthCheckResponse.IsSuccessStatusCode)
-                {
-                    return;
-                }
-
-                await delayTask;
-            }
-            catch (Exception)
-            {
-                await delayTask;
-            }
+            throw new DockerContainerException("The container is not running");
         }
 
-        throw new HealthcheckFailedException("Failed to connect to the server");
+        return _configuration.ContainerHealthCheckProvider.EnsureCreatedAsync(cancellationToken);
     }
 
     private async Task<bool> ImageExistsAsync(CancellationToken cancellationToken = default)
