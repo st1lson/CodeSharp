@@ -16,16 +16,25 @@ public class CompilationService : ICompilationService
 
     public async Task<CompilationResult> CompileAsync(string code, CancellationToken cancellationToken)
     {
-        var compileUrl = _containerEndpointProvider.GetCompileEndpoint();
+        //var compileUrl = _containerEndpointProvider.GetCompileEndpoint();
         using var httpClient = new HttpClient();
-        var result = await httpClient.PostAsJsonAsync(compileUrl, code, cancellationToken);
+
+        var compilationRequest = new CompilationRequest
+        {
+            Code = code
+        };
+        var result = await httpClient.PostAsJsonAsync("https://localhost:44349/api/compiler/code", compilationRequest, cancellationToken);
         if (!result.IsSuccessStatusCode)
         {
-            return new CompilationResult("asd");
+            throw new Exception("Compilation failed");
         }
 
         var json = await result.Content.ReadAsStringAsync(cancellationToken);
-        var item = JsonSerializer.Deserialize<CompilationResult>(json);
-        return new CompilationResult("asdas");
+        var item = JsonSerializer.Deserialize<CompilationResult>(json, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+        
+        return item!;
     }
 }

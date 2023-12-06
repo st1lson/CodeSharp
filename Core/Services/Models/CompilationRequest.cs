@@ -1,3 +1,6 @@
 ﻿namespace Core.Services.Models;
 
-public sealed record CompilationRequest(string Code);
+public class CompilationRequest
+{
+    public string Code { get; init; }
+};
