@@ -11,8 +11,9 @@ public class CompileController : ControllerBase
     {
         try
         {
-            new CodeExecutor().ExecuteCode(request.Code);
-            return Ok("Code executed successfully.");
+            var codeExecutor = new CodeExecutor();
+            codeExecutor.WriteCodeToFile(request.Code);
+            return Ok(codeExecutor.CompileCode());
         }
         catch (Exception ex)
         {
@@ -28,69 +29,85 @@ public class Request
 
 public class CodeExecutor
 {
-    public void ExecuteCode(string code)
+    public void WriteCodeToFile(string code)
     {
-        // Create a temporary directory
-        string tempDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        Directory.CreateDirectory(tempDirectory);
-
         try
         {
-            // Write the code to a temporary file
-            string codeFile = Path.Combine(tempDirectory, "DynamicCode.cs");
-            File.WriteAllText(codeFile, code);
-
-            // Create a temporary project file
-            string projectFile = Path.Combine(tempDirectory, "DynamicProject.csproj");
-            File.WriteAllText(projectFile, GetProjectFileContent());
-
-            // Build the project using dotnet build command
-            Process process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "dotnet",
-                    Arguments = $"build {projectFile}",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    WorkingDirectory = tempDirectory
-                }
-            };
-
-            process.Start();
-            process.WaitForExit();
-
-            if (process.ExitCode == 0)
-            {
-                // Run the compiled assembly
-                string assemblyFile = Path.Combine(tempDirectory, "bin", "Debug", "net7.0", "DynamicProject.dll");
-                Process.Start("dotnet", assemblyFile);
-            }
-            else
-            {
-                // Handle build errors
-                string errorOutput = process.StandardError.ReadToEnd();
-                Console.WriteLine($"Build failed with errors:\n{errorOutput}");
-            }
+            File.WriteAllText(@"M:\study\CodeSharp\Runner\AppSample\AppSample\Program.cs", code);
+            Console.WriteLine($@"Code written to file: M:\study\CodeSharp\Runner\AppSample\AppSample\Program.cs");
         }
-        finally
+        catch (Exception ex)
         {
-            // Cleanup: Delete temporary files and directory
-            Directory.Delete(tempDirectory, true);
+            Console.WriteLine($"Error writing code to file: {ex.Message}");
         }
     }
 
-    private static string GetProjectFileContent()
+    public class CompilationResult
     {
-        return @"
-<Project Sdk=""Microsoft.NET.Sdk"">
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-  </PropertyGroup>
-</Project>
-";
+        public bool Success { get; set; }
+        public string Output { get; set; }
+        public string Error { get; set; }
+        public TimeSpan TimeTaken { get; set; }
+    }
+
+    public CompilationResult CompileCode()
+    {
+        var result = new CompilationResult();
+        
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+        
+        try
+        {
+            using (Process process = new Process())
+            {
+                process.StartInfo.FileName = "dotnet";
+                process.StartInfo.Arguments = "build M:\\study\\CodeSharp\\Runner\\AppSample\\AppSample.sln";
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.CreateNoWindow = true;
+
+                StringWriter outputWriter = new StringWriter();
+                StringWriter errorWriter = new StringWriter();
+
+                process.OutputDataReceived += (sender, e) =>
+                {
+                    if (!string.IsNullOrEmpty(e.Data))
+                    {
+                        outputWriter.WriteLine($"[Output] {e.Data}");
+                    }
+                };
+
+                process.ErrorDataReceived += (sender, e) =>
+                {
+                    if (!string.IsNullOrEmpty(e.Data))
+                    {
+                        errorWriter.WriteLine($"[Error] {e.Data}");
+                    }
+                };
+
+                process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+                process.WaitForExit();
+                
+                stopwatch.Stop();
+                result.TimeTaken = stopwatch.Elapsed;
+
+                int exitCode = process.ExitCode;
+
+                result.Success = (exitCode == 0);
+                result.Output = outputWriter.ToString();
+                result.Error = errorWriter.ToString();
+            }
+        }
+        catch (Exception ex)
+        {
+            result.Success = false;
+            result.Error = $"An error occurred: {ex.Message}";
+        }
+
+        return result;
     }
 }

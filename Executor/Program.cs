@@ -1,6 +1,7 @@
 ﻿using Core.Docker;
 using Core.Docker.Models;
 using Core.Docker.Providers;
+using Core.Services;
 
 IContainerPortProvider portProvider = new ContainerPortProvider();
 IContainerEndpointProvider endpointProvider = new ContainerEndpointProvider(portProvider);
@@ -19,7 +20,17 @@ await dockerContainer.StartAsync();
 
 await dockerContainer.EnsureCreatedAsync();
 
-var httpClient = new HttpClient();
+ICompilationService compilationService = new CompilationService(endpointProvider);
+var compilationResult = await compilationService.CompileAsync(@"
+using System;
 
-var res = await httpClient.GetStringAsync($"http://localhost:{portProvider.CurrentPort}/WeatherForecast");
-Console.WriteLine(res);
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine(""Hello, World!"");
+    }
+}
+");
+
+Console.WriteLine(compilationResult);
