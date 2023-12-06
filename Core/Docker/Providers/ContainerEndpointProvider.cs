@@ -9,6 +9,11 @@ public class ContainerEndpointProvider : IContainerEndpointProvider
         _portProvider = portProvider;
     }
 
+    public string GetCompileEndpoint()
+    {
+        return $"http://localhost:{_portProvider.CurrentPort}/compiler";
+    }
+
     public string GetHealthCheckEndpoint()
     {
         return $"http://localhost:{_portProvider.CurrentPort}/health";

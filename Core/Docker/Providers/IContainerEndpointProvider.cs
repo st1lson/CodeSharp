@@ -3,4 +3,5 @@
 public interface IContainerEndpointProvider
 {
     string GetHealthCheckEndpoint();
+    string GetCompileEndpoint();
 }
