@@ -1,4 +1,6 @@
 ﻿using Core.Docker.Exceptions;
+using Core.Docker.Models;
+using Core.Docker.Providers;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 
@@ -6,15 +8,24 @@ namespace Core.Docker;
 
 public class DockerContainer : IDockerContainer
 {
-    private readonly IDockerConfiguration _configuration;
+    private readonly ContainerConfiguration _configuration;
+    private readonly IContainerNameProvider _containerNameProvider;
+    private readonly IContainerPortProvider _containerPortProvider;
+    private readonly IContainerHealthCheckProvider _containerHealthCheckProvider;
 
     private IDockerClient? _dockerClient;
     private string? _containerId;
 
     public DockerContainer(
-        IDockerConfiguration configuration)
+        ContainerConfiguration configuration,
+        IContainerNameProvider containerNameProvider,
+        IContainerPortProvider containerPortProvider,
+        IContainerHealthCheckProvider containerHealthCheckProvider)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _containerNameProvider = containerNameProvider ?? throw new ArgumentNullException(nameof(containerNameProvider));
+        _containerPortProvider = containerPortProvider ?? throw new ArgumentNullException(nameof(containerPortProvider));
+        _containerHealthCheckProvider = containerHealthCheckProvider ?? throw new ArgumentNullException(nameof(containerHealthCheckProvider));
     }
 
     public async Task StartAsync(CancellationToken cancellationToken = default)
@@ -34,7 +45,7 @@ public class DockerContainer : IDockerContainer
         _containerId = container.ID;
         await _dockerClient.Containers.StartContainerAsync(container.ID, new ContainerStartParameters(), cancellationToken);
 
-        await _configuration.ContainerHealthCheckProvider.EnsureCreatedAsync(cancellationToken);
+        await _containerHealthCheckProvider.EnsureCreatedAsync(cancellationToken);
     }
 
     public Task EnsureCreatedAsync(CancellationToken cancellationToken = default)
@@ -44,7 +55,7 @@ public class DockerContainer : IDockerContainer
             throw new DockerContainerException("The container is not running");
         }
 
-        return _configuration.ContainerHealthCheckProvider.EnsureCreatedAsync(cancellationToken);
+        return _containerHealthCheckProvider.EnsureCreatedAsync(cancellationToken);
     }
 
     private async Task<bool> ImageExistsAsync(CancellationToken cancellationToken = default)
@@ -65,12 +76,12 @@ public class DockerContainer : IDockerContainer
 
     private Task<CreateContainerResponse?> CreateContainerAsync(CancellationToken cancellationToken = default)
     {
-        _configuration.ContainerPortProvider.AcquirePort();
+        _containerPortProvider.AcquirePort();
 
         var createContainerParameters = new CreateContainerParameters
         {
             Image = _configuration.Image.ToString(),
-            Name = _configuration.ContainerNameProvider.GetName(),
+            Name = _containerNameProvider.GetName(),
             Tty = true,
             AttachStdout = true,
             AttachStderr = true,
@@ -82,7 +93,7 @@ public class DockerContainer : IDockerContainer
                     { "80", new List<PortBinding>
                         { new()
                             {
-                                HostPort = _configuration.ContainerPortProvider.CurrentPort.ToString()
+                                HostPort = _containerPortProvider.CurrentPort.ToString()
                             }
                         }
                     }
@@ -120,7 +131,7 @@ public class DockerContainer : IDockerContainer
 
         if (disposing)
         {
-            var containerName = _configuration.ContainerNameProvider.GetName();
+            var containerName = _containerNameProvider.GetName();
             if (!string.IsNullOrEmpty(containerName))
             {
                 CleanupAsync().Wait();
@@ -141,6 +152,6 @@ public class DockerContainer : IDockerContainer
 
         await StopAsync();
         await _dockerClient.Containers.RemoveContainerAsync(_containerId, new ContainerRemoveParameters { Force = true });
-        _configuration.ContainerPortProvider.ReleasePort();
+        _containerPortProvider.ReleasePort();
     }
 }
