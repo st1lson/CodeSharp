@@ -1,5 +1,4 @@
-﻿using Core.Docker;
-using Core.Docker.Models;
+﻿using Core.Docker.Models;
 using Core.Docker.Providers;
 using Core.Services;
 
@@ -12,15 +11,12 @@ ContainerConfiguration configuration = new ContainerConfiguration
     Image = Image.CreateImage("codesharp.executor:latest")
 };
 
-using IDockerContainer dockerContainer = new DockerContainer(configuration,
+ICompilationService compilationService = new CompilationService(
+    configuration,
     new RandomContainerNameProvider(),
     portProvider,
-    healthCheckProvider);
-await dockerContainer.StartAsync();
-
-await dockerContainer.EnsureCreatedAsync();
-
-ICompilationService compilationService = new CompilationService(endpointProvider);
+    healthCheckProvider,
+    endpointProvider);
 var compilationResult = await compilationService.CompileAsync(@"
 using System;
 

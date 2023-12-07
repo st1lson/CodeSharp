@@ -1,4 +1,6 @@
-﻿using Core.Docker.Providers;
+﻿using Core.Docker;
+using Core.Docker.Models;
+using Core.Docker.Providers;
 using Core.Services.Models;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -8,22 +10,39 @@ namespace Core.Services;
 public class CompilationService : ICompilationService
 {
     private readonly IContainerEndpointProvider _containerEndpointProvider;
+    private readonly ContainerConfiguration _configuration;
+    private readonly IContainerNameProvider _containerNameProvider;
+    private readonly IContainerPortProvider _containerPortProvider;
+    private readonly IContainerHealthCheckProvider _containerHealthCheckProvider;
 
-    public CompilationService(IContainerEndpointProvider containerEndpointProvider)
+    public CompilationService(
+        ContainerConfiguration configuration,
+        IContainerNameProvider containerNameProvider,
+        IContainerPortProvider containerPortProvider,
+        IContainerHealthCheckProvider containerHealthCheckProvider,
+        IContainerEndpointProvider containerEndpointProvider)
     {
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _containerNameProvider = containerNameProvider ?? throw new ArgumentNullException(nameof(containerNameProvider));
+        _containerPortProvider = containerPortProvider ?? throw new ArgumentNullException(nameof(containerPortProvider));
+        _containerHealthCheckProvider = containerHealthCheckProvider ?? throw new ArgumentNullException(nameof(containerHealthCheckProvider));
         _containerEndpointProvider = containerEndpointProvider;
     }
 
     public async Task<CompilationResult> CompileAsync(string code, CancellationToken cancellationToken)
     {
-        //var compileUrl = _containerEndpointProvider.GetCompileEndpoint();
+        using var dockerContainer = new DockerContainer(_configuration, _containerNameProvider, _containerPortProvider, _containerHealthCheckProvider);
+        await dockerContainer.StartAsync(cancellationToken);
+
+        await dockerContainer.EnsureCreatedAsync(cancellationToken);
+        var compileUrl = _containerEndpointProvider.GetCompileEndpoint();
         using var httpClient = new HttpClient();
 
         var compilationRequest = new CompilationRequest
         {
             Code = code
         };
-        var result = await httpClient.PostAsJsonAsync("https://localhost:44349/api/compiler/code", compilationRequest, cancellationToken);
+        var result = await httpClient.PostAsJsonAsync(compileUrl, compilationRequest, cancellationToken);
         if (!result.IsSuccessStatusCode)
         {
             throw new Exception("Compilation failed");
@@ -34,7 +53,7 @@ public class CompilationService : ICompilationService
         {
             PropertyNameCaseInsensitive = true
         });
-        
+
         return item!;
     }
 }
