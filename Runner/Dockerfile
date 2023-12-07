@@ -1,7 +1,5 @@
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
 
 #build Web API
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
@@ -26,9 +24,20 @@ COPY ["./AppSample/AppTests/AppTests.csproj", "/TestApp/AppTests/"]
 RUN dotnet restore "/TestApp/AppSample.sln"
 COPY ./AppSample ./TestApp
 
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS final
 WORKDIR /test-app
 COPY --from=copyAppSample /src .
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+EXPOSE 80
+
+#set envs
+ENV ASPNETCORE_URLS="http://+:80" \
+	ApplicationSettings__SolutionPath="/test-app/TestApp/AppSample.sln" \
+    ApplicationSettings__ConsoleProjectPath="/test-app/TestApp/AppSample/AppSample.csproj" \
+	ApplicationSettings__TestProjectPath="/test-app/TestApp/AppTests/AppTests.csproj" \
+	ApplicationSettings__ConsoleFilePath="/test-app/TestApp/AppSample/Program.cs" \
+	ApplicationSettings__TestFilePath="/test-app/TestApp/AppTests/Tests.cs"
+
 ENTRYPOINT ["dotnet", "CodeSharp.Executor.dll"]

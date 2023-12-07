@@ -3,7 +3,7 @@ using CodeSharp.Executor;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.RegisterServices();
+builder.Services.RegisterServices(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

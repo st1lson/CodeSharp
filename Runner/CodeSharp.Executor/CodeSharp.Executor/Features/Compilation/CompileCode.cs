@@ -1,7 +1,9 @@
-﻿using System.Diagnostics;
-using Carter;
+﻿using Carter;
 using CodeSharp.Executor.Contracts;
+using CodeSharp.Executor.Options;
 using MediatR;
+using Microsoft.Extensions.Options;
+using System.Diagnostics;
 
 namespace CodeSharp.Executor.Features.Compilation;
 
@@ -11,40 +13,49 @@ public static class CompileCode
     {
         public required string Code { get; init; }
     }
-    
+
     public sealed class Handler : IRequestHandler<Command, CompilationResponse>
     {
+        private readonly ApplicationOptions _applicationOptions;
+
+        public Handler(IOptions<ApplicationOptions> applicationOptions)
+        {
+            _applicationOptions = applicationOptions.Value;
+        }
+
         public Task<CompilationResponse> Handle(Command request, CancellationToken cancellationToken)
         {
             WriteCodeToFile(request.Code);
             return Task.FromResult(CompileCode());
         }
-        
-        private static void WriteCodeToFile(string code)
+
+        private void WriteCodeToFile(string code)
         {
             try
             {
-                File.WriteAllText(@"M:\study\CodeSharp\Runner\AppSample\AppSample\Program.cs", code);
-                Console.WriteLine($@"Code written to file: M:\study\CodeSharp\Runner\AppSample\AppSample\Program.cs");
+                //TODO: Pass path to program.cs file
+                var codeFilePath = _applicationOptions.ConsoleFilePath;
+                File.WriteAllText(codeFilePath, code);
+                Console.WriteLine($"Code written to file: {codeFilePath}");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error writing code to file: {ex.Message}");
             }
         }
-        
-        private static CompilationResponse CompileCode()
+
+        private CompilationResponse CompileCode()
         {
             var result = new CompilationResponse();
-            
+
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            
+
             try
             {
                 using Process process = new Process();
                 process.StartInfo.FileName = "dotnet";
-                process.StartInfo.Arguments = "build M:\\study\\CodeSharp\\Runner\\AppSample\\AppSample.sln";
+                process.StartInfo.Arguments = $"build {_applicationOptions.SolutionPath}";
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.RedirectStandardError = true;
                 process.StartInfo.UseShellExecute = false;
@@ -73,7 +84,7 @@ public static class CompileCode
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
                 process.WaitForExit();
-                    
+
                 stopwatch.Stop();
                 result.TimeTaken = stopwatch.Elapsed;
 
