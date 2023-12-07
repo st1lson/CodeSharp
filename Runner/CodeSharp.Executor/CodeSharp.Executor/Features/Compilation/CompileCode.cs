@@ -55,7 +55,7 @@ public static class CompileCode
             {
                 using Process process = new Process();
                 process.StartInfo.FileName = "dotnet";
-                process.StartInfo.Arguments = $"build {_applicationOptions.SolutionPath}";
+                process.StartInfo.Arguments = $"build {_applicationOptions.ConsoleProjectPath}";
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.RedirectStandardError = true;
                 process.StartInfo.UseShellExecute = false;
