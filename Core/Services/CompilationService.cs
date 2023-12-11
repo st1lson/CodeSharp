@@ -26,7 +26,7 @@ public class CompilationService : ICompilationService
         _containerNameProvider = containerNameProvider ?? throw new ArgumentNullException(nameof(containerNameProvider));
         _containerPortProvider = containerPortProvider ?? throw new ArgumentNullException(nameof(containerPortProvider));
         _containerHealthCheckProvider = containerHealthCheckProvider ?? throw new ArgumentNullException(nameof(containerHealthCheckProvider));
-        _containerEndpointProvider = containerEndpointProvider;
+        _containerEndpointProvider = containerEndpointProvider ?? throw new ArgumentNullException(nameof(containerEndpointProvider));
     }
 
     public async Task<CompilationResult> CompileAsync(string code, CancellationToken cancellationToken)
@@ -55,5 +55,20 @@ public class CompilationService : ICompilationService
         });
 
         return item!;
+    }
+
+    public async Task<CompilationResult> CompileFileAsync(string filePath, CancellationToken cancellationToken = default)
+    {
+        const string requiredFileExtension = ".cs";
+        
+        var fileExtension = Path.GetExtension(filePath);
+        if (!fileExtension.Equals(requiredFileExtension))
+        {
+            throw new Exception("Wrong file extension");
+        }
+        
+        var code = await File.ReadAllTextAsync(filePath, cancellationToken);
+
+        return await CompileAsync(code, cancellationToken);
     }
 }

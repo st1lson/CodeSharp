@@ -2,5 +2,5 @@
 
 public class CompilationRequest
 {
-    public string Code { get; init; }
+    public required string Code { get; init; }
 };
