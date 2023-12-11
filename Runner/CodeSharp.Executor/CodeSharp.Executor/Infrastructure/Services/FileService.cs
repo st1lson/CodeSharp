@@ -20,6 +20,13 @@ public sealed class FileService : IFileService
         return File.WriteAllTextAsync(codeFilePath, newCode, cancellationToken);
     }
 
+    public Task ReplaceCodeToTestFileAsync(string newCode, CancellationToken cancellationToken = default)
+    {
+        var codeToTestFilePath = _applicationOptions.CodeToTestFilePath;
+        
+        return File.WriteAllTextAsync(codeToTestFilePath, newCode, cancellationToken);
+    }
+
     public Task ReplaceTestsFileAsync(string newTests, CancellationToken cancellationToken = default)
     {
         var testFilePath = _applicationOptions.TestFilePath;

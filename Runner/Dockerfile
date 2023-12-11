@@ -38,6 +38,8 @@ ENV ASPNETCORE_URLS="http://+:80" \
     ApplicationSettings__ConsoleProjectPath="/test-app/TestApp/AppSample/AppSample.csproj" \
 	ApplicationSettings__TestProjectPath="/test-app/TestApp/AppTests/AppTests.csproj" \
 	ApplicationSettings__ConsoleFilePath="/test-app/TestApp/AppSample/Program.cs" \
-	ApplicationSettings__TestFilePath="/test-app/TestApp/AppTests/Tests.cs"
+	ApplicationSettings__CodeToTestFilePath="/test-app/TestApp/AppSample/Code.cs" \
+	ApplicationSettings__TestFilePath="/test-app/TestApp/AppTests/Tests.cs" \
+	ApplicationSettings__TestReportFilePath="/test-app/TestApp/AppTests/test-report.xml"
 
 ENTRYPOINT ["dotnet", "CodeSharp.Executor.dll"]

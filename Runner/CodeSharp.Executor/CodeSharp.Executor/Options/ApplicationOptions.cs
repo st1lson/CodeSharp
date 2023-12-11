@@ -8,5 +8,7 @@ public sealed class ApplicationOptions
     public required string ConsoleProjectPath { get; init; }
     public required string TestProjectPath { get; init; }
     public required string ConsoleFilePath { get; init; }
+    public required string CodeToTestFilePath { get; init; }
     public required string TestFilePath { get; init; }
+    public required string TestReportFilePath { get; init; }
 }
