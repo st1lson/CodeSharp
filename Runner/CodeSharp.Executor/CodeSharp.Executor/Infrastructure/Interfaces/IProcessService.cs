@@ -5,5 +5,5 @@ namespace CodeSharp.Executor.Infrastructure.Interfaces;
 
 public interface IProcessService
 {
-    Task<CompilationResponse> ExecuteProcessAsync(ProcessExecutionOptions executionOptions, CancellationToken cancellationToken = default);
+    Task<T> ExecuteProcessAsync<T>(ProcessExecutionOptions executionOptions, CancellationToken cancellationToken = default) where T : CompilationResponse, new();
 }

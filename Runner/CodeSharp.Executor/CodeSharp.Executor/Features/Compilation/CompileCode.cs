@@ -35,7 +35,7 @@ public static class CompileCode
 
             var executionOptions = new ProcessExecutionOptions("dotnet", $"build {_applicationOptions.ConsoleProjectPath}");
             
-            return await _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
+            return await _processService.ExecuteProcessAsync<CompilationResponse>(executionOptions, cancellationToken);
         }
     }
 }

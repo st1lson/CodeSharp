@@ -7,9 +7,11 @@ namespace CodeSharp.Executor.Infrastructure.Services;
 
 public class ProcessService : IProcessService
 {
-    public async Task<CompilationResponse> ExecuteProcessAsync(ProcessExecutionOptions executionOptions, CancellationToken cancellationToken = default)
+    public async Task<T> ExecuteProcessAsync<T>(
+        ProcessExecutionOptions executionOptions,
+        CancellationToken cancellationToken = default) where T : CompilationResponse, new()
     {
-        var result = new CompilationResponse();
+        var result = new T();
 
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
