@@ -1,6 +1,8 @@
 ﻿using Carter;
 using CodeSharp.Executor.Options;
 using System.Reflection;
+using CodeSharp.Executor.Infrastructure.Interfaces;
+using CodeSharp.Executor.Infrastructure.Services;
 
 namespace CodeSharp.Executor;
 
@@ -17,6 +19,9 @@ public static class DependencyInjection
             config.RegisterServicesFromAssembly(assembly));
 
         serviceCollection.AddCarter();
+
+        serviceCollection.AddScoped<IFileService, FileService>();
+        serviceCollection.AddScoped<IProcessService, ProcessService>();
 
         return serviceCollection;
     }
