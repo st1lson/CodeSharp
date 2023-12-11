@@ -33,7 +33,6 @@ public static class CompileCode
         {
             try
             {
-                //TODO: Pass path to program.cs file
                 var codeFilePath = _applicationOptions.ConsoleFilePath;
                 File.WriteAllText(codeFilePath, code);
                 Console.WriteLine($"Code written to file: {codeFilePath}");
