@@ -2,6 +2,7 @@
 using CodeSharp.Executor.Options;
 using System.Reflection;
 using CodeSharp.Executor.Infrastructure.Interfaces;
+using CodeSharp.Executor.Infrastructure.Parsers;
 using CodeSharp.Executor.Infrastructure.Services;
 
 namespace CodeSharp.Executor;
@@ -22,6 +23,7 @@ public static class DependencyInjection
 
         serviceCollection.AddScoped<IFileService, FileService>();
         serviceCollection.AddScoped<IProcessService, ProcessService>();
+        serviceCollection.AddScoped<ITestReportParser, XmlTestReportParser>();
 
         return serviceCollection;
     }
