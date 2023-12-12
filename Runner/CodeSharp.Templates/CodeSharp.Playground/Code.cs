@@ -1,4 +1,4 @@
-﻿namespace AppSample;
+﻿namespace CodeSharp.Playground;
 
 public class Calculator
 {

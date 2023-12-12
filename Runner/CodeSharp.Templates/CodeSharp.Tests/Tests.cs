@@ -1,6 +1,6 @@
-using AppSample;
+using CodeSharp.Playground;
 
-namespace AppTests;
+namespace CodeSharp.Tests;
 
 public class MultiplyTests
 {
