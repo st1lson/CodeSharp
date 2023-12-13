@@ -18,4 +18,9 @@ public class ContainerEndpointProvider : IContainerEndpointProvider
     {
         return $"http://localhost:{_portProvider.CurrentPort}/health";
     }
+
+    public string GetTestingEndpoint()
+    {
+        return $"http://localhost:{_portProvider.CurrentPort}/api/test";
+    }
 }
