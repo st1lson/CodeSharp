@@ -1,11 +1,10 @@
 ﻿using Carter;
 using CodeSharp.Executor.Contracts;
+using CodeSharp.Executor.Contracts.Internal;
+using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
 using MediatR;
 using Microsoft.Extensions.Options;
-using System.Diagnostics;
-using CodeSharp.Executor.Contracts.Internal;
-using CodeSharp.Executor.Infrastructure.Interfaces;
 
 namespace CodeSharp.Executor.Features.Compilation;
 
@@ -34,7 +33,7 @@ public static class CompileCode
             await _fileService.ReplaceProgramFileAsync(request.Code, cancellationToken);
 
             var executionOptions = new ProcessExecutionOptions("dotnet", $"build {_applicationOptions.ConsoleProjectPath}");
-            
+
             return await _processService.ExecuteProcessAsync<CompilationResponse>(executionOptions, cancellationToken);
         }
     }
@@ -44,7 +43,7 @@ public class CompileCodeEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("api/compiler/code", async (CompilationRequest request, ISender sender) =>
+        app.MapPost("api/compile", async (CompilationRequest request, ISender sender) =>
         {
             var command = new CompileCode.Command
             {

@@ -11,7 +11,7 @@ public class ContainerEndpointProvider : IContainerEndpointProvider
 
     public string GetCompileEndpoint()
     {
-        return $"http://localhost:{_portProvider.CurrentPort}/api/compiler/code";
+        return $"http://localhost:{_portProvider.CurrentPort}/api/compile";
     }
 
     public string GetHealthCheckEndpoint()
