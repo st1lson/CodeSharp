@@ -1,9 +1,9 @@
-﻿using System.Xml.Linq;
-using CodeSharp.Executor.Constants;
+﻿using CodeSharp.Executor.Constants;
 using CodeSharp.Executor.Contracts;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
 using Microsoft.Extensions.Options;
+using System.Xml.Linq;
 
 namespace CodeSharp.Executor.Infrastructure.Parsers;
 
@@ -29,9 +29,9 @@ public class XmlTestReportParser : ITestReportParser
                 from test in document.Descendants(XmlReportConstants.TestElementName)
                 select new TestResult
                 {
-                    TestName = (string)test.Attribute(XmlReportConstants.TestNameAttribute),
-                    Passed = (string)test.Attribute(XmlReportConstants.PassedAttribute) == XmlReportConstants.TestPassedValue,
-                    ExecutionTime = (double)test.Attribute(XmlReportConstants.ExecutionTimeAttribute),
+                    TestName = (string)test.Attribute(XmlReportConstants.TestNameAttribute)!,
+                    Passed = (string)test.Attribute(XmlReportConstants.PassedAttribute)! == XmlReportConstants.TestPassedValue,
+                    ExecutionTime = (double)test.Attribute(XmlReportConstants.ExecutionTimeAttribute)!,
                     ErrorMessage = ExtractErrorMessage(test.Element(XmlReportConstants.ErrorElementName))
                 }
             ).ToList();
@@ -44,11 +44,11 @@ public class XmlTestReportParser : ITestReportParser
 
         return result;
     }
-    
+
     private static string? ExtractErrorMessage(XContainer? failureElement)
     {
         var messageElement = failureElement?.Element(XmlReportConstants.ErrorMessageElementName);
-            
+
         return messageElement?.Value;
     }
 }
