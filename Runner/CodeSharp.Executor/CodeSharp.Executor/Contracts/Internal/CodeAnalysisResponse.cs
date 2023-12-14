@@ -1,6 +1,6 @@
 ﻿namespace CodeSharp.Executor.Contracts.Internal;
 
-public record CodeAnalysisResponse
+public class CodeAnalysisResponse
 {
     public int CodeGrade { get; init; }
     public IList<CodeAnalysisIssue> Errors { get; set; } = new List<CodeAnalysisIssue>();

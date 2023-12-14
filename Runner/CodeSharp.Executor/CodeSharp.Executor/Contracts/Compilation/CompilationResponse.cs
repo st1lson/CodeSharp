@@ -1,9 +1,9 @@
-﻿namespace CodeSharp.Executor.Contracts.Compilation;
+﻿using CodeSharp.Executor.Contracts.Internal;
 
-public class CompilationResponse
+namespace CodeSharp.Executor.Contracts.Compilation;
+
+public class CompilationResponse : CodeAnalysisResponse
 {
     public virtual bool Success { get; set; }
     public TimeSpan Duration { get; set; }
-    public string Error { get; set; } = string.Empty;
-    public string Output { get; set; } = string.Empty;
 }

@@ -41,7 +41,14 @@ public class CodeAnalysisReportParser : ICodeAnalysisReportParser
                 continue;
             }
 
-            codeAnalysisResponse.CodeAnalysisIssues.Add(issue!);
+            if (issue!.Severity == "warning")
+            {
+                codeAnalysisResponse.CodeAnalysisIssues.Add(issue!);
+            }
+            else
+            {
+                codeAnalysisResponse.Errors.Add(issue);
+            }
         }
 
         return codeAnalysisResponse;

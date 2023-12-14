@@ -34,12 +34,19 @@ public class CompilationService : ICompilationService
 
     private async Task<CompilationResponse> CompileAsync(string projectPath, CancellationToken cancellationToken)
     {
-        var executionOptions = new ProcessExecutionOptions("dotnet", $"build {projectPath} -nologo -noconsolelogger -filelogger -flp1:logfile={_applicationOptions.ErrorsFilePath};errorsonly -flp2:logfile={_applicationOptions.CodeAnalysisFilePath};append;warningsonly");
+        var executionOptions = new ProcessExecutionOptions("dotnet", $"build {projectPath} -nologo -noconsolelogger -flp1:logfile={_applicationOptions.ErrorsFilePath};errorsonly -flp2:logfile={_applicationOptions.CodeAnalysisFilePath};append;warningsonly");
 
-        var compilationResponse = await _processService.ExecuteProcessAsync<CompilationResponse>(executionOptions, cancellationToken);
-        
+        var compilationResponse = await _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
+
         var codeAnalysisResponse = await _codeAnalysisReportParser.ParseCodeAnalysisReportAsync(cancellationToken);
 
-        return compilationResponse;
+        return new CompilationResponse
+        {
+            Duration = compilationResponse.Duration,
+            Success = compilationResponse.Success,
+            Errors = codeAnalysisResponse.Errors,
+            CodeAnalysisIssues = codeAnalysisResponse.CodeAnalysisIssues,
+            CodeGrade = codeAnalysisResponse.CodeGrade
+        };
     }
 }
