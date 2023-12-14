@@ -1,4 +1,5 @@
-﻿using CodeSharp.Executor.Contracts.Internal;
+﻿using CodeSharp.Executor.Constants;
+using CodeSharp.Executor.Contracts.Internal;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
 using Microsoft.Extensions.Options;
@@ -24,6 +25,7 @@ public class CodeAnalysisReportParser : ICodeAnalysisReportParser
 
         if (!File.Exists(codeAnalysisFilePath) || !File.Exists(errorsFilePath))
         {
+            // TODO: Handle exception
             throw new Exception();
         }
 
@@ -41,7 +43,7 @@ public class CodeAnalysisReportParser : ICodeAnalysisReportParser
                 continue;
             }
 
-            if (issue!.Severity == "warning")
+            if (issue!.Severity == CodeAnalysisConstants.WarningKeyword)
             {
                 codeAnalysisResponse.CodeAnalysisIssues.Add(issue!);
             }
@@ -58,7 +60,7 @@ public class CodeAnalysisReportParser : ICodeAnalysisReportParser
     {
         return logContent
             .Split('\n')
-            .Where(line => line.Contains("warning", StringComparison.OrdinalIgnoreCase) || line.Contains("error", StringComparison.OrdinalIgnoreCase));
+            .Where(line => line.Contains(CodeAnalysisConstants.ErrorKeyword, StringComparison.OrdinalIgnoreCase) || line.Contains(CodeAnalysisConstants.WarningKeyword, StringComparison.OrdinalIgnoreCase));
     }
 
     private static bool TryExtractCodeAnalysisIssue(string codeAnalysisLine, out CodeAnalysisIssue? issue)
@@ -68,7 +70,7 @@ public class CodeAnalysisReportParser : ICodeAnalysisReportParser
         //TODO: review the regex to probably clean it up
         //string pattern = @"(\d+:\d+)>(.+)\((\d+,\d+)\): (\w+) (\w+): (.+) \[([^\]]+)\]";
         //string pattern = @"(?<Position>\d+:\d+)>(?<FilePath>.+)\((?<LineNumber>\d+,\d+)\): (?<ErrorType>\w+) (?<ErrorCode>\w+): (?<ErrorMessage>.+) \[(?<ProjectFilePath>[^\]]+)\]";
-        string pattern = @"(?<Line>\d+):(?<Column>\d+)>.+: (?<ErrorType>\w+) (?<ErrorCode>\w+): (?<ErrorMessage>.+) \[.*\]";
+        const string pattern = @"(?<Line>\d+):(?<Column>\d+)>.+: (?<ErrorType>\w+) (?<ErrorCode>\w+): (?<ErrorMessage>.+) \[.*\]";
         var regex = new Regex(pattern);
         var match = regex.Match(codeAnalysisLine);
         if (!match.Success)
@@ -78,11 +80,11 @@ public class CodeAnalysisReportParser : ICodeAnalysisReportParser
 
         issue = new CodeAnalysisIssue
         {
-            Line = int.Parse(match.Groups["Line"].Value),
-            Column = int.Parse(match.Groups["Column"].Value),
-            Severity = match.Groups["ErrorType"].Value,
-            Code = match.Groups["ErrorCode"].Value,
-            Message = match.Groups["ErrorMessage"].Value
+            Line = int.Parse(match.Groups[CodeAnalysisConstants.RegexGroup.Line].Value),
+            Column = int.Parse(match.Groups[CodeAnalysisConstants.RegexGroup.Column].Value),
+            Severity = match.Groups[CodeAnalysisConstants.RegexGroup.ErrorType].Value,
+            Code = match.Groups[CodeAnalysisConstants.RegexGroup.ErrorCode].Value,
+            Message = match.Groups[CodeAnalysisConstants.RegexGroup.ErrorMessage].Value
         };
 
         return true;
