@@ -1,25 +1,23 @@
-﻿using System.Diagnostics;
-using CodeSharp.Executor.Contracts;
-using CodeSharp.Executor.Contracts.Compilation;
-using CodeSharp.Executor.Contracts.Internal;
+﻿using CodeSharp.Executor.Contracts.Internal;
 using CodeSharp.Executor.Infrastructure.Interfaces;
+using System.Diagnostics;
 
 namespace CodeSharp.Executor.Infrastructure.Services;
 
 public class ProcessService : IProcessService
 {
-    public async Task<T> ExecuteProcessAsync<T>(
+    public async Task<ProcessExecution> ExecuteProcessAsync(
         ProcessExecutionOptions executionOptions,
-        CancellationToken cancellationToken = default) where T : CompilationResponse, new()
+        CancellationToken cancellationToken = default)
     {
-        var result = new T();
+        var result = new ProcessExecution();
 
-        Stopwatch stopwatch = new Stopwatch();
+        var stopwatch = new Stopwatch();
         stopwatch.Start();
 
         try
         {
-            using Process process = new Process();
+            using var process = new Process();
             process.StartInfo.FileName = executionOptions.FileName;
             process.StartInfo.Arguments = executionOptions.Arguments;
             process.StartInfo.RedirectStandardOutput = executionOptions.RedirectStandardOutput;
@@ -27,8 +25,8 @@ public class ProcessService : IProcessService
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.CreateNoWindow = executionOptions.CreateNoWindow;
 
-            StringWriter outputWriter = new StringWriter();
-            StringWriter errorWriter = new StringWriter();
+            var outputWriter = new StringWriter();
+            var errorWriter = new StringWriter();
 
             process.OutputDataReceived += (_, e) =>
             {
@@ -54,9 +52,7 @@ public class ProcessService : IProcessService
             stopwatch.Stop();
             result.Duration = stopwatch.Elapsed;
 
-            int exitCode = process.ExitCode;
-
-            result.Success = (exitCode == 0);
+            result.Success = (process.ExitCode == 0);
             result.Output = outputWriter.ToString();
             result.Error = errorWriter.ToString();
         }
