@@ -43,7 +43,14 @@ public static class TestCode
             // TODO: Handle execution result
             var _ = await _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
 
-            return _reportParser.ParseTestReport();
+            var testingResponse = _reportParser.ParseTestReport();
+
+            //TODO: Add mapper
+            testingResponse.CodeAnalysisIssues = compilationResponse.CodeAnalysisIssues;
+            testingResponse.CodeGrade = compilationResponse.CodeGrade;
+            testingResponse.Errors = compilationResponse.Errors;
+
+            return testingResponse;
         }
     }
 }
