@@ -1,14 +1,9 @@
 ﻿using Carter;
-using CodeSharp.Executor.Contracts;
-using CodeSharp.Executor.Contracts.Internal;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
 using MediatR;
 using Microsoft.Extensions.Options;
-using System.Diagnostics;
 using CodeSharp.Executor.Contracts.Compilation;
-using CodeSharp.Executor.Contracts.Internal;
-using CodeSharp.Executor.Infrastructure.Interfaces;
 
 namespace CodeSharp.Executor.Features.Compilation;
 
@@ -23,12 +18,12 @@ public static class CompileCode
     {
         private readonly ApplicationOptions _applicationOptions;
         private readonly IFileService _fileService;
-        private readonly IProcessService _processService;
+        private readonly ICompilationService _compilationService;
 
-        public Handler(IOptions<ApplicationOptions> applicationOptions, IFileService fileService, IProcessService processService)
+        public Handler(IOptions<ApplicationOptions> applicationOptions, IFileService fileService, ICompilationService compilationService)
         {
             _fileService = fileService;
-            _processService = processService;
+            _compilationService = compilationService;
             _applicationOptions = applicationOptions.Value;
         }
 
@@ -36,9 +31,7 @@ public static class CompileCode
         {
             await _fileService.ReplaceProgramFileAsync(request.Code, cancellationToken);
 
-            var executionOptions = new ProcessExecutionOptions("dotnet", $"build {_applicationOptions.ConsoleProjectPath}");
-
-            return await _processService.ExecuteProcessAsync<CompilationResponse>(executionOptions, cancellationToken);
+            return await _compilationService.CompileExecutableAsync(cancellationToken);
         }
     }
 }

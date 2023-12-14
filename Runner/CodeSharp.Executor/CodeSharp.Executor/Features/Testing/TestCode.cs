@@ -19,12 +19,14 @@ public static class  TestCode
         private readonly IFileService _fileService;
         private readonly IProcessService _processService;
         private readonly ITestReportParser _reportParser;
+        private readonly ICompilationService _compilationService;
 
-        public Handler(IOptions<ApplicationOptions> applicationOptions, IFileService fileService, IProcessService processService, ITestReportParser reportParser)
+        public Handler(IOptions<ApplicationOptions> applicationOptions, IFileService fileService, IProcessService processService, ITestReportParser reportParser, ICompilationService compilationService)
         {
             _fileService = fileService;
             _processService = processService;
             _reportParser = reportParser;
+            _compilationService = compilationService;
             _applicationOptions = applicationOptions.Value;
         }
 
@@ -33,6 +35,8 @@ public static class  TestCode
             await _fileService.ReplaceCodeToTestFileAsync(request.CodeToTest, cancellationToken);
 
             await _fileService.ReplaceTestsFileAsync(request.TestsCode, cancellationToken);
+
+            var compilationResponse = await _compilationService.CompileTestsAsync(cancellationToken);
             
             var executionOptions = new ProcessExecutionOptions("dotnet",
                 $"test {_applicationOptions.TestProjectPath} --configuration xunit.runner.json --logger \"xunit;LogFilePath={_applicationOptions.TestReportFilePath}\"");

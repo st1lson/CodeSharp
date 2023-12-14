@@ -1,6 +1,7 @@
 ﻿using Carter;
 using CodeSharp.Executor.Options;
 using System.Reflection;
+using CodeSharp.Executor.Contracts.Compilation;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Infrastructure.Parsers;
 using CodeSharp.Executor.Infrastructure.Services;
@@ -24,6 +25,8 @@ public static class DependencyInjection
         serviceCollection.AddScoped<IFileService, FileService>();
         serviceCollection.AddScoped<IProcessService, ProcessService>();
         serviceCollection.AddScoped<ITestReportParser, XmlTestReportParser>();
+        serviceCollection.AddScoped<ICompilationService, CompilationService>();
+        serviceCollection.AddScoped<ICodeAnalysisReportParser, CodeAnalysisReportParser>();
 
         return serviceCollection;
     }

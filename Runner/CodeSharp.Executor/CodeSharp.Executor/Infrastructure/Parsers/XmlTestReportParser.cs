@@ -4,7 +4,6 @@ using CodeSharp.Executor.Contracts.Testing;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
 using Microsoft.Extensions.Options;
-using System.Xml.Linq;
 
 namespace CodeSharp.Executor.Infrastructure.Parsers;
 
