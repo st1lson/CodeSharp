@@ -1,4 +1,6 @@
-﻿namespace CodeSharp.Executor.Contracts;
+﻿using CodeSharp.Executor.Contracts.Compilation;
+
+namespace CodeSharp.Executor.Contracts.Testing;
 
 public class TestingResponse : CompilationResponse
 {

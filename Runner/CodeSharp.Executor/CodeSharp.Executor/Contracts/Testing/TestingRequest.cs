@@ -1,4 +1,4 @@
-﻿namespace CodeSharp.Executor.Contracts;
+﻿namespace CodeSharp.Executor.Contracts.Testing;
 
 public class TestingRequest
 {

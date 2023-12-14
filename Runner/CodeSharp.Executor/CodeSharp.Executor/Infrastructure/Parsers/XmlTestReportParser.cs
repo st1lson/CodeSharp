@@ -1,5 +1,6 @@
-﻿using CodeSharp.Executor.Constants;
-using CodeSharp.Executor.Contracts;
+using System.Xml.Linq;
+using CodeSharp.Executor.Constants;
+using CodeSharp.Executor.Contracts.Testing;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
 using Microsoft.Extensions.Options;
@@ -29,9 +30,9 @@ public class XmlTestReportParser : ITestReportParser
                 from test in document.Descendants(XmlReportConstants.TestElementName)
                 select new TestResult
                 {
-                    TestName = (string)test.Attribute(XmlReportConstants.TestNameAttribute)!,
-                    Passed = (string)test.Attribute(XmlReportConstants.PassedAttribute)! == XmlReportConstants.TestPassedValue,
-                    ExecutionTime = (double)test.Attribute(XmlReportConstants.ExecutionTimeAttribute)!,
+                    TestName = test.Attribute(XmlReportConstants.TestNameAttribute)!.Value,
+                    Passed = test.Attribute(XmlReportConstants.PassedAttribute)!.Value == XmlReportConstants.TestPassedValue,
+                    ExecutionTime = double.Parse(test.Attribute(XmlReportConstants.ExecutionTimeAttribute)!.Value),
                     ErrorMessage = ExtractErrorMessage(test.Element(XmlReportConstants.ErrorElementName))
                 }
             ).ToList();

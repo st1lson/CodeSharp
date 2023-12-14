@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using CodeSharp.Executor.Contracts;
+using CodeSharp.Executor.Contracts.Compilation;
 using CodeSharp.Executor.Contracts.Internal;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 
