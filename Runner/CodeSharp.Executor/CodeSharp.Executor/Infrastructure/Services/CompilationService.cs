@@ -10,15 +10,12 @@ public class CompilationService : ICompilationService
 {
     private readonly IProcessService _processService;
     private readonly ApplicationOptions _applicationOptions;
-    private readonly ICodeAnalysisService _codeAnalysisService;
 
     public CompilationService(
         IOptions<ApplicationOptions> applicationOptions,
-        IProcessService processService,
-        ICodeAnalysisService codeAnalysisService)
+        IProcessService processService)
     {
         _processService = processService;
-        _codeAnalysisService = codeAnalysisService;
         _applicationOptions = applicationOptions.Value;
     }
 
@@ -37,8 +34,6 @@ public class CompilationService : ICompilationService
         var executionOptions = new ProcessExecutionOptions("dotnet", $"build {projectPath} -nologo -noconsolelogger -flp1:logfile={_applicationOptions.ErrorsFilePath};errorsonly -flp2:logfile={_applicationOptions.CodeAnalysisFilePath};append;warningsonly");
 
         var compilationResponse = await _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
-
-        var codeAnalysis = await _codeAnalysisService.AnalyseAsync(cancellationToken);
 
         return new CompilationResponse
         {

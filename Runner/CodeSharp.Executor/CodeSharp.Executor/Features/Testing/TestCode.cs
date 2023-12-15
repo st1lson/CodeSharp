@@ -19,14 +19,22 @@ public static class TestCode
         private readonly IProcessService _processService;
         private readonly ITestReportParser _reportParser;
         private readonly ICompilationService _compilationService;
+        private readonly ICodeAnalysisService _codeAnalysisService;
 
-        public Handler(IOptions<ApplicationOptions> applicationOptions, IFileService fileService, IProcessService processService, ITestReportParser reportParser, ICompilationService compilationService)
+        public Handler(
+            IOptions<ApplicationOptions> applicationOptions,
+            IFileService fileService,
+            IProcessService processService,
+            ITestReportParser reportParser,
+            ICompilationService compilationService,
+            ICodeAnalysisService codeAnalysisService)
         {
             _fileService = fileService;
             _processService = processService;
             _reportParser = reportParser;
             _compilationService = compilationService;
             _applicationOptions = applicationOptions.Value;
+            _codeAnalysisService = codeAnalysisService;
         }
 
         public async Task<TestingResponse> Handle(Command request, CancellationToken cancellationToken)
@@ -37,6 +45,8 @@ public static class TestCode
 
             var compilationResponse = await _compilationService.CompileTestsAsync(cancellationToken);
 
+            var analysisResponse = await _codeAnalysisService.AnalyzeAsync(cancellationToken);
+
             var executionOptions = new ProcessExecutionOptions("dotnet",
                 $"test {_applicationOptions.TestProjectPath} --configuration xunit.runner.json --logger \"xunit;LogFilePath={_applicationOptions.TestReportFilePath}\"");
 
@@ -46,9 +56,7 @@ public static class TestCode
             var testingResponse = _reportParser.ParseTestReport();
 
             //TODO: Add mapper
-            testingResponse.CodeAnalysisIssues = compilationResponse.CodeAnalysisIssues;
-            testingResponse.CodeGrade = compilationResponse.CodeGrade;
-            testingResponse.Errors = compilationResponse.Errors;
+            testingResponse.AnalysisResponse = analysisResponse;
 
             return testingResponse;
         }

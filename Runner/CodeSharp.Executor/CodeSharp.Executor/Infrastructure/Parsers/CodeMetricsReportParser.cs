@@ -1,9 +1,8 @@
-﻿using System.Xml;
-using System.Xml.Linq;
-using CodeSharp.Executor.Contracts.Internal;
+﻿using CodeSharp.Executor.Contracts.Internal;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
 using Microsoft.Extensions.Options;
+using System.Xml.Linq;
 
 namespace CodeSharp.Executor.Infrastructure.Parsers;
 
@@ -38,13 +37,21 @@ public class CodeMetricsReportParser : ICodeMetricsReportParser
 
     public CodeMetricsReport Parse()
     {
-        var document = XDocument.Load(@"M:\study\CodeSharp\Runner\CodeSharp.Executor\CodeSharp.Executor\res.xml");
-        
+        var document = XDocument.Load(@"C:\Users\st1lson\Desktop\repos\CodeSharp\Runner\CodeSharp.Executor\CodeSharp.Executor\res.xml");
+
         CodeMetrics codeMetrics = ParseMetrics(document.Root.Element("Targets").Element("Target").Element("Assembly"));
 
-        return new CodeMetricsReport();
+        return new CodeMetricsReport
+        {
+            ClassCoupling = codeMetrics.ClassCoupling,
+            CyclomaticComplexity = codeMetrics.CyclomaticComplexity,
+            MaintainabilityIndex = codeMetrics.MaintainabilityIndex,
+            SourceLines = codeMetrics.SourceLines,
+            ExecutableLines = codeMetrics.ExecutableLines,
+            DepthOfInheritance = codeMetrics.DepthOfInheritance,
+        };
     }
-    
+
     static CodeMetrics ParseMetrics(XElement element)
     {
         XElement metricsElement = element.Element("Metrics");
@@ -82,7 +89,7 @@ public class CodeMetricsReportParser : ICodeMetricsReportParser
                     }
                 }
             }
-            
+
             metrics.NestedMetrics.AddRange(metricsElement.Elements("Metrics").Select(ParseMetrics));
         }
 

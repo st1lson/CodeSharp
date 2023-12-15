@@ -1,5 +1,4 @@
-﻿using CodeSharp.Executor.Contracts.Compilation;
-using CodeSharp.Executor.Contracts.Internal;
+﻿using CodeSharp.Executor.Contracts.Internal;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 
 namespace CodeSharp.Executor.Infrastructure.Services;
@@ -15,12 +14,17 @@ public class CodeAnalysisService : ICodeAnalysisService
         _codeMetricsReport = codeMetricsReport;
     }
 
-    public async Task<CodeAnalysisResponse> AnalyseAsync(CancellationToken cancellationToken = default)
+    public async Task<CodeAnalysisResponse> AnalyzeAsync(CancellationToken cancellationToken = default)
     {
         var codeReport = await _codeAnalysisReportParser.ParseCodeAnalysisReportAsync(cancellationToken);
 
         var metricsReport = _codeMetricsReport.Parse();
-        
-        return new CompilationResponse();
+
+        return new CodeAnalysisResponse
+        {
+            CodeAnalysis = codeReport,
+            CodeMetrics = metricsReport,
+            CodeGrade = Random.Shared.Next(100)
+        };
     }
 }

@@ -1,9 +1,7 @@
 ﻿using Carter;
 using CodeSharp.Executor.Contracts.Compilation;
 using CodeSharp.Executor.Infrastructure.Interfaces;
-using CodeSharp.Executor.Options;
 using MediatR;
-using Microsoft.Extensions.Options;
 
 namespace CodeSharp.Executor.Features.Compilation;
 
@@ -16,22 +14,31 @@ public static class CompileCode
 
     public sealed class Handler : IRequestHandler<Command, CompilationResponse>
     {
-        private readonly ApplicationOptions _applicationOptions;
         private readonly IFileService _fileService;
         private readonly ICompilationService _compilationService;
+        private readonly ICodeAnalysisService _codeAnalysisService;
 
-        public Handler(IOptions<ApplicationOptions> applicationOptions, IFileService fileService, ICompilationService compilationService)
+        public Handler(
+            IFileService fileService,
+            ICompilationService compilationService,
+            ICodeAnalysisService codeAnalysisService)
         {
             _fileService = fileService;
             _compilationService = compilationService;
-            _applicationOptions = applicationOptions.Value;
+            _codeAnalysisService = codeAnalysisService;
         }
 
         public async Task<CompilationResponse> Handle(Command request, CancellationToken cancellationToken)
         {
             await _fileService.ReplaceProgramFileAsync(request.Code, cancellationToken);
 
-            return await _compilationService.CompileExecutableAsync(cancellationToken);
+            var compilationResponse = await _compilationService.CompileExecutableAsync(cancellationToken);
+
+            var analysisResponse = await _codeAnalysisService.AnalyzeAsync(cancellationToken);
+
+            compilationResponse.AnalysisResponse = analysisResponse;
+
+            return compilationResponse;
         }
     }
 }
