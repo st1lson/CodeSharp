@@ -4,5 +4,5 @@ namespace CodeSharp.Executor.Infrastructure.Interfaces;
 
 public interface ICodeAnalysisReportParser
 {
-    Task<CodeAnalysisResponse> ParseCodeAnalysisReportAsync(CancellationToken cancellationToken = default);
+    Task<CodeAnalysisReport> ParseCodeAnalysisReportAsync(CancellationToken cancellationToken = default);
 }

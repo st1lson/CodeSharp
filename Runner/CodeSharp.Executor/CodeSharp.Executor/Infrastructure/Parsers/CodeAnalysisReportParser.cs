@@ -16,9 +16,9 @@ public class CodeAnalysisReportParser : ICodeAnalysisReportParser
         _applicationOptions = applicationOptions.Value;
     }
 
-    public async Task<CodeAnalysisResponse> ParseCodeAnalysisReportAsync(CancellationToken cancellationToken)
+    public async Task<CodeAnalysisReport> ParseCodeAnalysisReportAsync(CancellationToken cancellationToken)
     {
-        var codeAnalysisResponse = new CodeAnalysisResponse();
+        var codeAnalysisResponse = new CodeAnalysisReport();
 
         var codeAnalysisFilePath = _applicationOptions.CodeAnalysisFilePath;
         var errorsFilePath = _applicationOptions.ErrorsFilePath;

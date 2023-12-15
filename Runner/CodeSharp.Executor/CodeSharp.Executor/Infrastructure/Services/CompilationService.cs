@@ -10,15 +10,15 @@ public class CompilationService : ICompilationService
 {
     private readonly IProcessService _processService;
     private readonly ApplicationOptions _applicationOptions;
-    private readonly ICodeAnalysisReportParser _codeAnalysisReportParser;
+    private readonly ICodeAnalysisService _codeAnalysisService;
 
     public CompilationService(
         IOptions<ApplicationOptions> applicationOptions,
         IProcessService processService,
-        ICodeAnalysisReportParser codeAnalysisReportParser)
+        ICodeAnalysisService codeAnalysisService)
     {
         _processService = processService;
-        _codeAnalysisReportParser = codeAnalysisReportParser;
+        _codeAnalysisService = codeAnalysisService;
         _applicationOptions = applicationOptions.Value;
     }
 
@@ -38,15 +38,12 @@ public class CompilationService : ICompilationService
 
         var compilationResponse = await _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
 
-        var codeAnalysisResponse = await _codeAnalysisReportParser.ParseCodeAnalysisReportAsync(cancellationToken);
+        var codeAnalysis = await _codeAnalysisService.AnalyseAsync(cancellationToken);
 
         return new CompilationResponse
         {
             Duration = compilationResponse.Duration,
-            Success = compilationResponse.Success,
-            Errors = codeAnalysisResponse.Errors,
-            CodeAnalysisIssues = codeAnalysisResponse.CodeAnalysisIssues,
-            CodeGrade = codeAnalysisResponse.CodeGrade
+            Success = compilationResponse.Success
         };
     }
 }
