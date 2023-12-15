@@ -1,4 +1,5 @@
-﻿using CodeSharp.Executor.Contracts.Internal;
+using System.Xml.Linq;
+using CodeSharp.Executor.Contracts.Internal;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
 using Microsoft.Extensions.Options;
@@ -21,9 +22,8 @@ public class CodeMetrics
 
 public class SourceInfo
 {
-    public string File { get; set; }
-    public int Line { get; set; }
-    public string Method { get; set; }
+    public string FileName { get; set; }
+    public int LineNumber { get; set; }
 }
 
 public class CodeMetricsReportParser : ICodeMetricsReportParser
@@ -37,81 +37,73 @@ public class CodeMetricsReportParser : ICodeMetricsReportParser
 
     public CodeMetricsReport Parse()
     {
-        var document = XDocument.Load(@"C:\Users\st1lson\Desktop\repos\CodeSharp\Runner\CodeSharp.Executor\CodeSharp.Executor\res.xml");
+        var document = XDocument.Load(@"M:\study\CodeSharp\Runner\CodeSharp.Executor\CodeSharp.Executor\res.xml");
 
-        CodeMetrics codeMetrics = ParseMetrics(document.Root.Element("Targets").Element("Target").Element("Assembly"));
+        CodeMetrics codeMetrics = ParseMetricsNode(document.Descendants("Assembly").FirstOrDefault());
 
-        return new CodeMetricsReport
-        {
-            ClassCoupling = codeMetrics.ClassCoupling,
-            CyclomaticComplexity = codeMetrics.CyclomaticComplexity,
-            MaintainabilityIndex = codeMetrics.MaintainabilityIndex,
-            SourceLines = codeMetrics.SourceLines,
-            ExecutableLines = codeMetrics.ExecutableLines,
-            DepthOfInheritance = codeMetrics.DepthOfInheritance,
-        };
+        return new CodeMetricsReport();
     }
 
-    static CodeMetrics ParseMetrics(XElement element)
+    static CodeMetrics ParseMetricsNode(XElement element)
     {
-        XElement metricsElement = element.Element("Metrics");
+        var metrics = new CodeMetrics();
 
-        CodeMetrics metrics = new CodeMetrics();
-        if (metricsElement != null)
+        // Extract the metrics directly associated with this element
+        foreach (var metric in element.Element("Metrics")?.Elements("Metric"))
         {
-            foreach (XElement metricElement in metricsElement.Elements("Metric"))
+            switch (metric.Attribute("Name")?.Value)
             {
-                string metricName = metricElement.Attribute("Name")?.Value;
-                string metricValue = metricElement.Attribute("Value")?.Value;
-
-                if (!string.IsNullOrEmpty(metricName) && !string.IsNullOrEmpty(metricValue))
-                {
-                    switch (metricName)
-                    {
-                        case "MaintainabilityIndex":
-                            metrics.MaintainabilityIndex = Convert.ToInt32(metricValue);
-                            break;
-                        case "CyclomaticComplexity":
-                            metrics.CyclomaticComplexity = Convert.ToInt32(metricValue);
-                            break;
-                        case "ClassCoupling":
-                            metrics.ClassCoupling = Convert.ToInt32(metricValue);
-                            break;
-                        case "DepthOfInheritance":
-                            metrics.DepthOfInheritance = Convert.ToInt32(metricValue);
-                            break;
-                        case "SourceLines":
-                            metrics.SourceLines = Convert.ToInt32(metricValue);
-                            break;
-                        case "ExecutableLines":
-                            metrics.ExecutableLines = Convert.ToInt32(metricValue);
-                            break;
-                    }
-                }
+                case "MaintainabilityIndex":
+                    metrics.MaintainabilityIndex = (int)metric.Attribute("Value");
+                    break;
+                case "CyclomaticComplexity":
+                    metrics.CyclomaticComplexity = (int)metric.Attribute("Value");
+                    break;
+                case "ClassCoupling":
+                    metrics.ClassCoupling = (int)metric.Attribute("Value");
+                    break;
+                case "DepthOfInheritance":
+                    metrics.DepthOfInheritance = (int)metric.Attribute("Value");
+                    break;
+                case "SourceLines":
+                    metrics.SourceLines = (int)metric.Attribute("Value");
+                    break;
+                case "ExecutableLines":
+                    metrics.ExecutableLines = (int)metric.Attribute("Value");
+                    break;
             }
-
-            metrics.NestedMetrics.AddRange(metricsElement.Elements("Metrics").Select(ParseMetrics));
         }
 
-        metrics.SourceInfo = ParseSourceInfo(element);
-
-        return metrics;
-    }
-
-    static SourceInfo ParseSourceInfo(XElement element)
-    {
-        XElement sourceInfoElement = element.Elements("Members").Elements("Method").Elements("Metrics").FirstOrDefault();
-
-        if (sourceInfoElement != null)
+        if (element.Name.LocalName == "Method" ||
+            element.Name.LocalName == "Field" ||
+            element.Name.LocalName == "Property" ||
+            element.Name.LocalName == "Accessor")
         {
-            return new SourceInfo
+            metrics.SourceInfo = new SourceInfo
             {
-                File = sourceInfoElement.Attribute("File")?.Value ?? string.Empty,
-                Line = Convert.ToInt32(sourceInfoElement.Attribute("Line")?.Value ?? "0"),
-                Method = sourceInfoElement.Attribute("Name")?.Value ?? string.Empty
+                FileName = element.Attribute("File")?.Value,
+                LineNumber = (int?)element.Attribute("Line") ?? 0
             };
         }
 
-        return new SourceInfo();
+        var namespaces = element.Elements("Namespaces").Elements("Namespace");
+        foreach (var ns in namespaces)
+        {
+            metrics.NestedMetrics.Add(ParseMetricsNode(ns));
+        }
+
+        var types = element.Elements("Types").Elements("NamedType");
+        foreach (var type in types)
+        {
+            metrics.NestedMetrics.Add(ParseMetricsNode(type));
+        }
+
+        var members = element.Elements("Members").Elements();
+        foreach (var member in members)
+        {
+            metrics.NestedMetrics.Add(ParseMetricsNode(member));
+        }
+
+        return metrics;
     }
 }
