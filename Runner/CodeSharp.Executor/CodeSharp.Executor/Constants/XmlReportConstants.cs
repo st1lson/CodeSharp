@@ -1,6 +1,6 @@
 ﻿namespace CodeSharp.Executor.Constants;
 
-public class XmlReportConstants
+public static class XmlReportConstants
 {
     public const string TestNameAttribute = "name";
     public const string PassedAttribute = "result";
