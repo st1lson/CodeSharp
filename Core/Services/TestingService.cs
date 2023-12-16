@@ -4,6 +4,7 @@ using Core.Docker.Providers;
 using Core.Services.Models;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Core.Services.Models.Testing;
 
 namespace Core.Services;
 
@@ -29,7 +30,7 @@ public class TestingService : ITestingService
         _containerEndpointProvider = containerEndpointProvider ?? throw new ArgumentNullException(nameof(containerEndpointProvider));
     }
 
-    public async Task<TestingResult> TestAsync(string code, string testsCode, CancellationToken cancellationToken = default)
+    public async Task<TestingResponse> TestAsync(string code, string testsCode, CancellationToken cancellationToken = default)
     {
         using var dockerContainer = new DockerContainer(_configuration, _containerNameProvider, _containerPortProvider, _containerHealthCheckProvider);
         await dockerContainer.StartAsync(cancellationToken);
@@ -46,11 +47,11 @@ public class TestingService : ITestingService
         var result = await httpClient.PostAsJsonAsync(testingUrl, testingRequest, cancellationToken);
         if (!result.IsSuccessStatusCode)
         {
-            throw new Exception("Compilation failed");
+            throw new Exception("Testing failed");
         }
 
         var json = await result.Content.ReadAsStringAsync(cancellationToken);
-        var item = JsonSerializer.Deserialize<TestingResult>(json, new JsonSerializerOptions
+        var item = JsonSerializer.Deserialize<TestingResponse>(json, new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
         });
@@ -58,7 +59,7 @@ public class TestingService : ITestingService
         return item!;
     }
 
-    public async Task<TestingResult> TestFileAsync(string filePath, string testsCode, CancellationToken cancellationToken = default)
+    public async Task<TestingResponse> TestFileAsync(string filePath, string testsCode, CancellationToken cancellationToken = default)
     {
         const string requiredFileExtension = ".cs";
 

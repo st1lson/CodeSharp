@@ -1,9 +1,9 @@
-﻿using Core.Services.Models;
+﻿using Core.Services.Models.Testing;
 
 namespace Core.Services;
 
 public interface ITestingService
 {
-    Task<TestingResult> TestAsync(string code, string testsCode, CancellationToken cancellationToken = default);
-    Task<TestingResult> TestFileAsync(string filePath, string testsCode, CancellationToken cancellationToken = default);
+    Task<TestingResponse> TestAsync(string code, string testsCode, CancellationToken cancellationToken = default);
+    Task<TestingResponse> TestFileAsync(string filePath, string testsCode, CancellationToken cancellationToken = default);
 }
