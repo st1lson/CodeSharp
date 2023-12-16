@@ -1,5 +1,5 @@
-﻿using System.Text.Json;
-using Core.Services.Models.Shared;
+﻿using Core.Services.Models.Shared;
+using System.Text.Json;
 
 namespace Core.Services.Models.Testing;
 
@@ -10,6 +10,6 @@ public class TestingResponse : AnalyzableResponse
 
     public override string ToString()
     {
-        return JsonSerializer.Serialize(this);
+        return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
     }
 }
