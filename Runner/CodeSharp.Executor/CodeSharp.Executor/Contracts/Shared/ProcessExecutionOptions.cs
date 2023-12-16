@@ -1,4 +1,4 @@
-﻿namespace CodeSharp.Executor.Contracts.Internal;
+﻿namespace CodeSharp.Executor.Contracts.Shared;
 
 public record ProcessExecutionOptions(
     string FileName,

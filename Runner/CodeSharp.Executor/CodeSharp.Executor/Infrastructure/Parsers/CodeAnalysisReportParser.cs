@@ -1,9 +1,9 @@
 ﻿using CodeSharp.Executor.Constants;
-using CodeSharp.Executor.Contracts.Internal;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
 using Microsoft.Extensions.Options;
 using System.Text.RegularExpressions;
+using CodeSharp.Executor.Contracts.Shared;
 
 namespace CodeSharp.Executor.Infrastructure.Parsers;
 

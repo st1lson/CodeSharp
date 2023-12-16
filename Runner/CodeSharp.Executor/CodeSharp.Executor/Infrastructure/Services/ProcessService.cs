@@ -1,6 +1,6 @@
-﻿using CodeSharp.Executor.Contracts.Internal;
-using CodeSharp.Executor.Infrastructure.Interfaces;
+﻿using CodeSharp.Executor.Infrastructure.Interfaces;
 using System.Diagnostics;
+using CodeSharp.Executor.Contracts.Shared;
 
 namespace CodeSharp.Executor.Infrastructure.Services;
 

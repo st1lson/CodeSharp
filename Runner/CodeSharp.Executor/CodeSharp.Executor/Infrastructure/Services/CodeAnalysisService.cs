@@ -1,4 +1,4 @@
-﻿using CodeSharp.Executor.Contracts.Internal;
+﻿using CodeSharp.Executor.Contracts.Shared;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 
 namespace CodeSharp.Executor.Infrastructure.Services;

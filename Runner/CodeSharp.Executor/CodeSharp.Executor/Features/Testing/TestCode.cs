@@ -1,5 +1,5 @@
 ﻿using Carter;
-using CodeSharp.Executor.Contracts.Internal;
+using CodeSharp.Executor.Contracts.Shared;
 using CodeSharp.Executor.Contracts.Testing;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
@@ -43,20 +43,24 @@ public static class TestCode
 
             await _fileService.ReplaceTestsFileAsync(request.TestsCode, cancellationToken);
 
+            // TODO: Handle compilation result
             var compilationResponse = await _compilationService.CompileTestsAsync(cancellationToken);
 
             var analysisResponse = await _codeAnalysisService.AnalyzeAsync(cancellationToken);
 
             var executionOptions = new ProcessExecutionOptions("dotnet",
                 $"test {_applicationOptions.TestProjectPath} --configuration xunit.runner.json --logger \"xunit;LogFilePath={_applicationOptions.TestReportFilePath}\"");
-
+            
+            var res = await _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
             // TODO: Handle execution result
-            var _ = await _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
+            if (!res.Success)
+            {
+                throw new Exception($"Output: {res.Output}\nError: {res.Error}");
+            }
 
             var testingResponse = _reportParser.ParseTestReport();
 
-            //TODO: Add mapper
-            testingResponse.AnalysisResponse = analysisResponse;
+            testingResponse.CodeReport = analysisResponse;
 
             return testingResponse;
         }

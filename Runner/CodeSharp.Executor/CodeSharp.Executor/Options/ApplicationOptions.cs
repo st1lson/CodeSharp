@@ -13,4 +13,5 @@ public sealed class ApplicationOptions
     public required string TestReportFilePath { get; init; }
     public required string ErrorsFilePath { get; init; }
     public required string CodeAnalysisFilePath { get; init; }
+    public required string CodeMetricsFilePath { get; init; }
 }

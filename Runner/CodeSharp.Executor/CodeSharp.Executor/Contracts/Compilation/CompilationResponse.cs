@@ -1,10 +1,9 @@
-﻿using CodeSharp.Executor.Contracts.Internal;
+﻿using CodeSharp.Executor.Contracts.Shared;
 
 namespace CodeSharp.Executor.Contracts.Compilation;
 
-public class CompilationResponse
+public class CompilationResponse : AnalyzableResponse
 {
-    public virtual bool Success { get; set; }
+    public bool Success { get; set; }
     public TimeSpan Duration { get; set; }
-    public CodeAnalysisResponse? AnalysisResponse { get; set; }
 }

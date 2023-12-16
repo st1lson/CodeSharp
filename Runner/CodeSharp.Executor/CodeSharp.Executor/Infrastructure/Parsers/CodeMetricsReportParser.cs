@@ -1,6 +1,6 @@
 using System.Xml.Linq;
 using CodeSharp.Executor.Constants;
-using CodeSharp.Executor.Contracts.Internal;
+using CodeSharp.Executor.Contracts.Shared;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
 using Microsoft.Extensions.Options;
@@ -18,7 +18,7 @@ public class CodeMetricsReportParser : ICodeMetricsReportParser
 
     public CodeMetricsReport Parse()
     {
-        var document = XDocument.Load(@"M:\study\CodeSharp\Runner\CodeSharp.Executor\CodeSharp.Executor\res.xml");
+        var document = XDocument.Load(_applicationOptions.CodeMetricsFilePath);
 
         var assemblyNode = document.Descendants(CodeMetricsReportConstants.Elements.Assembly).FirstOrDefault();
 

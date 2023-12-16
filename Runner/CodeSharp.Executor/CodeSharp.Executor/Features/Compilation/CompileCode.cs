@@ -36,7 +36,7 @@ public static class CompileCode
 
             var analysisResponse = await _codeAnalysisService.AnalyzeAsync(cancellationToken);
 
-            compilationResponse.AnalysisResponse = analysisResponse;
+            compilationResponse.CodeReport = analysisResponse;
 
             return compilationResponse;
         }

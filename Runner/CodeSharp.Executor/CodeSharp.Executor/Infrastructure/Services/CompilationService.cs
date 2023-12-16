@@ -1,5 +1,5 @@
 ﻿using CodeSharp.Executor.Contracts.Compilation;
-using CodeSharp.Executor.Contracts.Internal;
+using CodeSharp.Executor.Contracts.Shared;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
 using Microsoft.Extensions.Options;
@@ -31,7 +31,7 @@ public class CompilationService : ICompilationService
 
     private async Task<CompilationResponse> CompileAsync(string projectPath, CancellationToken cancellationToken)
     {
-        var executionOptions = new ProcessExecutionOptions("dotnet", $"build {projectPath} -nologo -noconsolelogger -flp1:logfile={_applicationOptions.ErrorsFilePath};errorsonly -flp2:logfile={_applicationOptions.CodeAnalysisFilePath};append;warningsonly");
+        var executionOptions = new ProcessExecutionOptions("dotnet", $"build {projectPath} /t:Metrics /p:MetricsOutputFile={_applicationOptions.CodeMetricsFilePath} -nologo -noconsolelogger -flp1:logfile={_applicationOptions.ErrorsFilePath};errorsonly -flp2:logfile={_applicationOptions.CodeAnalysisFilePath};append;warningsonly");
 
         var compilationResponse = await _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
 
