@@ -8,4 +8,7 @@ public class CodeMetricsReport
     public int DepthOfInheritance { get; set; }
     public int SourceLines { get; set; }
     public int ExecutableLines { get; set; }
+
+    public IList<CodeMetricsReport> NestedMetrics { get; set; } = new List<CodeMetricsReport>();
+    public SourceInfo? SourceInfo { get; set; }
 }
