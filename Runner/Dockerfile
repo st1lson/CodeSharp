@@ -41,6 +41,9 @@ ENV ASPNETCORE_URLS="http://+:80" \
 	ApplicationSettings__CodeToTestFilePath="/test-app/CodeSharp.Playground/Code.cs" \
 	ApplicationSettings__TestProjectPath="/test-app/CodeSharp.Tests/CodeSharp.Tests.csproj" \
 	ApplicationSettings__TestFilePath="/test-app/CodeSharp.Tests/Tests.cs" \
-	ApplicationSettings__TestReportFilePath="/test-app/CodeSharp.Tests/test-report.xml"
+	ApplicationSettings__TestReportFilePath="/test-app/CodeSharp.Tests/test-report.xml" \
+	ApplicationSettings__ErrorsFilePath="/test-app/code-analysis/errors.txt" \
+	ApplicationSettings__CodeAnalysisFilePath="/test-app/code-analysis/warnings.txt" \
+	ApplicationSettings__CodeMetricsFilePath="/test-app/code-analysis/metrics.xml"
 
 ENTRYPOINT ["dotnet", "CodeSharp.Executor.dll"]
