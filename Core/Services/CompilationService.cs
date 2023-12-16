@@ -4,6 +4,7 @@ using Core.Docker.Providers;
 using Core.Services.Models;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Core.Services.Models.Compilation;
 
 namespace Core.Services;
 
@@ -29,7 +30,7 @@ public class CompilationService : ICompilationService
         _containerEndpointProvider = containerEndpointProvider ?? throw new ArgumentNullException(nameof(containerEndpointProvider));
     }
 
-    public async Task<CompilationResult> CompileAsync(string code, CancellationToken cancellationToken)
+    public async Task<CompilationResponse> CompileAsync(string code, CancellationToken cancellationToken)
     {
         using var dockerContainer = new DockerContainer(_configuration, _containerNameProvider, _containerPortProvider, _containerHealthCheckProvider);
         await dockerContainer.StartAsync(cancellationToken);
@@ -49,7 +50,7 @@ public class CompilationService : ICompilationService
         }
 
         var json = await result.Content.ReadAsStringAsync(cancellationToken);
-        var item = JsonSerializer.Deserialize<CompilationResult>(json, new JsonSerializerOptions
+        var item = JsonSerializer.Deserialize<CompilationResponse>(json, new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
         });
@@ -57,7 +58,7 @@ public class CompilationService : ICompilationService
         return item!;
     }
 
-    public async Task<CompilationResult> CompileFileAsync(string filePath, CancellationToken cancellationToken = default)
+    public async Task<CompilationResponse> CompileFileAsync(string filePath, CancellationToken cancellationToken = default)
     {
         const string requiredFileExtension = ".cs";
         

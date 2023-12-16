@@ -1,9 +1,9 @@
-﻿using Core.Services.Models;
+﻿using Core.Services.Models.Compilation;
 
 namespace Core.Services;
 
 public interface ICompilationService
 {
-    Task<CompilationResult> CompileAsync(string code, CancellationToken cancellationToken = default);
-    Task<CompilationResult> CompileFileAsync(string filePath, CancellationToken cancellationToken = default);
+    Task<CompilationResponse> CompileAsync(string code, CancellationToken cancellationToken = default);
+    Task<CompilationResponse> CompileFileAsync(string filePath, CancellationToken cancellationToken = default);
 }
