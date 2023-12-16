@@ -70,7 +70,7 @@ public class CodeAnalysisReportParser : ICodeAnalysisReportParser
         //TODO: review the regex to probably clean it up
         //string pattern = @"(\d+:\d+)>(.+)\((\d+,\d+)\): (\w+) (\w+): (.+) \[([^\]]+)\]";
         //string pattern = @"(?<Position>\d+:\d+)>(?<FilePath>.+)\((?<LineNumber>\d+,\d+)\): (?<ErrorType>\w+) (?<ErrorCode>\w+): (?<ErrorMessage>.+) \[(?<ProjectFilePath>[^\]]+)\]";
-        const string pattern = @"(?<Line>\d+):(?<Column>\d+)>.+: (?<ErrorType>\w+) (?<ErrorCode>\w+): (?<ErrorMessage>.+) \[.*\]";
+        const string pattern = @".*\((?<Line>\d+),(?<Column>\d+)\): (?<ErrorType>\w+) (?<ErrorCode>\w+): (?<ErrorMessage>.+) \[.*\]";
         var regex = new Regex(pattern);
         var match = regex.Match(codeAnalysisLine);
         if (!match.Success)
