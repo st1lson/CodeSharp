@@ -28,6 +28,7 @@ COPY ./CodeSharp.Templates ./TestApp
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS final
 WORKDIR /test-app
 COPY --from=copyAppSample /src/TestApp .
+RUN dotnet restore "CodeSharp.Templates.sln"
 WORKDIR /app
 COPY --from=publish /app/publish .
 
