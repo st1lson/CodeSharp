@@ -6,10 +6,6 @@ export interface CompilationResponse {
 }
 
 export interface CodeReport {
-    codeAnalysis: CodeAnalysis;
-}
-
-export interface CodeAnalysis {
     errors: CodeAnalysisNode[];
     codeAnalysisIssues: CodeAnalysisNode[];
 }

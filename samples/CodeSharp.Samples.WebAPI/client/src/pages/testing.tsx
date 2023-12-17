@@ -1,3 +1,4 @@
+import CodeAnalysisTable from "@/components/codeAnalysisTable";
 import CodeEditor from "@/components/codeEditor";
 import { Test, TestingRequest, TestingResponse } from "@/models/testing";
 import { fetchTest, startTesting } from "@/services/testing.service";
@@ -64,12 +65,12 @@ const TestPage: React.FC = () => {
             <div className="flex flex-col gap-5 items-center">
                 <div className="w-full">
                     <pre className="bg-gray-800 p-4 w-full">
-                        <h3 className="text-xl font-bold mb-2">
-                            Test results:
-                        </h3>
                         {testResult?.testResults &&
                             testResult.testResults.length > 0 && (
                                 <div className="flex flex-col gap-5">
+                                    <h3 className="text-xl font-bold mb-2">
+                                        Test results:
+                                    </h3>
                                     {testResult.testResults.map(
                                         (result, index) => (
                                             <div
@@ -122,6 +123,11 @@ const TestPage: React.FC = () => {
                                     )}
                                 </div>
                             )}
+                        {testResult && testResult.codeReport && (
+                            <CodeAnalysisTable
+                                codeReport={testResult.codeReport}
+                            />
+                        )}
                     </pre>
                 </div>
                 <button

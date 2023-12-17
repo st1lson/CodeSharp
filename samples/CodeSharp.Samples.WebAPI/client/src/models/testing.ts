@@ -1,3 +1,5 @@
+import { CodeReport } from "./compilation";
+
 export interface Test {
     id: string;
     testsCode: string;
@@ -13,6 +15,7 @@ export interface TestingRequest {
 export interface TestingResponse {
     success: boolean;
     testResults: TestReport[];
+    codeReport: CodeReport;
 }
 
 export interface TestReport {
