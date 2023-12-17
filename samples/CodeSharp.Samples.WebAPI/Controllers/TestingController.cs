@@ -1,6 +1,6 @@
-﻿using CodeSharp.Samples.WebAPI.Models;
+﻿using CodeSharp.Core.Services;
+using CodeSharp.Samples.WebAPI.Models;
 using CodeSharp.Samples.WebAPI.Models.Requests;
-using Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSharp.Samples.WebAPI.Controllers;
@@ -8,7 +8,7 @@ namespace CodeSharp.Samples.WebAPI.Controllers;
 [Route("api/[controller]")]
 public class TestingController : ControllerBase
 {
-    public readonly ITestingService _testingService;
+    private readonly ITestingService _testingService;
 
     private static readonly Test _test = new()
     {

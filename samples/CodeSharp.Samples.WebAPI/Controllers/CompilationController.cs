@@ -1,5 +1,5 @@
-﻿using CodeSharp.Samples.WebAPI.Models.Requests;
-using Core.Services;
+﻿using CodeSharp.Core.Services;
+using CodeSharp.Samples.WebAPI.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeSharp.Samples.WebAPI.Controllers;
@@ -17,7 +17,7 @@ public class CompilationController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CompileAsync([FromBody] CompilationRequest request)
     {
-        var compilationResult = await _compilationService.CompileAsync(request.Code);
+        var compilationResult = await _compilationService.CompileAsync(request.Code, true);
 
         return Ok(compilationResult);
     }

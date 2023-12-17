@@ -1,6 +1,6 @@
-﻿using Core.Docker.Models;
-using Core.Docker.Providers;
-using Core.Services;
+﻿using CodeSharp.Core.Docker.Models;
+using CodeSharp.Core.Docker.Providers;
+using CodeSharp.Core.Services;
 
 namespace CodeSharp.Samples.WebAPI;
 
