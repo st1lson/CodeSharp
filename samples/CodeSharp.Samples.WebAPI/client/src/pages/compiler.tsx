@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
-import MonacoEditor, { OnChange } from "@monaco-editor/react";
+import { useState } from "react";
+import { OnChange } from "@monaco-editor/react";
 import { compile } from "@/services/compilation.service";
+import CodeEditor from "@/components/codeEditor";
 
 const Compiler: React.FC = () => {
     const [code, setCode] = useState<string>(
@@ -47,51 +48,11 @@ const Compiler: React.FC = () => {
         }
     };
 
-    const editorOptions = {
-        acceptSuggestionOnCommitCharacter: true,
-        automaticLayout: true,
-        codeLens: true,
-        colorDecorators: true,
-        contextmenu: true,
-        disableLayerHinting: false,
-        disableMonospaceOptimizations: false,
-        dragAndDrop: false,
-        fixedOverflowWidgets: false,
-        fontLigatures: false,
-        formatOnPaste: true,
-        formatOnType: true,
-        hideCursorInOverviewRuler: false,
-        highlightActiveIndentGuide: true,
-        links: true,
-        mouseWheelZoom: false,
-        multiCursorMergeOverlapping: true,
-        overviewRulerBorder: true,
-        overviewRulerLanes: 2,
-        quickSuggestions: true,
-        quickSuggestionsDelay: 100,
-        revealHorizontalRightPadding: 30,
-        roundedSelection: true,
-        rulers: [],
-        scrollBeyondLastColumn: 5,
-        scrollBeyondLastLine: true,
-        selectOnLineNumbers: true,
-        selectionClipboard: true,
-        selectionHighlight: true,
-        smoothScrolling: false,
-        wordSeparators: "~!@#$%^&*()-=+[{]}|;:'\",.<>/?",
-        wordWrapBreakAfterCharacters: "\t})]?|&,;",
-        wordWrapBreakBeforeCharacters: "{([+",
-        wordWrapBreakObtrusiveCharacters: ".",
-    };
-
     return (
         <div className="flex flex-col p-4 text-white">
             <div className="flex-grow mb-4">
-                <MonacoEditor
-                    language="csharp"
-                    theme="vs-dark"
-                    value={code}
-                    options={editorOptions}
+                <CodeEditor
+                    code={code}
                     onChange={handleCodeChange}
                     height="60vh"
                 />
