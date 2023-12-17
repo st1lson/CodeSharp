@@ -6,7 +6,7 @@ interface Props {
 
 const CodeAnalysisTable: React.FC<Props> = ({ codeReport }) => {
     return (
-        <div className="mt-4 p-4 rounded-md">
+        <div className="mt-4 rounded-md">
             <h3 className="text-xl font-bold mb-2">Code Analysis:</h3>
             <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">

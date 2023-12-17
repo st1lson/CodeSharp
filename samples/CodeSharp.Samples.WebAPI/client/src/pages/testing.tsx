@@ -68,7 +68,7 @@ const TestPage: React.FC = () => {
                         {testResult?.testResults &&
                             testResult.testResults.length > 0 && (
                                 <div className="flex flex-col gap-5">
-                                    <h3 className="text-xl font-bold mb-2">
+                                    <h3 className="text-xl mt-4 font-bold mb-2">
                                         Test results:
                                     </h3>
                                     {testResult.testResults.map(
