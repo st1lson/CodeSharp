@@ -12,13 +12,8 @@ public class CodeAnalysisService : ICodeAnalysisService
         _codeAnalysisReportParser = codeAnalysisReportParser;
     }
 
-    public async Task<CodeAnalysisResponse> AnalyzeAsync(CancellationToken cancellationToken = default)
+    public Task<CodeAnalysisReport> AnalyzeAsync(CancellationToken cancellationToken = default)
     {
-        var codeReport = await _codeAnalysisReportParser.ParseCodeAnalysisReportAsync(cancellationToken);
-        
-        return new CodeAnalysisResponse
-        {
-            CodeAnalysis = codeReport
-        };
+        return _codeAnalysisReportParser.ParseCodeAnalysisReportAsync(cancellationToken);
     }
 }

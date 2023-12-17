@@ -48,6 +48,14 @@ public static class TestCode
 
             var analysisResponse = await _codeAnalysisService.AnalyzeAsync(cancellationToken);
 
+            if (!compilationResponse.Success)
+            {
+                return new TestingResponse
+                {
+                    CodeReport = analysisResponse
+                };
+            }
+
             var executionOptions = new ProcessExecutionOptions("dotnet",
                 $"test {_applicationOptions.TestProjectPath} --configuration xunit.runner.json --logger \"xunit;LogFilePath={_applicationOptions.TestReportFilePath}\"");
             

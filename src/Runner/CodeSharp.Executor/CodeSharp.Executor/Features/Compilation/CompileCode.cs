@@ -48,7 +48,7 @@ public static class CompileCode
 
             compilationResponse.CodeReport = analysisResponse;
 
-            if (!request.Run)
+            if (!request.Run || !compilationResponse.Success)
             {
                 return compilationResponse;
             }
