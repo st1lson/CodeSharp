@@ -15,9 +15,7 @@ public class CodeAnalysisService : ICodeAnalysisService
     public async Task<CodeAnalysisResponse> AnalyzeAsync(CancellationToken cancellationToken = default)
     {
         var codeReport = await _codeAnalysisReportParser.ParseCodeAnalysisReportAsync(cancellationToken);
-
-        //var metricsReport = _codeMetricsReport.Parse();
-
+        
         return new CodeAnalysisResponse
         {
             CodeAnalysis = codeReport

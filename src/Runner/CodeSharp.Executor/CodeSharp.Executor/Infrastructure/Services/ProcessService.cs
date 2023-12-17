@@ -32,7 +32,7 @@ public class ProcessService : IProcessService
             {
                 if (!string.IsNullOrEmpty(e.Data))
                 {
-                    outputWriter.WriteLine($"[Output] {e.Data}");
+                    outputWriter.WriteLine(e.Data);
                 }
             };
 
@@ -40,7 +40,7 @@ public class ProcessService : IProcessService
             {
                 if (!string.IsNullOrEmpty(e.Data))
                 {
-                    errorWriter.WriteLine($"[Error] {e.Data}");
+                    errorWriter.WriteLine(e.Data);
                 }
             };
 
