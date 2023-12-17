@@ -58,13 +58,13 @@ public static class TestCode
 
             var executionOptions = new ProcessExecutionOptions("dotnet",
                 $"test {_applicationOptions.TestProjectPath} --configuration xunit.runner.json --logger \"xunit;LogFilePath={_applicationOptions.TestReportFilePath}\"");
-            
+
             var res = await _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
             // TODO: Handle execution result
-            if (!res.Success)
-            {
-                throw new Exception($"Output: {res.Output}\nError: {res.Error}");
-            }
+            //if (!res.Success)
+            //{
+            //    throw new Exception($"Output: {res.Output}\nError: {res.Error}");
+            //}
 
             var testingResponse = _reportParser.ParseTestReport();
 
