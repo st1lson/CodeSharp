@@ -1,4 +1,4 @@
-import { Test, TestingResponse } from "@/models/testing";
+import { Test, TestingRequest, TestingResponse } from "@/models/testing";
 import api from "./axios";
 
 export const fetchTest = async (): Promise<Test> => {
@@ -8,13 +8,10 @@ export const fetchTest = async (): Promise<Test> => {
 };
 
 export const startTesting = async (
-    testId: string,
-    code: string
+    request: TestingRequest
 ): Promise<TestingResponse> => {
-    const response = await api.post<TestingResponse>("/api/testing", {
-        testId,
-        code,
-    });
+    console.log(request);
+    const response = await api.post<TestingResponse>("/api/testing", request);
 
     return response.data;
 };

@@ -1,5 +1,5 @@
 import CodeEditor from "@/components/codeEditor";
-import { Test } from "@/models/testing";
+import { Test, TestingRequest, TestingResponse } from "@/models/testing";
 import { fetchTest, startTesting } from "@/services/testing.service";
 import { OnChange } from "@monaco-editor/react";
 import React, { useEffect, useState } from "react";
@@ -7,20 +7,21 @@ import React, { useEffect, useState } from "react";
 const TestPage: React.FC = () => {
     const [code, setCode] = useState<string>();
     const [test, setTest] = useState<Test | null>(null);
+    const [testResult, setTestResult] = useState<TestingResponse | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        const fetchData = () => {
-            fetchTest()
-                .then((testData: Test) => {
-                    setTest(testData);
-                })
-                .catch((error) => {
-                    console.error("Error fetching test data:", error);
-                })
-                .finally(() => {
-                    setIsLoading(false);
-                });
+        const fetchData = async () => {
+            try {
+                const testData = await fetchTest();
+
+                setCode(testData.initialUserCode);
+                setTest(testData);
+            } catch (error) {
+                console.error("Error fetching test data:", error);
+            } finally {
+                setIsLoading(false);
+            }
         };
 
         fetchData();
@@ -33,12 +34,18 @@ const TestPage: React.FC = () => {
     };
 
     const handleTesting = async () => {
-        await startTesting(code!, test!.id);
+        try {
+            setIsLoading(true);
+            setTestResult(
+                await startTesting({
+                    code: code!,
+                    testId: test!.id,
+                } as TestingRequest)
+            );
+        } finally {
+            setIsLoading(false);
+        }
     };
-
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
 
     if (!test) {
         return <div>Error loading test data</div>;
@@ -58,7 +65,36 @@ const TestPage: React.FC = () => {
                 <div className="w-full">
                     <h3 className="text-xl font-bold mb-2">Output:</h3>
                     <pre className="bg-gray-800 p-4 w-full">
-                        {/* Display output if needed */}
+                        {testResult?.testResults &&
+                            testResult.testResults.length > 0 && (
+                                <div>
+                                    <p>Test results:</p>{" "}
+                                    {testResult.testResults.map(
+                                        (result, index) => (
+                                            <div key={index}>
+                                                <p>Test: {result.testName}</p>
+                                                <p>
+                                                    Passed:{" "}
+                                                    {result.passed
+                                                        ? "Yes"
+                                                        : "No"}
+                                                </p>
+                                                <p>
+                                                    Execution Time:{" "}
+                                                    {result.executionTime} ms
+                                                </p>
+                                                {result.errorMessage && (
+                                                    <p>
+                                                        Error:{" "}
+                                                        {result.errorMessage}
+                                                    </p>
+                                                )}
+                                                <hr />
+                                            </div>
+                                        )
+                                    )}
+                                </div>
+                            )}
                     </pre>
                 </div>
                 <button

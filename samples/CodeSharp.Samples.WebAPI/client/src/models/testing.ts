@@ -5,7 +5,19 @@ export interface Test {
     description: string;
 }
 
+export interface TestingRequest {
+    testId: string;
+    code: string;
+}
+
 export interface TestingResponse {
     success: boolean;
-    testResults: [];
+    testResults: TestReport[];
+}
+
+export interface TestReport {
+    testName: string;
+    passed: boolean;
+    executionTime: number;
+    errorMessage?: string;
 }
