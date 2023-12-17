@@ -1,4 +1,4 @@
-﻿namespace Core.Docker.Enums;
+﻿namespace CodeSharp.Core.Docker.Enums;
 
 public enum ContainerState
 {

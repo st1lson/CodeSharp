@@ -1,6 +1,6 @@
-﻿using Core.Services.Models.Testing;
+﻿using CodeSharp.Core.Services.Models.Testing;
 
-namespace Core.Services;
+namespace CodeSharp.Core.Services;
 
 public interface ITestingService
 {

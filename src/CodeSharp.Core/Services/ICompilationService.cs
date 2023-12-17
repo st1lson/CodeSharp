@@ -1,9 +1,9 @@
-﻿using Core.Services.Models.Compilation;
+﻿using CodeSharp.Core.Services.Models.Compilation;
 
-namespace Core.Services;
+namespace CodeSharp.Core.Services;
 
 public interface ICompilationService
 {
-    Task<CompilationResponse> CompileAsync(string code, CancellationToken cancellationToken = default);
-    Task<CompilationResponse> CompileFileAsync(string filePath, CancellationToken cancellationToken = default);
+    Task<CompilationResponse> CompileAsync(string code, bool run = false, CancellationToken cancellationToken = default);
+    Task<CompilationResponse> CompileFileAsync(string filePath,  bool run = false, CancellationToken cancellationToken = default);
 }

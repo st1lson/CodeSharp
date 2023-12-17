@@ -1,12 +1,11 @@
-﻿using Core.Docker;
-using Core.Docker.Models;
-using Core.Docker.Providers;
-using Core.Services.Models;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Text.Json;
-using Core.Services.Models.Testing;
+using CodeSharp.Core.Docker;
+using CodeSharp.Core.Docker.Models;
+using CodeSharp.Core.Docker.Providers;
+using CodeSharp.Core.Services.Models.Testing;
 
-namespace Core.Services;
+namespace CodeSharp.Core.Services;
 
 public class TestingService : ITestingService
 {

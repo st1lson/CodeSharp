@@ -1,4 +1,4 @@
-﻿namespace Core.Services.Models.Testing;
+﻿namespace CodeSharp.Core.Services.Models.Testing;
 
 public sealed record TestResult
 {

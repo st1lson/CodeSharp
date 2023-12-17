@@ -1,4 +1,4 @@
-﻿namespace Core.Docker.Exceptions;
+﻿namespace CodeSharp.Core.Docker.Exceptions;
 
 public class DockerContainerException : Exception
 {

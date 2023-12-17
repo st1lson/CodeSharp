@@ -1,8 +1,8 @@
 ﻿using System.Net;
 using System.Net.Sockets;
-using Core.Docker.Exceptions;
+using CodeSharp.Core.Docker.Exceptions;
 
-namespace Core.Docker.Providers;
+namespace CodeSharp.Core.Docker.Providers;
 
 public class ContainerPortProvider : IContainerPortProvider
 {

@@ -1,4 +1,4 @@
-﻿namespace Core.Docker.Providers;
+﻿namespace CodeSharp.Core.Docker.Providers;
 
 public interface IContainerHealthCheckProvider
 {

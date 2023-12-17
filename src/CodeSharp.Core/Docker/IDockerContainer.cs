@@ -1,4 +1,4 @@
-﻿namespace Core.Docker;
+﻿namespace CodeSharp.Core.Docker;
 
 public interface IDockerContainer : IDisposable
 {

@@ -1,10 +1,10 @@
-﻿using Core.Docker.Exceptions;
-using Core.Docker.Models;
-using Core.Docker.Providers;
+﻿using CodeSharp.Core.Docker.Exceptions;
+using CodeSharp.Core.Docker.Models;
+using CodeSharp.Core.Docker.Providers;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 
-namespace Core.Docker;
+namespace CodeSharp.Core.Docker;
 
 public class DockerContainer : IDockerContainer
 {

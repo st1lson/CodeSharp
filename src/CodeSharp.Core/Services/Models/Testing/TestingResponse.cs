@@ -1,7 +1,7 @@
-﻿using Core.Services.Models.Shared;
-using System.Text.Json;
+﻿using System.Text.Json;
+using CodeSharp.Core.Services.Models.Shared;
 
-namespace Core.Services.Models.Testing;
+namespace CodeSharp.Core.Services.Models.Testing;
 
 public class TestingResponse : AnalyzableResponse
 {

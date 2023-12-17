@@ -1,4 +1,4 @@
-﻿namespace Core.Docker.Models;
+﻿namespace CodeSharp.Core.Docker.Models;
 
 public class ContainerConfiguration
 {

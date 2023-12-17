@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Core.Docker.Models;
+namespace CodeSharp.Core.Docker.Models;
 
 public record Image(string Registry, string Name, string Tag)
 {

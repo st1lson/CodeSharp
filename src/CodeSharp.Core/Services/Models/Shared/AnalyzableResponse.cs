@@ -1,4 +1,4 @@
-﻿namespace Core.Services.Models.Shared;
+﻿namespace CodeSharp.Core.Services.Models.Shared;
 
 public abstract class AnalyzableResponse
 {
