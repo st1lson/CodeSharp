@@ -2,5 +2,5 @@
 
 public abstract class AnalyzableResponse
 {
-    public CodeAnalysisResponse CodeReport { get; set; }
+    public required CodeAnalysisResponse CodeReport { get; set; }
 }

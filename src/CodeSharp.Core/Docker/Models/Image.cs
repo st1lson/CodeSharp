@@ -6,6 +6,8 @@ public record Image(string Registry, string Name, string Tag)
 {
     private const string DefaultTag = "latest";
 
+    public static Image Default => CreateImage("codesharp.executor:latest");
+
     public static Image CreateImage(string imageString)
     {
         const string pattern = @"^(?:(?<registry>[^/]+?)/)?(?<name>[^:/]+?)(?::(?<tag>.*))?$";
@@ -17,7 +19,7 @@ public record Image(string Registry, string Name, string Tag)
         var match = Regex.Match(imageString, pattern);
         if (!match.Success)
         {
-            throw new ArgumentException();
+            throw new ArgumentException(nameof(imageString));
         }
 
         string registry = match.Groups[registryKey].Value;
