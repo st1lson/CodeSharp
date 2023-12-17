@@ -63,33 +63,60 @@ const TestPage: React.FC = () => {
             </div>
             <div className="flex flex-col gap-5 items-center">
                 <div className="w-full">
-                    <h3 className="text-xl font-bold mb-2">Output:</h3>
                     <pre className="bg-gray-800 p-4 w-full">
+                        <h3 className="text-xl font-bold mb-2">
+                            Test results:
+                        </h3>
                         {testResult?.testResults &&
                             testResult.testResults.length > 0 && (
-                                <div>
-                                    <p>Test results:</p>{" "}
+                                <div className="flex flex-col gap-5">
                                     {testResult.testResults.map(
                                         (result, index) => (
-                                            <div key={index}>
-                                                <p>Test: {result.testName}</p>
-                                                <p>
+                                            <div
+                                                key={index}
+                                                className={`p-4 rounded-md ${
+                                                    result.passed
+                                                        ? "bg-green-700"
+                                                        : "bg-red-700"
+                                                }`}
+                                            >
+                                                <p
+                                                    className={`font-bold text-${
+                                                        result.passed
+                                                            ? "green"
+                                                            : "red"
+                                                    }-100`}
+                                                >
+                                                    Test: {result.testName}
+                                                </p>
+                                                <p
+                                                    className={`text-${
+                                                        result.passed
+                                                            ? "green"
+                                                            : "red"
+                                                    }-100`}
+                                                >
                                                     Passed:{" "}
                                                     {result.passed
                                                         ? "Yes"
                                                         : "No"}
                                                 </p>
-                                                <p>
+                                                <p
+                                                    className={`text-${
+                                                        result.passed
+                                                            ? "green"
+                                                            : "red"
+                                                    }-100`}
+                                                >
                                                     Execution Time:{" "}
                                                     {result.executionTime} ms
                                                 </p>
                                                 {result.errorMessage && (
-                                                    <p>
+                                                    <p className="text-red-100">
                                                         Error:{" "}
                                                         {result.errorMessage}
                                                     </p>
                                                 )}
-                                                <hr />
                                             </div>
                                         )
                                     )}
