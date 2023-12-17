@@ -7,7 +7,8 @@ public class CompilationResponse
 {
     public bool Success { get; set; }
     public TimeSpan Duration { get; set; }
-    public required CodeAnalysisResponse CodeReport { get; set; }
+    public string? Output { get; set; }
+    public required CodeAnalysisReport CodeReport { get; set; }
 
     public override string ToString()
     {

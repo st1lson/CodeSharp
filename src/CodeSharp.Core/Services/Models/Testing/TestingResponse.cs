@@ -7,7 +7,7 @@ public class TestingResponse
 {
     public bool Success => TestResults.All(tr => tr.Passed);
     public IList<TestResult> TestResults { get; set; } = new List<TestResult>();
-    public required CodeAnalysisResponse CodeReport { get; set; }
+    public required CodeAnalysisReport CodeReport { get; set; }
 
     public override string ToString()
     {
