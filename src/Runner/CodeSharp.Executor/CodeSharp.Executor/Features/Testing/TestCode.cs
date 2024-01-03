@@ -42,8 +42,7 @@ public static class TestCode
             await _fileService.ReplaceCodeToTestFileAsync(request.CodeToTest, cancellationToken);
 
             await _fileService.ReplaceTestsFileAsync(request.TestsCode, cancellationToken);
-
-            // TODO: Handle compilation result
+            
             var compilationResponse = await _compilationService.CompileTestsAsync(cancellationToken);
 
             var analysisResponse = await _codeAnalysisService.AnalyzeAsync(cancellationToken);
@@ -57,7 +56,7 @@ public static class TestCode
             }
 
             var executionOptions = new ProcessExecutionOptions("dotnet",
-                $"test {_applicationOptions.TestProjectPath} --configuration xunit.runner.json --logger \"xunit;LogFilePath={_applicationOptions.TestReportFilePath}\"");
+                $"test {_applicationOptions.TestProjectPath} --configuration {_applicationOptions.TestConfigFilePath} --logger \"xunit;LogFilePath={_applicationOptions.TestReportFilePath}\"");
 
             var res = await _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
             // TODO: Handle execution result

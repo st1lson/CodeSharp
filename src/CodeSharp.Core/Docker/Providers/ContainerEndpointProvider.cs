@@ -16,7 +16,7 @@ public class ContainerEndpointProvider : IContainerEndpointProvider
 
     public string GetHealthCheckEndpoint()
     {
-        return $"http://localhost:{_portProvider.CurrentPort}/health";
+        return $"http://localhost:{_portProvider.CurrentPort}/healthz";
     }
 
     public string GetTestingEndpoint()

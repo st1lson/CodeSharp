@@ -10,6 +10,7 @@ public sealed class ApplicationOptions
     public required string ConsoleFilePath { get; init; }
     public required string CodeToTestFilePath { get; init; }
     public required string TestFilePath { get; init; }
+    public required string TestConfigFilePath { get; init; }
     public required string TestReportFilePath { get; init; }
     public required string ErrorsFilePath { get; init; }
     public required string CodeAnalysisFilePath { get; init; }

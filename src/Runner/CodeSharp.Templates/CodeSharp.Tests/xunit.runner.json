@@ -5,5 +5,8 @@
 	"parallelizeAssembly": true,
 	"parallelizeTestCollections": true,
 	"maxParallelThreads": 0,
-	"stopOnFail": true
+	"stopOnFail": true,
+	"longRunningTestSeconds": 2,
+	"failWarns": true,
+	"failSkips": true
 }

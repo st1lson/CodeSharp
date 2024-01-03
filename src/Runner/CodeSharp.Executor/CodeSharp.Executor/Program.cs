@@ -20,7 +20,7 @@ if (app.Environment.IsDevelopment())
 
 app.MapCarter();
 
-app.MapHealthChecks("/health");
+app.MapHealthChecks("/healthz");
 
 app.UseHttpsRedirection();
 
