@@ -2,8 +2,8 @@
 
 namespace CodeSharp.Core.Services;
 
-public interface ITestExecutor
+public interface ITestExecutor<TResponse> where TResponse : TestingResponse
 {
-    Task<TestingResponse> TestAsync(string code, string testsCode, CancellationToken cancellationToken = default);
-    Task<TestingResponse> TestFileAsync(string filePath, string testsCode, CancellationToken cancellationToken = default);
+    Task<TResponse> TestAsync(string code, string testsCode, CancellationToken cancellationToken = default);
+    Task<TResponse> TestFileAsync(string filePath, string testsCode, CancellationToken cancellationToken = default);
 }

@@ -2,8 +2,8 @@
 
 namespace CodeSharp.Core.Services;
 
-public interface ICompileExecutor
+public interface ICompileExecutor<TResponse> where TResponse : CompilationResponse
 {
-    Task<CompilationResponse> CompileAsync(string code, bool run = false, CancellationToken cancellationToken = default);
-    Task<CompilationResponse> CompileFileAsync(string filePath, bool run = false, CancellationToken cancellationToken = default);
+    Task<TResponse> CompileAsync(string code, bool run = false, CancellationToken cancellationToken = default);
+    Task<TResponse> CompileFileAsync(string filePath, bool run = false, CancellationToken cancellationToken = default);
 }

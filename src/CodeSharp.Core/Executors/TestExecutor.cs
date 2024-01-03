@@ -8,7 +8,19 @@ using System.Text.Json;
 
 namespace CodeSharp.Core.Services;
 
-public class TestExecutor : ITestExecutor
+public class TestExecutor : TestExecutor<TestingResponse>
+{
+    public TestExecutor(
+        ContainerConfiguration configuration,
+        IContainerNameProvider containerNameProvider,
+        IContainerPortProvider containerPortProvider,
+        IContainerHealthCheckProvider containerHealthCheckProvider,
+        IContainerEndpointProvider containerEndpointProvider) : base(configuration, containerNameProvider, containerPortProvider, containerHealthCheckProvider, containerEndpointProvider)
+    {
+    }
+}
+
+public class TestExecutor<TResponse> : ITestExecutor<TResponse> where TResponse : TestingResponse
 {
     private readonly IContainerEndpointProvider _containerEndpointProvider;
     private readonly ContainerConfiguration _configuration;
@@ -30,7 +42,7 @@ public class TestExecutor : ITestExecutor
         _containerEndpointProvider = containerEndpointProvider ?? throw new ArgumentNullException(nameof(containerEndpointProvider));
     }
 
-    public async Task<TestingResponse> TestAsync(string code, string testsCode, CancellationToken cancellationToken = default)
+    public async Task<TResponse> TestAsync(string code, string testsCode, CancellationToken cancellationToken = default)
     {
         using var dockerContainer = new DockerContainer(_configuration, _containerNameProvider, _containerPortProvider, _containerHealthCheckProvider);
         await dockerContainer.StartAsync(cancellationToken);
@@ -51,7 +63,7 @@ public class TestExecutor : ITestExecutor
         }
 
         var json = await result.Content.ReadAsStringAsync(cancellationToken);
-        var item = JsonSerializer.Deserialize<TestingResponse>(json, new JsonSerializerOptions
+        var item = JsonSerializer.Deserialize<TResponse>(json, new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
         });
@@ -59,7 +71,7 @@ public class TestExecutor : ITestExecutor
         return item!;
     }
 
-    public async Task<TestingResponse> TestFileAsync(string filePath, string testsCode, CancellationToken cancellationToken = default)
+    public async Task<TResponse> TestFileAsync(string filePath, string testsCode, CancellationToken cancellationToken = default)
     {
         const string requiredFileExtension = ".cs";
 

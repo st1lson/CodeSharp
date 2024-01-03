@@ -8,7 +8,19 @@ using System.Text.Json;
 
 namespace CodeSharp.Core.Services;
 
-public class CompileExecutor : ICompileExecutor
+public class CompileExecutor : CompileExecutor<CompilationResponse>
+{
+    public CompileExecutor(
+        ContainerConfiguration configuration,
+        IContainerNameProvider containerNameProvider,
+        IContainerPortProvider containerPortProvider,
+        IContainerHealthCheckProvider containerHealthCheckProvider,
+        IContainerEndpointProvider containerEndpointProvider) : base(configuration, containerNameProvider, containerPortProvider, containerHealthCheckProvider, containerEndpointProvider)
+    {
+    }
+}
+
+public class CompileExecutor<TResponse> : ICompileExecutor<TResponse> where TResponse : CompilationResponse
 {
     private readonly IContainerEndpointProvider _containerEndpointProvider;
     private readonly ContainerConfiguration _configuration;
@@ -30,7 +42,7 @@ public class CompileExecutor : ICompileExecutor
         _containerEndpointProvider = containerEndpointProvider ?? throw new ArgumentNullException(nameof(containerEndpointProvider));
     }
 
-    public async Task<CompilationResponse> CompileAsync(string code, bool run, CancellationToken cancellationToken)
+    public async Task<TResponse> CompileAsync(string code, bool run, CancellationToken cancellationToken)
     {
         using var dockerContainer = new DockerContainer(_configuration, _containerNameProvider, _containerPortProvider, _containerHealthCheckProvider);
         await dockerContainer.StartAsync(cancellationToken);
@@ -51,7 +63,7 @@ public class CompileExecutor : ICompileExecutor
         }
 
         var json = await result.Content.ReadAsStringAsync(cancellationToken);
-        var item = JsonSerializer.Deserialize<CompilationResponse>(json, new JsonSerializerOptions
+        var item = JsonSerializer.Deserialize<TResponse>(json, new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
         });
@@ -59,7 +71,7 @@ public class CompileExecutor : ICompileExecutor
         return item!;
     }
 
-    public async Task<CompilationResponse> CompileFileAsync(string filePath, bool run, CancellationToken cancellationToken = default)
+    public async Task<TResponse> CompileFileAsync(string filePath, bool run, CancellationToken cancellationToken = default)
     {
         const string requiredFileExtension = ".cs";
 
