@@ -11,7 +11,7 @@ const Layout: React.FC<Props> = ({ children }) => {
 			<nav className='fixed top-0 left-0 right-0 z-10 p-4 bg-gray-800 flex justify-between items-center'>
 				<div>
 					<Link href='/' className='text-2xl font-bold'>
-						Code Sharp Playground
+						CodeSharp Playground
 					</Link>
 				</div>
 				<div className='flex items-center gap-5'>
