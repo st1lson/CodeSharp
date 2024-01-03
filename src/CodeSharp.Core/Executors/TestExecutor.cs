@@ -1,13 +1,14 @@
-﻿using System.Net.Http.Json;
-using System.Text.Json;
-using CodeSharp.Core.Docker;
+﻿using CodeSharp.Core.Docker;
 using CodeSharp.Core.Docker.Models;
 using CodeSharp.Core.Docker.Providers;
+using CodeSharp.Core.Services.Exceptions;
 using CodeSharp.Core.Services.Models.Testing;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace CodeSharp.Core.Services;
 
-public class TestingService : ITestingService
+public class TestExecutor : ITestExecutor
 {
     private readonly IContainerEndpointProvider _containerEndpointProvider;
     private readonly ContainerConfiguration _configuration;
@@ -15,7 +16,7 @@ public class TestingService : ITestingService
     private readonly IContainerPortProvider _containerPortProvider;
     private readonly IContainerHealthCheckProvider _containerHealthCheckProvider;
 
-    public TestingService(
+    public TestExecutor(
         ContainerConfiguration configuration,
         IContainerNameProvider containerNameProvider,
         IContainerPortProvider containerPortProvider,
@@ -46,7 +47,7 @@ public class TestingService : ITestingService
         var result = await httpClient.PostAsJsonAsync(testingUrl, testingRequest, cancellationToken);
         if (!result.IsSuccessStatusCode)
         {
-            throw new Exception("Testing failed");
+            throw new TestingFailedException();
         }
 
         var json = await result.Content.ReadAsStringAsync(cancellationToken);
@@ -65,7 +66,7 @@ public class TestingService : ITestingService
         var fileExtension = Path.GetExtension(filePath);
         if (!fileExtension.Equals(requiredFileExtension))
         {
-            throw new Exception("Wrong file extension");
+            throw new ArgumentException("Wrong file extension");
         }
 
         var code = await File.ReadAllTextAsync(filePath, cancellationToken);

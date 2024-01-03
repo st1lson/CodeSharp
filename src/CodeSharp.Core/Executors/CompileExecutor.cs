@@ -1,13 +1,14 @@
-﻿using System.Net.Http.Json;
-using System.Text.Json;
-using CodeSharp.Core.Docker;
+﻿using CodeSharp.Core.Docker;
 using CodeSharp.Core.Docker.Models;
 using CodeSharp.Core.Docker.Providers;
+using CodeSharp.Core.Services.Exceptions;
 using CodeSharp.Core.Services.Models.Compilation;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace CodeSharp.Core.Services;
 
-public class CompilationService : ICompilationService
+public class CompileExecutor : ICompileExecutor
 {
     private readonly IContainerEndpointProvider _containerEndpointProvider;
     private readonly ContainerConfiguration _configuration;
@@ -15,7 +16,7 @@ public class CompilationService : ICompilationService
     private readonly IContainerPortProvider _containerPortProvider;
     private readonly IContainerHealthCheckProvider _containerHealthCheckProvider;
 
-    public CompilationService(
+    public CompileExecutor(
         ContainerConfiguration configuration,
         IContainerNameProvider containerNameProvider,
         IContainerPortProvider containerPortProvider,
@@ -46,7 +47,7 @@ public class CompilationService : ICompilationService
         var result = await httpClient.PostAsJsonAsync(compileUrl, compilationRequest, cancellationToken);
         if (!result.IsSuccessStatusCode)
         {
-            throw new Exception("Compilation failed");
+            throw new CompilationFailedException();
         }
 
         var json = await result.Content.ReadAsStringAsync(cancellationToken);
@@ -61,13 +62,13 @@ public class CompilationService : ICompilationService
     public async Task<CompilationResponse> CompileFileAsync(string filePath, bool run, CancellationToken cancellationToken = default)
     {
         const string requiredFileExtension = ".cs";
-        
+
         var fileExtension = Path.GetExtension(filePath);
         if (!fileExtension.Equals(requiredFileExtension))
         {
-            throw new Exception("Wrong file extension");
+            throw new ArgumentException("Wrong file extension");
         }
-        
+
         var code = await File.ReadAllTextAsync(filePath, cancellationToken);
 
         return await CompileAsync(code, run, cancellationToken);
