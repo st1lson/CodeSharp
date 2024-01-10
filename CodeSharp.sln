@@ -5,6 +5,8 @@ VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeSharp.Core", "src\CodeSharp.Core\CodeSharp.Core.csproj", "{9E2C701C-E98A-4D52-83F5-BA312A699110}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeSharp.EntityFramework", "src\CodeSharp.EntityFramework\CodeSharp.EntityFramework.csproj", "{93D21C4E-D92C-488B-8BE6-B3CE24565732}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{9E2C701C-E98A-4D52-83F5-BA312A699110}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E2C701C-E98A-4D52-83F5-BA312A699110}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E2C701C-E98A-4D52-83F5-BA312A699110}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93D21C4E-D92C-488B-8BE6-B3CE24565732}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93D21C4E-D92C-488B-8BE6-B3CE24565732}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93D21C4E-D92C-488B-8BE6-B3CE24565732}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93D21C4E-D92C-488B-8BE6-B3CE24565732}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
