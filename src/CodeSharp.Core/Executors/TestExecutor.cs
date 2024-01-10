@@ -1,6 +1,7 @@
 ﻿using CodeSharp.Core.Docker;
 using CodeSharp.Core.Docker.Models;
 using CodeSharp.Core.Docker.Providers;
+using CodeSharp.Core.Executors;
 using CodeSharp.Core.Services.Exceptions;
 using CodeSharp.Core.Services.Models.Testing;
 using System.Net.Http.Json;
@@ -20,7 +21,7 @@ public class TestExecutor : TestExecutor<TestingResponse>
     }
 }
 
-public class TestExecutor<TResponse> : ITestExecutor<TResponse> where TResponse : TestingResponse
+public class TestExecutor<TResponse> : CodeExecutor, ITestExecutor<TResponse> where TResponse : TestingResponse
 {
     private readonly IContainerEndpointProvider _containerEndpointProvider;
     private readonly ContainerConfiguration _configuration;
@@ -81,7 +82,7 @@ public class TestExecutor<TResponse> : ITestExecutor<TResponse> where TResponse 
             throw new ArgumentException("Wrong file extension");
         }
 
-        var code = await File.ReadAllTextAsync(filePath, cancellationToken);
+        var code = await ReadCodeFromFileAsync(filePath, cancellationToken);
 
         return await TestAsync(code, testsCode, cancellationToken);
     }

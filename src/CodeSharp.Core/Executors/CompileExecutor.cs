@@ -1,6 +1,7 @@
 ﻿using CodeSharp.Core.Docker;
 using CodeSharp.Core.Docker.Models;
 using CodeSharp.Core.Docker.Providers;
+using CodeSharp.Core.Executors;
 using CodeSharp.Core.Services.Exceptions;
 using CodeSharp.Core.Services.Models.Compilation;
 using System.Net.Http.Json;
@@ -20,7 +21,7 @@ public class CompileExecutor : CompileExecutor<CompilationResponse>
     }
 }
 
-public class CompileExecutor<TResponse> : ICompileExecutor<TResponse> where TResponse : CompilationResponse
+public class CompileExecutor<TResponse> : CodeExecutor, ICompileExecutor<TResponse> where TResponse : CompilationResponse
 {
     private readonly IContainerEndpointProvider _containerEndpointProvider;
     private readonly ContainerConfiguration _configuration;
@@ -73,15 +74,7 @@ public class CompileExecutor<TResponse> : ICompileExecutor<TResponse> where TRes
 
     public async Task<TResponse> CompileFileAsync(string filePath, bool run, CancellationToken cancellationToken = default)
     {
-        const string requiredFileExtension = ".cs";
-
-        var fileExtension = Path.GetExtension(filePath);
-        if (!fileExtension.Equals(requiredFileExtension))
-        {
-            throw new ArgumentException("Wrong file extension");
-        }
-
-        var code = await File.ReadAllTextAsync(filePath, cancellationToken);
+        var code = await ReadCodeFromFileAsync(filePath, cancellationToken);
 
         return await CompileAsync(code, run, cancellationToken);
     }
