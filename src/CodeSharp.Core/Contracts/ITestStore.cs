@@ -1,6 +1,6 @@
 ﻿namespace CodeSharp.Core.Contracts;
 
-public interface ITestingStore<TItem, TKey> where TItem : ITest<TKey>
+public interface ITestStore<TItem, TKey> where TItem : ITest<TKey>
 {
     Task CreateAsync(TItem item, CancellationToken cancellationToken = default);
     Task UpdateAsync(TItem item, CancellationToken cancellationToken = default);
