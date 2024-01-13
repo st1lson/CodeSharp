@@ -4,7 +4,7 @@ namespace CodeSharp.Core.Services;
 
 public interface ITestService<TTest> :
     ITestService<TTest, Guid>
-    where TTest : ITest
+    where TTest : ITest<Guid>
 {
 }
 
