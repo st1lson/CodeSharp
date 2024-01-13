@@ -4,17 +4,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CodeSharp.EntityFramework.Stores;
 
-public class TestStore<TItem> : TestStore<TItem, Guid>
-    where TItem : class, ITest<Guid>
+public class TestStore<TItem> :
+    TestStore<TItem, Guid, CodeSharpDbContext>
+    where TItem : class,
+    ITest<Guid>
 {
     public TestStore(CodeSharpDbContext context) : base(context)
     {
     }
 }
 
-public class TestStore<TItem, TKey> : BaseStore<TItem>, ITestStore<TItem, TKey> where TItem : class, ITest<TKey>
+public class TestStore<TItem, TKey, TContext> :
+    BaseStore<TItem, TContext>,
+    ITestStore<TItem, TKey>
+    where TItem : class, ITest<TKey>
+    where TContext : DbContext
 {
-    public TestStore(CodeSharpDbContext context) : base(context)
+    public TestStore(TContext context) : base(context)
     {
     }
 
@@ -44,7 +50,7 @@ public class TestStore<TItem, TKey> : BaseStore<TItem>, ITestStore<TItem, TKey> 
 
     public async Task<TItem?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
     {
-        return await DbSet.FindAsync(new object[] { id }, cancellationToken);
+        return await DbSet.FindAsync(new object[] { id ?? throw new ArgumentNullException(nameof(id)) }, cancellationToken);
     }
 
     public async Task<IList<TItem>> GetAllAsync(CancellationToken cancellationToken = default)

@@ -9,5 +9,5 @@ public class CodeSharpDbContext : DbContext
     {
     }
 
-    public DbSet<Test> Tests { get; set; }
+    public DbSet<Test> Tests => Set<Test>();
 }

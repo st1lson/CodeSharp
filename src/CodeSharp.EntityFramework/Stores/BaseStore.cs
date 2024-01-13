@@ -3,12 +3,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CodeSharp.EntityFramework.Stores;
 
-public abstract class BaseStore<TEntity> where TEntity : class
+public abstract class BaseStore<TEntity, TContext>
+    where TEntity : class
+    where TContext : DbContext
 {
     protected DbSet<TEntity> DbSet { get; }
-    protected CodeSharpDbContext Context { get; }
+    protected TContext Context { get; }
 
-    protected BaseStore(CodeSharpDbContext context)
+    protected BaseStore(TContext context)
     {
         Context = context;
 
