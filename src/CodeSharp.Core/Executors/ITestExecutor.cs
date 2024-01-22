@@ -1,6 +1,6 @@
-﻿using CodeSharp.Core.Services.Models.Testing;
+﻿using CodeSharp.Core.Executors.Models.Testing;
 
-namespace CodeSharp.Core.Services;
+namespace CodeSharp.Core.Executors;
 
 public interface ITestExecutor<TResponse> where TResponse : TestingResponse
 {

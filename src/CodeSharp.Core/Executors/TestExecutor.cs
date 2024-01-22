@@ -1,13 +1,12 @@
-﻿using CodeSharp.Core.Docker;
+﻿using System.Net.Http.Json;
+using System.Text.Json;
+using CodeSharp.Core.Docker;
 using CodeSharp.Core.Docker.Models;
 using CodeSharp.Core.Docker.Providers;
-using CodeSharp.Core.Executors;
-using CodeSharp.Core.Services.Exceptions;
-using CodeSharp.Core.Services.Models.Testing;
-using System.Net.Http.Json;
-using System.Text.Json;
+using CodeSharp.Core.Executors.Exceptions;
+using CodeSharp.Core.Executors.Models.Testing;
 
-namespace CodeSharp.Core.Services;
+namespace CodeSharp.Core.Executors;
 
 public class TestExecutor : TestExecutor<TestingResponse>
 {

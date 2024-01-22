@@ -1,6 +1,6 @@
-﻿using CodeSharp.Core.Services.Models.Compilation;
+﻿using CodeSharp.Core.Executors.Models.Compilation;
 
-namespace CodeSharp.Core.Services;
+namespace CodeSharp.Core.Executors;
 
 public interface ICompileExecutor<TResponse> where TResponse : CompilationResponse
 {

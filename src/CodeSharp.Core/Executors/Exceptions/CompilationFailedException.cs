@@ -1,4 +1,4 @@
-﻿namespace CodeSharp.Core.Services.Exceptions;
+﻿namespace CodeSharp.Core.Executors.Exceptions;
 
 public class CompilationFailedException : Exception
 {

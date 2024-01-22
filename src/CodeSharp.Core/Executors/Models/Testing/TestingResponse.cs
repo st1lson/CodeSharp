@@ -1,13 +1,13 @@
-﻿using CodeSharp.Core.Services.Models.Shared;
-using System.Text.Json;
+﻿using System.Text.Json;
+using CodeSharp.Core.Executors.Models.Shared;
 
-namespace CodeSharp.Core.Services.Models.Testing;
+namespace CodeSharp.Core.Executors.Models.Testing;
 
 public class TestingResponse
 {
     public bool Success => TestResults.All(tr => tr.Passed);
-    public IList<TestResult> TestResults { get; set; } = new List<TestResult>();
-    public required CodeAnalysisReport CodeReport { get; set; }
+    public required IList<TestingResult> TestResults { get; init; } = new List<TestingResult>();
+    public required CodeAnalysisReport CodeReport { get; init; }
 
     public override string ToString()
     {

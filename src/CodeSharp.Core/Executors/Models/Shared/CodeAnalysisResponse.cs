@@ -1,4 +1,4 @@
-﻿namespace CodeSharp.Core.Services.Models.Shared;
+﻿namespace CodeSharp.Core.Executors.Models.Shared;
 
 public class CodeAnalysisResponse
 {

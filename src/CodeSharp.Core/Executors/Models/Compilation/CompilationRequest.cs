@@ -1,4 +1,4 @@
-﻿namespace CodeSharp.Core.Services.Models.Compilation;
+﻿namespace CodeSharp.Core.Executors.Models.Compilation;
 
 public class CompilationRequest
 {

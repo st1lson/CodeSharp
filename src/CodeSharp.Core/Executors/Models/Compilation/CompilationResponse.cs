@@ -1,14 +1,14 @@
-﻿using CodeSharp.Core.Services.Models.Shared;
-using System.Text.Json;
+﻿using System.Text.Json;
+using CodeSharp.Core.Executors.Models.Shared;
 
-namespace CodeSharp.Core.Services.Models.Compilation;
+namespace CodeSharp.Core.Executors.Models.Compilation;
 
 public class CompilationResponse
 {
-    public bool Success { get; set; }
-    public TimeSpan Duration { get; set; }
-    public string? Output { get; set; }
-    public required CodeAnalysisReport CodeReport { get; set; }
+    public bool Success { get; }
+    public TimeSpan Duration { get; init; }
+    public string? Output { get; init; }
+    public required CodeAnalysisReport CodeReport { get; init; }
 
     public override string ToString()
     {

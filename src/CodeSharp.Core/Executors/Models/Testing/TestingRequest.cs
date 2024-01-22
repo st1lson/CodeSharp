@@ -1,4 +1,4 @@
-﻿namespace CodeSharp.Core.Services.Models.Testing;
+﻿namespace CodeSharp.Core.Executors.Models.Testing;
 
 public class TestingRequest
 {
