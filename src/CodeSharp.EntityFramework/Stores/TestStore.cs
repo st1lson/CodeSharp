@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CodeSharp.EntityFramework.Stores;
 
-public class TestStore<TItem> :
-    TestStore<TItem, Guid, CodeSharpDbContext>
-    where TItem : class,
+public class TestStore<TTest> :
+    TestStore<TTest, Guid, CodeSharpDbContext>
+    where TTest : class,
     ITest<Guid>
 {
     public TestStore(CodeSharpDbContext context) : base(context)
@@ -14,23 +14,23 @@ public class TestStore<TItem> :
     }
 }
 
-public class TestStore<TItem, TKey, TContext> :
-    BaseStore<TItem, TContext>,
-    ITestStore<TItem, TKey>
-    where TItem : class, ITest<TKey>
+public class TestStore<TTest, TKey, TContext> :
+    BaseStore<TTest, TContext>,
+    ITestStore<TTest, TKey>
+    where TTest : class, ITest<TKey>
     where TContext : DbContext
 {
     public TestStore(TContext context) : base(context)
     {
     }
 
-    public Task CreateAsync(TItem item, CancellationToken cancellationToken = default)
+    public Task CreateAsync(TTest item, CancellationToken cancellationToken = default)
     {
         DbSet.Add(item);
         return SaveChangesAsync(cancellationToken);
     }
 
-    public Task UpdateAsync(TItem item, CancellationToken cancellationToken = default)
+    public Task UpdateAsync(TTest item, CancellationToken cancellationToken = default)
     {
         Context.Entry(item).State = EntityState.Modified;
         return SaveChangesAsync(cancellationToken);
@@ -48,12 +48,12 @@ public class TestStore<TItem, TKey, TContext> :
         await SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<TItem?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
+    public async Task<TTest?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
     {
         return await DbSet.FindAsync(new object[] { id ?? throw new ArgumentNullException(nameof(id)) }, cancellationToken);
     }
 
-    public async Task<IList<TItem>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IList<TTest>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await DbSet.ToListAsync(cancellationToken);
     }

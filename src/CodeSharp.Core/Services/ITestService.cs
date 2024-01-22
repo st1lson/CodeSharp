@@ -2,14 +2,19 @@
 
 namespace CodeSharp.Core.Services;
 
-public interface ITestService<TTest> :
-    ITestService<TTest, Guid>
+public interface ITestService<TTest, TTestLog> :
+    ITestService<TTest, TTestLog, Guid>
     where TTest : ITest<Guid>
+    where TTestLog : ITestLog<Guid>
 {
 }
 
-public interface ITestService<TTest, TKey> where TTest : ITest<TKey>
+public interface ITestService<TTest, TTestLog, TKey>
+    where TTest : ITest<TKey>
+    where TTestLog : ITestLog<TKey>
 {
+    Task<TTestLog> ExecuteTestAsync(TTest test, string code, CancellationToken cancellationToken = default);
+    Task<TTestLog> ExecuteTestByIdAsync(TKey id, string code, CancellationToken cancellationToken = default);
     Task<IList<TTest>> GetTestsAsync(CancellationToken cancellationToken = default);
     Task<TTest?> GetTestAsync(TKey id, CancellationToken cancellationToken = default);
     Task AddTestAsync(TTest test, CancellationToken cancellationToken = default);
