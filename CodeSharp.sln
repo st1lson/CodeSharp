@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeSharp.Core", "src\CodeS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeSharp.EntityFramework", "src\CodeSharp.EntityFramework\CodeSharp.EntityFramework.csproj", "{93D21C4E-D92C-488B-8BE6-B3CE24565732}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeSharp.EntityFramework.AspNetCore", "src\CodeSharp.EntityFramework.AspNetCore\CodeSharp.EntityFramework.AspNetCore.csproj", "{70F6D928-61F4-4134-8764-5CD671310F50}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{93D21C4E-D92C-488B-8BE6-B3CE24565732}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93D21C4E-D92C-488B-8BE6-B3CE24565732}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93D21C4E-D92C-488B-8BE6-B3CE24565732}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70F6D928-61F4-4134-8764-5CD671310F50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70F6D928-61F4-4134-8764-5CD671310F50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70F6D928-61F4-4134-8764-5CD671310F50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70F6D928-61F4-4134-8764-5CD671310F50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
