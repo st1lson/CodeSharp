@@ -1,4 +1,6 @@
-﻿using CodeSharp.Core.Executors;
+﻿using CodeSharp.Core.Docker;
+using CodeSharp.Core.Docker.Providers;
+using CodeSharp.Core.Executors;
 using CodeSharp.Core.Models;
 using CodeSharp.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,8 +19,48 @@ public class CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
 
     internal void AddDefaultImplementations()
     {
+        AddContainerEndpointProvider<ContainerEndpointProvider>();
+        AddContainerPortProvider<ContainerPortProvider>();
+        AddContainerHealthCheckProvider<HttpContainerHealthCheckProvider>();
+        AddDockerContainer<DockerContainer>();
         AddCompilationService<CompilationService<CompilationLog>>();
         AddCompileExecutor<CompileExecutor<CompilationLog>>();
+    }
+
+    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddContainerEndpointProvider<TEndpointProvider>() where TEndpointProvider : IContainerEndpointProvider
+    {
+        RegisterImplementations(typeof(TEndpointProvider), typeof(IContainerEndpointProvider));
+
+        return this;
+    }
+
+    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddContainerPortProvider<TPortProvider>() where TPortProvider : IContainerPortProvider
+    {
+        RegisterImplementations(typeof(TPortProvider), typeof(IContainerPortProvider));
+
+        return this;
+    }
+
+    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddContainerHealthCheckProvider<THealthCheckProvider>() where THealthCheckProvider : IContainerHealthCheckProvider
+    {
+        RegisterImplementations(typeof(THealthCheckProvider), typeof(IContainerHealthCheckProvider));
+
+        return this;
+    }
+
+    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddContainerNameProvider<TNameProvider>() where TNameProvider : IContainerNameProvider
+    {
+        RegisterImplementations(typeof(TNameProvider), typeof(IContainerNameProvider));
+
+        return this;
+    }
+
+
+    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddDockerContainer<TDockerContainer>() where TDockerContainer : IDockerContainer
+    {
+        RegisterImplementations(typeof(TDockerContainer), typeof(IDockerContainer));
+
+        return this;
     }
 
     public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddCompilationService<TCompilationService>() where TCompilationService : class
