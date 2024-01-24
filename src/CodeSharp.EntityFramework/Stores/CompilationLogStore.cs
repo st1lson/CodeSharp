@@ -37,4 +37,17 @@ public class CompilationLogStore<TCompilationLog, TKey, TContext> :
     {
         return await DbSet.ToListAsync(cancellationToken);
     }
+
+    public async Task RemoveAsync(TKey id, CancellationToken cancellationToken = default)
+    {
+        var compilationLog = await GetByIdAsync(id, cancellationToken);
+        if (compilationLog is null)
+        {
+            return;
+        }
+
+        DbSet.Remove(compilationLog);
+
+        await SaveChangesAsync(cancellationToken);
+    }
 }

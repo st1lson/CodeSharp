@@ -27,7 +27,7 @@ public class CompilationService<TCompilationLog, TKey> : ICompilationService<TCo
         }
 
         var compilationLog = await _compileExecutor.CompileAsync(code, run, cancellationToken);
-        await _compilationLogStore.CreateAsync(compilationLog);
+        await _compilationLogStore.CreateAsync(compilationLog, cancellationToken);
 
         return compilationLog;
     }
