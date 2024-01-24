@@ -3,6 +3,14 @@ using CodeSharp.Core.Executors;
 
 namespace CodeSharp.Core.Services;
 
+public class CompilationService<TCompilationLog> : CompilationService<TCompilationLog, Guid> where TCompilationLog : ICompilationLog<Guid>
+{
+    public CompilationService(ICompileExecutor<TCompilationLog> compileExecutor, ICompilationLogStore<TCompilationLog, Guid> compilationLogStore)
+        : base(compileExecutor, compilationLogStore)
+    {
+    }
+}
+
 public class CompilationService<TCompilationLog, TKey> : ICompilationService<TCompilationLog, TKey> where TCompilationLog : ICompilationLog<TKey>
 {
     private readonly ICompilationLogStore<TCompilationLog, TKey> _compilationLogStore;
