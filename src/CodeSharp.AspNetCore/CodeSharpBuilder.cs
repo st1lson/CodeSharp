@@ -111,7 +111,7 @@ public class CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
         return this;
     }
 
-    private void RegisterImplementations(Type serviceType, Type implementationType)
+    protected void RegisterImplementations(Type serviceType, Type implementationType)
     {
         if (!serviceType.IsAssignableFrom(implementationType))
         {
@@ -138,7 +138,7 @@ public class CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
         }
     }
 
-    private static Type GetKeyType(Type entity)
+    protected static Type GetKeyType(Type entity)
     {
         var idProperty = entity.GetProperties().FirstOrDefault(p => p.Name == "Id")
             ?? throw new InvalidOperationException($"The type {entity} must have a property named 'Id'.");
