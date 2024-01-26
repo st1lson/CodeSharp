@@ -1,7 +1,7 @@
 ﻿namespace CodeSharp.Core.Docker.Models;
 
-public class ContainerConfiguration
+public record ContainerConfiguration
 {
-    public required Image Image { get; set; }
-    public string ExposedPort = "80";
+    public Image Image { get; init; } = Image.Default;
+    public string ExposedPort { get; init; } = "80";
 }
