@@ -1,17 +1,22 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using CodeSharp.AspNetCore;
+using CodeSharp.Core.Models;
+using CodeSharp.EntityFramework.Stores;
 
 namespace CodeSharp.EntityFramework.AspNetCore;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddCodeSharp(this IServiceCollection services, Action<CodeSharpBuilder>? configureBuilder = null)
+    public static EntityFrameworkCodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddCodeSharp<TCompilationLog, TTest, TTestLog>(this CodeSharpBuilder<TCompilationLog, TTest, TTestLog> builder)
     {
-        var builder = new CodeSharpBuilder(services);
+        if (builder is not EntityFrameworkCodeSharpBuilder<TCompilationLog, TTest, TTestLog> efBuilder)
+        {
+            throw new InvalidOperationException("Invalid builder type.");
+        }
 
-        builder.AddDefaultImplementations();
+        efBuilder.AddCompilationLogStore<CompilationLogStore<CompilationLog>>();
+        efBuilder.AddTestStore<TestStore<Test>>();
+        efBuilder.AddTestLogStore<TestLogStore<TestLog>>();
 
-        configureBuilder?.Invoke(builder);
-
-        return services;
+        return efBuilder;
     }
 }

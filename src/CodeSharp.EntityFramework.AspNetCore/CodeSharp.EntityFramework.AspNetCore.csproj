@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CodeSharp.AspNetCore\CodeSharp.AspNetCore.csproj" />
     <ProjectReference Include="..\CodeSharp.EntityFramework\CodeSharp.EntityFramework.csproj" />
   </ItemGroup>
 
