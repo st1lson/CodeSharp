@@ -28,6 +28,8 @@ public class CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
         
         // Services
         AddCompilationService<CompilationService<CompilationLog>>();
+        AddTestService<TestService<Test>>();
+        AddTestLogService<TestLogService<TestLog>>();
 
         // Executors
         AddCompileExecutor<CompileExecutor<CompilationLog>>();
@@ -84,6 +86,35 @@ public class CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
         return this;
     }
     
+    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddTestService<TTestService>() where TTestService : class
+    {
+        var testType = typeof(TTest);
+        var testLogType = typeof(TTestLog);
+
+        var keyType = GetKeyType(testType);
+
+        var serviceType = typeof(ITestService<,,>).MakeGenericType(testType, testLogType, keyType);
+        var implementationType = typeof(TTestService);
+
+        RegisterImplementations(serviceType, implementationType);
+
+        return this;
+    }
+    
+    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddTestLogService<TTestLogService>() where TTestLogService : class
+    {
+        var testLogType = typeof(TTestLog);
+
+        var keyType = GetKeyType(testLogType);
+
+        var serviceType = typeof(ITestLogService<,>).MakeGenericType(testLogType, keyType);
+        var implementationType = typeof(TTestLogService);
+
+        RegisterImplementations(serviceType, implementationType);
+
+        return this;
+    }
+    
     public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddCompileExecutor<TCompileExecutor>() where TCompileExecutor : class
     {
         var codeExecutorType = typeof(ICompileExecutor<>).MakeGenericType(typeof(TCompilationLog));
@@ -96,7 +127,7 @@ public class CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
 
     public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddTestExecutor<TTestExecutor>() where TTestExecutor : class
     {
-        var testExecutorType = typeof(ITestExecutor<>).MakeGenericType(typeof(TCompilationLog));
+        var testExecutorType = typeof(ITestExecutor<>).MakeGenericType(typeof(TTestLog));
         var implementationType = typeof(TTestExecutor);
 
         RegisterImplementations(testExecutorType, implementationType);
