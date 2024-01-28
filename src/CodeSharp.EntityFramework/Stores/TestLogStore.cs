@@ -28,6 +28,18 @@ public class TestLogStore<TTestLog, TKey, TContext> :
         return SaveChangesAsync(cancellationToken);
     }
 
+    public async Task RemoveAsync(TKey id, CancellationToken cancellationToken = default)
+    {
+        var testLog = await DbSet.FindAsync(new object[] { id ?? throw new ArgumentNullException(nameof(id)) }, cancellationToken);
+        if (testLog is null)
+        {
+            return;
+        }
+        
+        DbSet.Remove(testLog);
+        await SaveChangesAsync(cancellationToken);
+    }
+
     public async Task<TTestLog?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
     {
         return await DbSet.FindAsync(new object[] { id ?? throw new ArgumentNullException(nameof(id)) }, cancellationToken);
