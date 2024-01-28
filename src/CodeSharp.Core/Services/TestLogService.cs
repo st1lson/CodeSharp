@@ -2,6 +2,13 @@
 
 namespace CodeSharp.Core.Services;
 
+public class TestLogService<TTestLog> : TestLogService<TTestLog, Guid> where TTestLog : ITestLog<Guid>
+{
+    public TestLogService(ITestLogStore<TTestLog, Guid> testLogStore) : base(testLogStore)
+    {
+    }
+}
+
 public class TestLogService<TTestLog, TKey> : ITestLogService<TTestLog, TKey> where TTestLog : ITestLog<TKey>
 {
     private readonly ITestLogStore<TTestLog, TKey> _testLogStore;
