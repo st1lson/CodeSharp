@@ -19,12 +19,19 @@ public class CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
 
     internal void AddDefaultImplementations()
     {
+        // Container
+        AddContainerNameProvider<RandomContainerNameProvider>();
         AddContainerEndpointProvider<ContainerEndpointProvider>();
         AddContainerPortProvider<ContainerPortProvider>();
         AddContainerHealthCheckProvider<HttpContainerHealthCheckProvider>();
         AddDockerContainer<DockerContainer>();
+        
+        // Services
         AddCompilationService<CompilationService<CompilationLog>>();
+
+        // Executors
         AddCompileExecutor<CompileExecutor<CompilationLog>>();
+        AddTestExecutor<TestExecutor<TestLog>>();
     }
 
     public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddContainerEndpointProvider<TEndpointProvider>() where TEndpointProvider : IContainerEndpointProvider
