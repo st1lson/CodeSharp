@@ -83,21 +83,7 @@ public class CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
 
         return this;
     }
-
-    //public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddCompilationLogStore<TStore>() where TStore : class
-    //{
-    //    var compilationLogType = typeof(TCompilationLog);
-
-    //    var keyType = GetKeyType(compilationLogType);
-
-    //    var storeType = typeof(ICompilationLogStore<,>).MakeGenericType(compilationLogType, keyType);
-    //    var implementationType = typeof(TStore);
-
-    //    RegisterImplementations(storeType, implementationType);
-
-    //    return this;
-    //}
-
+    
     public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddCompileExecutor<TCompileExecutor>() where TCompileExecutor : class
     {
         var codeExecutorType = typeof(ICompileExecutor<>).MakeGenericType(typeof(TCompilationLog));
