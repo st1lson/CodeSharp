@@ -10,11 +10,11 @@ namespace CodeSharp.AspNetCore;
 
 public class CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
 {
-    private readonly IServiceCollection _services;
+    public IServiceCollection Services { get; }
 
     public CodeSharpBuilder(IServiceCollection services)
     {
-        _services = services;
+        Services = services;
     }
 
     internal void AddDefaultImplementations()
@@ -29,28 +29,28 @@ public class CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
 
     public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddContainerEndpointProvider<TEndpointProvider>() where TEndpointProvider : IContainerEndpointProvider
     {
-        RegisterImplementations(typeof(TEndpointProvider), typeof(IContainerEndpointProvider));
+        RegisterImplementations(typeof(IContainerEndpointProvider), typeof(TEndpointProvider));
 
         return this;
     }
 
     public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddContainerPortProvider<TPortProvider>() where TPortProvider : IContainerPortProvider
     {
-        RegisterImplementations(typeof(TPortProvider), typeof(IContainerPortProvider));
+        RegisterImplementations(typeof(IContainerPortProvider), typeof(TPortProvider));
 
         return this;
     }
 
     public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddContainerHealthCheckProvider<THealthCheckProvider>() where THealthCheckProvider : IContainerHealthCheckProvider
     {
-        RegisterImplementations(typeof(THealthCheckProvider), typeof(IContainerHealthCheckProvider));
+        RegisterImplementations(typeof(IContainerHealthCheckProvider), typeof(THealthCheckProvider));
 
         return this;
     }
 
     public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddContainerNameProvider<TNameProvider>() where TNameProvider : IContainerNameProvider
     {
-        RegisterImplementations(typeof(TNameProvider), typeof(IContainerNameProvider));
+        RegisterImplementations(typeof(IContainerNameProvider), typeof(TNameProvider));
 
         return this;
     }
@@ -58,7 +58,7 @@ public class CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
 
     public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddDockerContainer<TDockerContainer>() where TDockerContainer : IDockerContainer
     {
-        RegisterImplementations(typeof(TDockerContainer), typeof(IDockerContainer));
+        RegisterImplementations(typeof(IDockerContainer), typeof(TDockerContainer));
 
         return this;
     }
@@ -115,7 +115,7 @@ public class CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
     {
         if (!serviceType.IsAssignableFrom(implementationType))
         {
-            throw new ArgumentException($"{implementationType} must implement {serviceType}.");
+            throw new ArgumentException($"{serviceType} must implement {implementationType}.");
         }
 
         var assembly = Assembly.GetExecutingAssembly();
@@ -129,12 +129,12 @@ public class CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
         {
             foreach (var implType in implementations)
             {
-                _services.AddScoped(serviceType, implType);
+                Services.AddScoped(serviceType, implType);
             }
         }
         else
         {
-            _services.AddScoped(serviceType, implementationType);
+            Services.AddScoped(serviceType, implementationType);
         }
     }
 

@@ -40,11 +40,11 @@ public class EntityFrameworkCodeSharpBuilder<TCompilationLog, TTest, TTestLog> :
 
     public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddTestLogStore<TTestLogStore>() where TTestLogStore : class
     {
-        var testLogType = typeof(TTest);
+        var testLogType = typeof(TTestLog);
 
         var keyType = GetKeyType(testLogType);
 
-        var storeType = typeof(ITestStore<,>).MakeGenericType(testLogType, keyType);
+        var storeType = typeof(ITestLogStore<,>).MakeGenericType(testLogType, keyType);
         var implementationType = typeof(TTestLogStore);
 
         RegisterImplementations(storeType, implementationType);

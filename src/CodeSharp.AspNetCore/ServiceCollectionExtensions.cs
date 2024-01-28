@@ -6,14 +6,16 @@ namespace CodeSharp.AspNetCore;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddCodeSharp<TCompilationLog, TTest, TTestLog>(this IServiceCollection services, Action<ContainerConfiguration>? configuration = null)
+    public static CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddCodeSharp<TCompilationLog, TTest, TTestLog>(
+        this IServiceCollection services,
+        Action<ContainerConfiguration>? configuration = null)
         where TCompilationLog : class
         where TTest : class
         where TTestLog : class
     {
         var builder = new CodeSharpBuilder<TCompilationLog, TTest, TTestLog>(services);
 
-        services.AddSingleton(provider =>
+        services.AddSingleton(_ =>
         {
             var defaultConfig = new ContainerConfiguration();
             configuration?.Invoke(defaultConfig);
@@ -23,10 +25,10 @@ public static class ServiceCollectionExtensions
 
         builder.AddDefaultImplementations();
 
-        return services;
+        return builder;
     }
 
-    public static IServiceCollection AddCodeSharp(this IServiceCollection services, Action<ContainerConfiguration>? configuration = null)
+    public static CodeSharpBuilder<CompilationLog, Test, TestLog> AddCodeSharp(this IServiceCollection services, Action<ContainerConfiguration>? configuration = null)
     {
         return services.AddCodeSharp<CompilationLog, Test, TestLog>(configuration);
     }
