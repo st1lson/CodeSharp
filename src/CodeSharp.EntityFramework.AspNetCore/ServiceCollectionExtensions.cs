@@ -6,10 +6,10 @@ namespace CodeSharp.EntityFramework.AspNetCore;
 
 public static class ServiceCollectionExtensions
 {
-    public static EntityFrameworkCodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddCodeSharpStores<TCompilationLog, TTest, TTestLog>(this CodeSharpBuilder<TCompilationLog, TTest, TTestLog> builder)
+    public static EntityFrameworkCodeSharpBuilder AddCodeSharpStores<TContext>(this CodeSharpBuilder builder)
     {
-        var efBuilder = new EntityFrameworkCodeSharpBuilder<TCompilationLog, TTest, TTestLog>(builder.Services);
-        
+        var efBuilder = new EntityFrameworkCodeSharpBuilder(builder, typeof(TContext));
+
         efBuilder.AddCompilationLogStore<CompilationLogStore<CompilationLog>>();
         efBuilder.AddTestStore<TestStore<Test>>();
         efBuilder.AddTestLogStore<TestLogStore<TestLog>>();

@@ -1,22 +1,38 @@
 ﻿using CodeSharp.AspNetCore;
 using CodeSharp.Core.Contracts;
+using CodeSharp.Core.Models;
+using CodeSharp.EntityFramework.Stores;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CodeSharp.EntityFramework.AspNetCore;
 
-public class EntityFrameworkCodeSharpBuilder<TCompilationLog, TTest, TTestLog> : CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
+public class EntityFrameworkCodeSharpBuilder : CodeSharpBuilder
 {
-    public EntityFrameworkCodeSharpBuilder(IServiceCollection services) : base(services)
+    public Type DbContextType { get; }
+
+    public EntityFrameworkCodeSharpBuilder(IServiceCollection services, Type compilationLogType, Type testType, Type testLogType, Type dbContextType)
+        : base(services, compilationLogType, testType, testLogType)
+    {
+        DbContextType = dbContextType;
+    }
+
+    public EntityFrameworkCodeSharpBuilder(CodeSharpBuilder baseBuilder, Type dbContextType)
+        : this(baseBuilder.Services, baseBuilder.CompilationLogType, baseBuilder.TestType, baseBuilder.TestLogType, dbContextType)
     {
     }
 
-    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddCompilationLogStore<TCompilationLogStore>() where TCompilationLogStore : class
+    internal void AddDefaultStores()
     {
-        var compilationLogType = typeof(TCompilationLog);
+        AddCompilationLogStore<CompilationLogStore<CompilationLog>>();
+        AddTestStore<TestStore<Test>>();
+        AddTestLogStore<TestLogStore<TestLog>>();
+    }
 
-        var keyType = GetKeyType(compilationLogType);
+    public CodeSharpBuilder AddCompilationLogStore<TCompilationLogStore>() where TCompilationLogStore : class
+    {
+        var keyType = GetKeyType(CompilationLogType);
 
-        var storeType = typeof(ICompilationLogStore<,>).MakeGenericType(compilationLogType, keyType);
+        var storeType = typeof(ICompilationLogStore<,>).MakeGenericType(CompilationLogType, keyType);
         var implementationType = typeof(TCompilationLogStore);
 
         RegisterImplementations(storeType, implementationType);
@@ -24,13 +40,11 @@ public class EntityFrameworkCodeSharpBuilder<TCompilationLog, TTest, TTestLog> :
         return this;
     }
 
-    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddTestStore<TTestStore>() where TTestStore : class
+    public CodeSharpBuilder AddTestStore<TTestStore>() where TTestStore : class
     {
-        var testType = typeof(TTest);
+        var keyType = GetKeyType(TestType);
 
-        var keyType = GetKeyType(testType);
-
-        var storeType = typeof(ITestStore<,>).MakeGenericType(testType, keyType);
+        var storeType = typeof(ITestStore<,>).MakeGenericType(TestType, keyType);
         var implementationType = typeof(TTestStore);
 
         RegisterImplementations(storeType, implementationType);
@@ -38,13 +52,11 @@ public class EntityFrameworkCodeSharpBuilder<TCompilationLog, TTest, TTestLog> :
         return this;
     }
 
-    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddTestLogStore<TTestLogStore>() where TTestLogStore : class
+    public CodeSharpBuilder AddTestLogStore<TTestLogStore>() where TTestLogStore : class
     {
-        var testLogType = typeof(TTestLog);
+        var keyType = GetKeyType(TestLogType);
 
-        var keyType = GetKeyType(testLogType);
-
-        var storeType = typeof(ITestLogStore<,>).MakeGenericType(testLogType, keyType);
+        var storeType = typeof(ITestLogStore<,>).MakeGenericType(TestLogType, keyType);
         var implementationType = typeof(TTestLogStore);
 
         RegisterImplementations(storeType, implementationType);
