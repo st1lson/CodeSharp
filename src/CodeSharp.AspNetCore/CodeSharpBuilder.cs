@@ -8,13 +8,19 @@ using System.Reflection;
 
 namespace CodeSharp.AspNetCore;
 
-public class CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
+public class CodeSharpBuilder
 {
     public IServiceCollection Services { get; }
+    public Type CompilationLogType { get; }
+    public Type TestType { get; }
+    public Type TestLogType { get; }
 
-    public CodeSharpBuilder(IServiceCollection services)
+    public CodeSharpBuilder(IServiceCollection services, Type compilationLogType, Type testType, Type testLogType)
     {
         Services = services;
+        CompilationLogType = compilationLogType;
+        TestType = testType;
+        TestLogType = testLogType;
     }
 
     internal void AddDefaultImplementations()
@@ -25,7 +31,7 @@ public class CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
         AddContainerPortProvider<ContainerPortProvider>();
         AddContainerHealthCheckProvider<HttpContainerHealthCheckProvider>();
         AddDockerContainer<DockerContainer>();
-        
+
         // Services
         AddCompilationService<CompilationService<CompilationLog>>();
         AddTestService<TestService<Test>>();
@@ -36,28 +42,28 @@ public class CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
         AddTestExecutor<TestExecutor<TestLog>>();
     }
 
-    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddContainerEndpointProvider<TEndpointProvider>() where TEndpointProvider : IContainerEndpointProvider
+    public CodeSharpBuilder AddContainerEndpointProvider<TEndpointProvider>() where TEndpointProvider : IContainerEndpointProvider
     {
         RegisterImplementations(typeof(IContainerEndpointProvider), typeof(TEndpointProvider));
 
         return this;
     }
 
-    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddContainerPortProvider<TPortProvider>() where TPortProvider : IContainerPortProvider
+    public CodeSharpBuilder AddContainerPortProvider<TPortProvider>() where TPortProvider : IContainerPortProvider
     {
         RegisterImplementations(typeof(IContainerPortProvider), typeof(TPortProvider));
 
         return this;
     }
 
-    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddContainerHealthCheckProvider<THealthCheckProvider>() where THealthCheckProvider : IContainerHealthCheckProvider
+    public CodeSharpBuilder AddContainerHealthCheckProvider<THealthCheckProvider>() where THealthCheckProvider : IContainerHealthCheckProvider
     {
         RegisterImplementations(typeof(IContainerHealthCheckProvider), typeof(THealthCheckProvider));
 
         return this;
     }
 
-    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddContainerNameProvider<TNameProvider>() where TNameProvider : IContainerNameProvider
+    public CodeSharpBuilder AddContainerNameProvider<TNameProvider>() where TNameProvider : IContainerNameProvider
     {
         RegisterImplementations(typeof(IContainerNameProvider), typeof(TNameProvider));
 
@@ -65,59 +71,52 @@ public class CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
     }
 
 
-    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddDockerContainer<TDockerContainer>() where TDockerContainer : IDockerContainer
+    public CodeSharpBuilder AddDockerContainer<TDockerContainer>() where TDockerContainer : IDockerContainer
     {
         RegisterImplementations(typeof(IDockerContainer), typeof(TDockerContainer));
 
         return this;
     }
 
-    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddCompilationService<TCompilationService>() where TCompilationService : class
+    public CodeSharpBuilder AddCompilationService<TCompilationService>() where TCompilationService : class
     {
-        var compilationLogType = typeof(TCompilationLog);
+        var keyType = GetKeyType(CompilationLogType);
 
-        var keyType = GetKeyType(compilationLogType);
-
-        var serviceType = typeof(ICompilationService<,>).MakeGenericType(compilationLogType, keyType);
+        var serviceType = typeof(ICompilationService<,>).MakeGenericType(CompilationLogType, keyType);
         var implementationType = typeof(TCompilationService);
 
         RegisterImplementations(serviceType, implementationType);
 
         return this;
     }
-    
-    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddTestService<TTestService>() where TTestService : class
+
+    public CodeSharpBuilder AddTestService<TTestService>() where TTestService : class
     {
-        var testType = typeof(TTest);
-        var testLogType = typeof(TTestLog);
+        var keyType = GetKeyType(TestType);
 
-        var keyType = GetKeyType(testType);
-
-        var serviceType = typeof(ITestService<,,>).MakeGenericType(testType, testLogType, keyType);
+        var serviceType = typeof(ITestService<,,>).MakeGenericType(TestType, TestLogType, keyType);
         var implementationType = typeof(TTestService);
 
         RegisterImplementations(serviceType, implementationType);
 
         return this;
     }
-    
-    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddTestLogService<TTestLogService>() where TTestLogService : class
+
+    public CodeSharpBuilder AddTestLogService<TTestLogService>() where TTestLogService : class
     {
-        var testLogType = typeof(TTestLog);
+        var keyType = GetKeyType(TestLogType);
 
-        var keyType = GetKeyType(testLogType);
-
-        var serviceType = typeof(ITestLogService<,>).MakeGenericType(testLogType, keyType);
+        var serviceType = typeof(ITestLogService<,>).MakeGenericType(TestLogType, keyType);
         var implementationType = typeof(TTestLogService);
 
         RegisterImplementations(serviceType, implementationType);
 
         return this;
     }
-    
-    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddCompileExecutor<TCompileExecutor>() where TCompileExecutor : class
+
+    public CodeSharpBuilder AddCompileExecutor<TCompileExecutor>() where TCompileExecutor : class
     {
-        var codeExecutorType = typeof(ICompileExecutor<>).MakeGenericType(typeof(TCompilationLog));
+        var codeExecutorType = typeof(ICompileExecutor<>).MakeGenericType(CompilationLogType);
         var implementationType = typeof(TCompileExecutor);
 
         RegisterImplementations(codeExecutorType, implementationType);
@@ -125,9 +124,9 @@ public class CodeSharpBuilder<TCompilationLog, TTest, TTestLog>
         return this;
     }
 
-    public CodeSharpBuilder<TCompilationLog, TTest, TTestLog> AddTestExecutor<TTestExecutor>() where TTestExecutor : class
+    public CodeSharpBuilder AddTestExecutor<TTestExecutor>() where TTestExecutor : class
     {
-        var testExecutorType = typeof(ITestExecutor<>).MakeGenericType(typeof(TTestLog));
+        var testExecutorType = typeof(ITestExecutor<>).MakeGenericType(TestLogType);
         var implementationType = typeof(TTestExecutor);
 
         RegisterImplementations(testExecutorType, implementationType);
