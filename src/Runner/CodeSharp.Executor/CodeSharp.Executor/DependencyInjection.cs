@@ -4,6 +4,9 @@ using CodeSharp.Executor.Infrastructure.Parsers;
 using CodeSharp.Executor.Infrastructure.Services;
 using CodeSharp.Executor.Options;
 using System.Reflection;
+using CodeSharp.Executor.Common.Behaviors;
+using FluentValidation;
+using MediatR;
 
 namespace CodeSharp.Executor;
 
@@ -16,8 +19,13 @@ public static class DependencyInjection
 
         var assembly = Assembly.GetCallingAssembly();
 
+        serviceCollection.AddValidatorsFromAssembly(assembly);
+        
         serviceCollection.AddMediatR(config =>
-            config.RegisterServicesFromAssembly(assembly));
+        {
+            config.RegisterServicesFromAssembly(assembly);
+            config.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        });
 
         serviceCollection.AddCarter();
 

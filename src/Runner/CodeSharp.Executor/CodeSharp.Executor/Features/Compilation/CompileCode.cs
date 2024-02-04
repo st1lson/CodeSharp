@@ -4,19 +4,30 @@ using CodeSharp.Executor.Contracts.Shared;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
 using MediatR;
+using ErrorOr;
+using FluentValidation;
 using Microsoft.Extensions.Options;
 
 namespace CodeSharp.Executor.Features.Compilation;
 
 public static class CompileCode
 {
-    public record Command : IRequest<CompilationResponse>
+    public record Command : IRequest<ErrorOr<CompilationResponse>>
     {
         public required string Code { get; init; }
         public bool Run { get; init; }
     }
 
-    public sealed class Handler : IRequestHandler<Command, CompilationResponse>
+    public sealed class Validator : AbstractValidator<Command>
+    {
+        public Validator()
+        {
+            RuleFor(c => c.Code)
+                .NotEmpty();
+        }
+    }
+
+    public sealed class Handler : IRequestHandler<Command, ErrorOr<CompilationResponse>>
     {
         private readonly IFileService _fileService;
         private readonly IProcessService _processService;
@@ -38,7 +49,7 @@ public static class CompileCode
             _applicationOptions = applicationOptions.Value;
         }
 
-        public async Task<CompilationResponse> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<CompilationResponse>> Handle(Command request, CancellationToken cancellationToken)
         {
             await _fileService.ReplaceProgramFileAsync(request.Code, cancellationToken);
 
@@ -56,10 +67,9 @@ public static class CompileCode
             var runOptions = new ProcessExecutionOptions("dotnet", $"run --project {_applicationOptions.ConsoleProjectPath} --no-build");
             
             var runResponse = await _processService.ExecuteProcessAsync(runOptions, cancellationToken);
-            // TODO: Handle execution result
             if (!runResponse.Success)
             {
-                throw new Exception($"Output: {runResponse.Output}\nError: {runResponse.Error}");
+                return Error.Failure($"Output: {runResponse.Output}\nError: {runResponse.Error}");
             }
 
             compilationResponse.Output = runResponse.Output;
@@ -82,6 +92,10 @@ public class CompileCodeEndpoint : ICarterModule
             };
 
             var result = await sender.Send(command);
+            if (result.IsError)
+            {
+                return Results.BadRequest(result.FirstError);
+            }
 
             return Results.Ok(result);
         });

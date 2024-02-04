@@ -4,15 +4,29 @@ using CodeSharp.Executor.Contracts.Testing;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
 using MediatR;
+using ErrorOr;
+using FluentValidation;
 using Microsoft.Extensions.Options;
 
 namespace CodeSharp.Executor.Features.Testing;
 
 public static class TestCode
 {
-    public record Command(string CodeToTest, string TestsCode) : IRequest<TestingResponse>;
+    public record Command(string CodeToTest, string TestsCode) : IRequest<ErrorOr<TestingResponse>>;
 
-    public sealed class Handler : IRequestHandler<Command, TestingResponse>
+    public sealed class Validator : AbstractValidator<Command>
+    {
+        public Validator()
+        {
+            RuleFor(c => c.CodeToTest)
+                .NotEmpty();
+
+            RuleFor(c => c.TestsCode)
+                .NotEmpty();
+        }
+    }
+
+    public sealed class Handler : IRequestHandler<Command, ErrorOr<TestingResponse>>
     {
         private readonly ApplicationOptions _applicationOptions;
         private readonly IFileService _fileService;
@@ -37,7 +51,7 @@ public static class TestCode
             _codeAnalysisService = codeAnalysisService;
         }
 
-        public async Task<TestingResponse> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<TestingResponse>> Handle(Command request, CancellationToken cancellationToken)
         {
             await _fileService.ReplaceCodeToTestFileAsync(request.CodeToTest, cancellationToken);
 
@@ -58,12 +72,7 @@ public static class TestCode
             var executionOptions = new ProcessExecutionOptions("dotnet",
                 $"test {_applicationOptions.TestProjectPath} --configuration {_applicationOptions.TestConfigFilePath} --logger \"xunit;LogFilePath={_applicationOptions.TestReportFilePath}\"");
 
-            var res = await _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
-            // TODO: Handle execution result
-            //if (!res.Success)
-            //{
-            //    throw new Exception($"Output: {res.Output}\nError: {res.Error}");
-            //}
+            await _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
 
             var testingResponse = _reportParser.ParseTestReport();
 
