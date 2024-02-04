@@ -67,8 +67,7 @@ public partial class CodeAnalysisReportParser : ICodeAnalysisReportParser
     {
         issue = default;
         
-        var regex = CodeAnalysisRegex();
-        var match = regex.Match(codeAnalysisLine);
+        var match = CodeAnalysisRegex().Match(codeAnalysisLine);
         if (!match.Success)
         {
             return false;
