@@ -7,7 +7,7 @@ using CodeSharp.Executor.Contracts.Shared;
 
 namespace CodeSharp.Executor.Infrastructure.Parsers;
 
-public class CodeAnalysisReportParser : ICodeAnalysisReportParser
+public partial class CodeAnalysisReportParser : ICodeAnalysisReportParser
 {
     private readonly ApplicationOptions _applicationOptions;
 
@@ -66,12 +66,8 @@ public class CodeAnalysisReportParser : ICodeAnalysisReportParser
     private static bool TryExtractCodeAnalysisIssue(string codeAnalysisLine, out CodeAnalysisIssue? issue)
     {
         issue = default;
-
-        //TODO: review the regex to probably clean it up
-        //string pattern = @"(\d+:\d+)>(.+)\((\d+,\d+)\): (\w+) (\w+): (.+) \[([^\]]+)\]";
-        //string pattern = @"(?<Position>\d+:\d+)>(?<FilePath>.+)\((?<LineNumber>\d+,\d+)\): (?<ErrorType>\w+) (?<ErrorCode>\w+): (?<ErrorMessage>.+) \[(?<ProjectFilePath>[^\]]+)\]";
-        const string pattern = @".*\((?<Line>\d+),(?<Column>\d+)\): (?<ErrorType>\w+) (?<ErrorCode>\w+): (?<ErrorMessage>.+) \[.*\]";
-        var regex = new Regex(pattern);
+        
+        var regex = CodeAnalysisRegex();
         var match = regex.Match(codeAnalysisLine);
         if (!match.Success)
         {
@@ -89,4 +85,7 @@ public class CodeAnalysisReportParser : ICodeAnalysisReportParser
 
         return true;
     }
+
+    [GeneratedRegex(".*\\((?<Line>\\d+),(?<Column>\\d+)\\): (?<ErrorType>\\w+) (?<ErrorCode>\\w+): (?<ErrorMessage>.+) \\[.*\\]")]
+    private static partial Regex CodeAnalysisRegex();
 }
