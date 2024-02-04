@@ -1,4 +1,5 @@
 ﻿using Carter;
+using CodeSharp.Executor.Common.Extensions;
 using CodeSharp.Executor.Contracts.Shared;
 using CodeSharp.Executor.Contracts.Testing;
 using CodeSharp.Executor.Infrastructure.Interfaces;
@@ -93,7 +94,7 @@ public class TestCodeEndpoint : ICarterModule
 
             var result = await sender.Send(command);
 
-            return Results.Ok(result);
+            return Results.Extensions.ErrorOrResult(result);
         });
     }
 }

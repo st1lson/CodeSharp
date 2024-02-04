@@ -1,4 +1,5 @@
 ﻿using Carter;
+using CodeSharp.Executor.Common.Extensions;
 using CodeSharp.Executor.Contracts.Compilation;
 using CodeSharp.Executor.Contracts.Shared;
 using CodeSharp.Executor.Infrastructure.Interfaces;
@@ -7,6 +8,7 @@ using MediatR;
 using ErrorOr;
 using FluentValidation;
 using Microsoft.Extensions.Options;
+using Error = ErrorOr.Error;
 
 namespace CodeSharp.Executor.Features.Compilation;
 
@@ -92,12 +94,8 @@ public class CompileCodeEndpoint : ICarterModule
             };
 
             var result = await sender.Send(command);
-            if (result.IsError)
-            {
-                return Results.BadRequest(result.FirstError);
-            }
 
-            return Results.Ok(result);
+            return Results.Extensions.ErrorOrResult(result);
         });
     }
 }
