@@ -8,33 +8,32 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
     where TRequest : IBaseRequest
     where TResponse : IErrorOr
 {
-    private readonly IEnumerable<IValidator<TRequest>> _validators;
+    private readonly IValidator<TRequest>? _validator;
 
-    public ValidationBehavior(IEnumerable<IValidator<TRequest>> validator)
+    public ValidationBehavior(IValidator<TRequest>? validator)
     {
-        _validators = validator;
+        _validator = validator;
     }
     
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
-        if (!_validators.Any())
+        if (_validator is null)
         {
             return await next();
         }
 
-        var context = new ValidationContext<TRequest>(request);
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
 
-        var failures = _validators
-            .Select(v => v.Validate(context))
-            .SelectMany(res => res.Errors)
-            .Where(f => f != null)
-            .ToList();
-
-        if (failures.Any())
+        if (validationResult.IsValid)
         {
-            throw new ValidationException(failures);
+            return await next();
         }
 
-        return await next();
+        var errors = validationResult.Errors
+            .ConvertAll(error => Error.Validation(
+                code: error.PropertyName,
+                description: error.ErrorMessage));
+
+        return (dynamic)errors;
     }
 }
