@@ -30,7 +30,6 @@ public class CodeSharpBuilder
         AddContainerEndpointProvider<ContainerEndpointProvider>();
         AddContainerPortProvider<ContainerPortProvider>();
         AddContainerHealthCheckProvider<HttpContainerHealthCheckProvider>();
-        AddDockerContainer<DockerContainer>();
 
         // Services
         AddCompilationService<CompilationService<CompilationLog>>();
