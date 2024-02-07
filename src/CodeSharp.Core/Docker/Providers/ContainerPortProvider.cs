@@ -1,26 +1,26 @@
-﻿using System.Net;
+﻿using CodeSharp.Core.Docker.Exceptions;
+using System.Net;
 using System.Net.Sockets;
-using CodeSharp.Core.Docker.Exceptions;
 
 namespace CodeSharp.Core.Docker.Providers;
 
 public class ContainerPortProvider : IContainerPortProvider
 {
     private static readonly HashSet<int> Ports = new();
-    
+
     public int CurrentPort { get; private set; }
 
     public void AcquirePort()
     {
-        var freePort= FindFreePort();
+        var freePort = FindFreePort();
         if (freePort == 0)
         {
             throw new DockerContainerException("All ports are mapped");
         }
-        
+
         lock (Ports)
         {
-            Ports.Add(freePort);   
+            Ports.Add(freePort);
         }
 
         CurrentPort = freePort;
@@ -47,7 +47,7 @@ public class ContainerPortProvider : IContainerPortProvider
                 return default;
             }
         }
-        
+
         listener.Stop();
         return port;
     }

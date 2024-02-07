@@ -1,7 +1,7 @@
 ﻿namespace CodeSharp.Core.Docker.Exceptions;
 
-public class HealthcheckFailedException : Exception
+public class HealthCheckFailedException : Exception
 {
-    public HealthcheckFailedException(string message) : base(message)
+    public HealthCheckFailedException(string message) : base(message)
     { }
 }
