@@ -74,7 +74,7 @@ public class DockerContainer : IDockerContainer
         }, new AuthConfig(), new Progress<JSONMessage>(), cancellationToken);
     }
 
-    private Task<CreateContainerResponse?> CreateContainerAsync(CancellationToken cancellationToken = default)
+    public Task<CreateContainerResponse?> CreateContainerAsync(CancellationToken cancellationToken = default)
     {
         _containerPortProvider.AcquirePort();
 
