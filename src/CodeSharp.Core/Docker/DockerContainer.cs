@@ -1,4 +1,5 @@
 ﻿using CodeSharp.Core.Docker.Exceptions;
+using CodeSharp.Core.Docker.Factories;
 using CodeSharp.Core.Docker.Models;
 using CodeSharp.Core.Docker.Providers;
 using Docker.DotNet;
@@ -12,6 +13,7 @@ public class DockerContainer : IDockerContainer
     private readonly IContainerNameProvider _containerNameProvider;
     private readonly IContainerPortProvider _containerPortProvider;
     private readonly IContainerHealthCheckProvider _containerHealthCheckProvider;
+    private readonly IDockerClientFactory _dockerClientFactory;
 
     private IDockerClient? _dockerClient;
     private string? _containerId;
@@ -20,18 +22,19 @@ public class DockerContainer : IDockerContainer
         ContainerConfiguration configuration,
         IContainerNameProvider containerNameProvider,
         IContainerPortProvider containerPortProvider,
-        IContainerHealthCheckProvider containerHealthCheckProvider)
+        IContainerHealthCheckProvider containerHealthCheckProvider,
+        IDockerClientFactory dockerClientFactory)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _containerNameProvider = containerNameProvider ?? throw new ArgumentNullException(nameof(containerNameProvider));
         _containerPortProvider = containerPortProvider ?? throw new ArgumentNullException(nameof(containerPortProvider));
         _containerHealthCheckProvider = containerHealthCheckProvider ?? throw new ArgumentNullException(nameof(containerHealthCheckProvider));
+        _dockerClientFactory = dockerClientFactory ?? throw new ArgumentNullException(nameof(dockerClientFactory));
     }
 
     public async Task StartAsync(CancellationToken cancellationToken = default)
     {
-        _dockerClient = new DockerClientConfiguration()
-            .CreateClient();
+        _dockerClient ??= _dockerClientFactory.CreateClient();
 
         var dockerImageExists = await ImageExistsAsync(cancellationToken);
         if (!dockerImageExists)
@@ -39,7 +42,7 @@ public class DockerContainer : IDockerContainer
             await PullRunnerImageAsync(cancellationToken);
         }
 
-        var container = await CreateContainerAsync(cancellationToken)
+        var container = await CreateAsync(cancellationToken)
             ?? throw new DockerContainerException("Failed to create docker container");
 
         _containerId = container.ID;
@@ -74,7 +77,7 @@ public class DockerContainer : IDockerContainer
         }, new AuthConfig(), new Progress<JSONMessage>(), cancellationToken);
     }
 
-    public Task<CreateContainerResponse?> CreateContainerAsync(CancellationToken cancellationToken = default)
+    public Task<CreateContainerResponse?> CreateAsync(CancellationToken cancellationToken = default)
     {
         _containerPortProvider.AcquirePort();
 

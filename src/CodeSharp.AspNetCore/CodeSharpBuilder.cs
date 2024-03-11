@@ -1,4 +1,5 @@
 ﻿using CodeSharp.Core.Docker;
+using CodeSharp.Core.Docker.Factories;
 using CodeSharp.Core.Docker.Providers;
 using CodeSharp.Core.Executors;
 using CodeSharp.Core.Models;
@@ -30,6 +31,7 @@ public class CodeSharpBuilder
         AddContainerEndpointProvider<ContainerEndpointProvider>();
         AddContainerPortProvider<ContainerPortProvider>();
         AddContainerHealthCheckProvider<HttpContainerHealthCheckProvider>();
+        AddDockerClientFactory<DockerClientFactory>();
 
         // Services
         AddCompilationService<CompilationService<CompilationLog>>();
@@ -69,6 +71,12 @@ public class CodeSharpBuilder
         return this;
     }
 
+    public CodeSharpBuilder AddDockerClientFactory<TDockerClientFactory>() where TDockerClientFactory : IDockerClientFactory
+    {
+        RegisterImplementations(typeof(IDockerClientFactory), typeof(DockerClientFactory));
+
+        return this;
+    }
 
     public CodeSharpBuilder AddDockerContainer<TDockerContainer>() where TDockerContainer : IDockerContainer
     {
