@@ -2,10 +2,8 @@
 using CodeSharp.Core.Docker.Factories;
 using CodeSharp.Core.Docker.Models;
 using CodeSharp.Core.Docker.Providers;
-using CodeSharp.Core.Executors.Exceptions;
 using CodeSharp.Core.Executors.Models.Compilation;
-using System.Net.Http.Json;
-using System.Text.Json;
+using CodeSharp.Core.Executors.Strategies;
 
 namespace CodeSharp.Core.Executors;
 
@@ -17,7 +15,8 @@ public class CompileExecutor : CompileExecutor<CompilationResponse>
         IContainerPortProvider containerPortProvider,
         IContainerHealthCheckProvider containerHealthCheckProvider,
         IContainerEndpointProvider containerEndpointProvider,
-        IDockerClientFactory dockerClientFactory) : base(configuration, containerNameProvider, containerPortProvider, containerHealthCheckProvider, containerEndpointProvider, dockerClientFactory)
+        IDockerClientFactory dockerClientFactory,
+        ICommunicationStrategy communicationStrategy) : base(configuration, containerNameProvider, containerPortProvider, containerHealthCheckProvider, containerEndpointProvider, dockerClientFactory, communicationStrategy)
     {
     }
 }
@@ -30,6 +29,7 @@ public class CompileExecutor<TResponse> : CodeExecutor, ICompileExecutor<TRespon
     private readonly IContainerPortProvider _containerPortProvider;
     private readonly IContainerHealthCheckProvider _containerHealthCheckProvider;
     private readonly IDockerClientFactory _dockerClientFactory;
+    private readonly ICommunicationStrategy _communicationStrategy;
 
     public CompileExecutor(
         ContainerConfiguration configuration,
@@ -37,7 +37,8 @@ public class CompileExecutor<TResponse> : CodeExecutor, ICompileExecutor<TRespon
         IContainerPortProvider containerPortProvider,
         IContainerHealthCheckProvider containerHealthCheckProvider,
         IContainerEndpointProvider containerEndpointProvider,
-        IDockerClientFactory dockerClientFactory)
+        IDockerClientFactory dockerClientFactory,
+        ICommunicationStrategy communicationStrategy)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _containerNameProvider = containerNameProvider ?? throw new ArgumentNullException(nameof(containerNameProvider));
@@ -45,6 +46,7 @@ public class CompileExecutor<TResponse> : CodeExecutor, ICompileExecutor<TRespon
         _containerHealthCheckProvider = containerHealthCheckProvider ?? throw new ArgumentNullException(nameof(containerHealthCheckProvider));
         _containerEndpointProvider = containerEndpointProvider ?? throw new ArgumentNullException(nameof(containerEndpointProvider));
         _dockerClientFactory = dockerClientFactory ?? throw new ArgumentNullException(nameof(dockerClientFactory));
+        _communicationStrategy = communicationStrategy ?? throw new ArgumentNullException(nameof(communicationStrategy));
     }
 
     public async Task<TResponse> CompileAsync(string code, bool run, CancellationToken cancellationToken)
@@ -54,26 +56,14 @@ public class CompileExecutor<TResponse> : CodeExecutor, ICompileExecutor<TRespon
 
         await dockerContainer.EnsureCreatedAsync(cancellationToken);
         var compileUrl = _containerEndpointProvider.GetCompileEndpoint();
-        using var httpClient = new HttpClient();
 
         var compilationRequest = new CompilationRequest
         {
             Code = code,
             Run = run
         };
-        var result = await httpClient.PostAsJsonAsync(compileUrl, compilationRequest, cancellationToken);
-        if (!result.IsSuccessStatusCode)
-        {
-            throw new CompilationFailedException();
-        }
 
-        var json = await result.Content.ReadAsStringAsync(cancellationToken);
-        var item = JsonSerializer.Deserialize<TResponse>(json, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
-
-        return item!;
+        return await _communicationStrategy.SendRequestAsync<CompilationRequest, TResponse>(compileUrl, compilationRequest, cancellationToken);
     }
 
     public async Task<TResponse> CompileFileAsync(string filePath, bool run, CancellationToken cancellationToken = default)

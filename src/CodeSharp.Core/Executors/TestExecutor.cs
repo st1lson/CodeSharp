@@ -2,10 +2,8 @@
 using CodeSharp.Core.Docker.Factories;
 using CodeSharp.Core.Docker.Models;
 using CodeSharp.Core.Docker.Providers;
-using CodeSharp.Core.Executors.Exceptions;
 using CodeSharp.Core.Executors.Models.Testing;
-using System.Net.Http.Json;
-using System.Text.Json;
+using CodeSharp.Core.Executors.Strategies;
 
 namespace CodeSharp.Core.Executors;
 
@@ -17,7 +15,8 @@ public class TestExecutor : TestExecutor<TestingResponse>
         IContainerPortProvider containerPortProvider,
         IContainerHealthCheckProvider containerHealthCheckProvider,
         IContainerEndpointProvider containerEndpointProvider,
-        IDockerClientFactory dockerClientFactory) : base(configuration, containerNameProvider, containerPortProvider, containerHealthCheckProvider, containerEndpointProvider, dockerClientFactory)
+        IDockerClientFactory dockerClientFactory,
+        ICommunicationStrategy communicationStrategy) : base(configuration, containerNameProvider, containerPortProvider, containerHealthCheckProvider, containerEndpointProvider, dockerClientFactory, communicationStrategy)
     {
     }
 }
@@ -30,6 +29,7 @@ public class TestExecutor<TResponse> : CodeExecutor, ITestExecutor<TResponse>
     private readonly IContainerPortProvider _containerPortProvider;
     private readonly IContainerHealthCheckProvider _containerHealthCheckProvider;
     private readonly IDockerClientFactory _dockerClientFactory;
+    private readonly ICommunicationStrategy _communicationStrategy;
 
     public TestExecutor(
         ContainerConfiguration configuration,
@@ -37,7 +37,8 @@ public class TestExecutor<TResponse> : CodeExecutor, ITestExecutor<TResponse>
         IContainerPortProvider containerPortProvider,
         IContainerHealthCheckProvider containerHealthCheckProvider,
         IContainerEndpointProvider containerEndpointProvider,
-        IDockerClientFactory dockerClientFactory)
+        IDockerClientFactory dockerClientFactory,
+        ICommunicationStrategy communicationStrategy)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _containerNameProvider = containerNameProvider ?? throw new ArgumentNullException(nameof(containerNameProvider));
@@ -45,6 +46,7 @@ public class TestExecutor<TResponse> : CodeExecutor, ITestExecutor<TResponse>
         _containerHealthCheckProvider = containerHealthCheckProvider ?? throw new ArgumentNullException(nameof(containerHealthCheckProvider));
         _containerEndpointProvider = containerEndpointProvider ?? throw new ArgumentNullException(nameof(containerEndpointProvider));
         _dockerClientFactory = dockerClientFactory ?? throw new ArgumentNullException(nameof(dockerClientFactory));
+        _communicationStrategy = communicationStrategy ?? throw new ArgumentNullException(nameof(communicationStrategy));
     }
 
     public async Task<TResponse> TestAsync(string code, string testsCode, CancellationToken cancellationToken = default)
@@ -61,19 +63,8 @@ public class TestExecutor<TResponse> : CodeExecutor, ITestExecutor<TResponse>
             CodeToTest = code,
             TestsCode = testsCode,
         };
-        var result = await httpClient.PostAsJsonAsync(testingUrl, testingRequest, cancellationToken);
-        if (!result.IsSuccessStatusCode)
-        {
-            throw new TestingFailedException();
-        }
 
-        var json = await result.Content.ReadAsStringAsync(cancellationToken);
-        var item = JsonSerializer.Deserialize<TResponse>(json, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
-
-        return item!;
+        return await _communicationStrategy.SendRequestAsync<TestingRequest, TResponse>(testingUrl, testingRequest, cancellationToken);
     }
 
     public async Task<TResponse> TestFileAsync(string filePath, string testsCode, CancellationToken cancellationToken = default)
