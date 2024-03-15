@@ -2,6 +2,7 @@
 using CodeSharp.Core.Docker.Factories;
 using CodeSharp.Core.Docker.Providers;
 using CodeSharp.Core.Executors;
+using CodeSharp.Core.Executors.Strategies;
 using CodeSharp.Core.Models;
 using CodeSharp.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,6 +40,7 @@ public class CodeSharpBuilder
         AddTestLogService<TestLogService<TestLog>>();
 
         // Executors
+        AddHttpCommunicationStrategy<HttpCommunicationStrategy>();
         AddCompileExecutor<CompileExecutor<CompilationLog>>();
         AddTestExecutor<TestExecutor<TestLog>>();
     }
@@ -117,6 +119,13 @@ public class CodeSharpBuilder
         var implementationType = typeof(TTestLogService);
 
         RegisterImplementations(serviceType, implementationType);
+
+        return this;
+    }
+
+    public CodeSharpBuilder AddHttpCommunicationStrategy<THttpCommunicationStrategy>() where THttpCommunicationStrategy : class, ICommunicationStrategy
+    {
+        Services.AddHttpClient<ICommunicationStrategy, THttpCommunicationStrategy>();
 
         return this;
     }
