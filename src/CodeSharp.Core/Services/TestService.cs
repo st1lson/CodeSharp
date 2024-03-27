@@ -47,7 +47,7 @@ public class TestService<TTest, TTestLog, TKey> : ITestService<TTest, TTestLog, 
             throw new ArgumentNullException(nameof(test));
         }
 
-        var testingResult = await _testExecutor.TestAsync(test.Tests, code, cancellationToken);
+        var testingResult = await _testExecutor.TestAsync(code, test.Tests, cancellationToken);
 
         await _testLogStore.CreateAsync(testingResult, cancellationToken);
 

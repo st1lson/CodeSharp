@@ -46,7 +46,7 @@ public class TestServiceTests
         var code = "Test code";
         var testLog = _fixture.Create<TestLog>();
 
-        _testExecutor.TestAsync(test.Tests, code, CancellationToken.None).Returns(testLog);
+        _testExecutor.TestAsync(code, test.Tests, CancellationToken.None).Returns(testLog);
 
         // Act
         var result = await _testService.ExecuteTestAsync(test, code);
@@ -66,7 +66,7 @@ public class TestServiceTests
         var testLog = _fixture.Create<TestLog>();
 
         _testStore.GetByIdAsync(id, CancellationToken.None).Returns(test);
-        _testExecutor.TestAsync(test.Tests, code, CancellationToken.None).Returns(testLog);
+        _testExecutor.TestAsync(code, test.Tests, CancellationToken.None).Returns(testLog);
 
         // Act
         var result = await _testService.ExecuteTestByIdAsync(id, code);
