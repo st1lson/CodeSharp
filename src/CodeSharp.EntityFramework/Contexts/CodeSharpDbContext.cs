@@ -1,5 +1,6 @@
 ﻿using CodeSharp.Core.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace CodeSharp.EntityFramework.Contexts;
 
@@ -10,4 +11,13 @@ public class CodeSharpDbContext : DbContext
     }
 
     public DbSet<Test> Tests => Set<Test>();
+    public DbSet<TestLog> TestLogs => Set<TestLog>();
+    public DbSet<CompilationLog> CompilationLogs => Set<CompilationLog>();
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        base.OnModelCreating(builder);
+    }
 }
