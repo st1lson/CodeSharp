@@ -5,6 +5,7 @@ namespace CodeSharp.Core.Docker.Providers
     public class HttpContainerHealthCheckProvider : IContainerHealthCheckProvider
     {
         private const int Retries = 5;
+        private const int DelayMs = 1000;
 
         private readonly IContainerEndpointProvider _containerEndpointProvider;
         private readonly IHttpClientFactory _httpClientFactory;
@@ -18,12 +19,12 @@ namespace CodeSharp.Core.Docker.Providers
         public async Task EnsureCreatedAsync(CancellationToken cancellationToken)
         {
             var httpClient = _httpClientFactory.CreateClient();
-            var delayTask = Task.Delay(1000, cancellationToken);
+
+            var healthCheckEndpoint = _containerEndpointProvider.GetHealthCheckEndpoint();
             for (int i = 0; i < Retries; i++)
             {
                 try
                 {
-                    var healthCheckEndpoint = _containerEndpointProvider.GetHealthCheckEndpoint();
                     var healthCheckResponse = await httpClient.GetAsync(healthCheckEndpoint, cancellationToken);
 
                     if (healthCheckResponse.IsSuccessStatusCode)
@@ -31,11 +32,11 @@ namespace CodeSharp.Core.Docker.Providers
                         return;
                     }
 
-                    await delayTask;
+                    await Task.Delay(DelayMs, cancellationToken);
                 }
                 catch (Exception)
                 {
-                    await delayTask;
+                    await Task.Delay(DelayMs, cancellationToken);
                 }
             }
 

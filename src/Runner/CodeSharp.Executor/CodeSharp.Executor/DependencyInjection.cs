@@ -1,12 +1,12 @@
 ﻿using Carter;
+using CodeSharp.Executor.Common.Behaviors;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Infrastructure.Parsers;
 using CodeSharp.Executor.Infrastructure.Services;
 using CodeSharp.Executor.Options;
-using System.Reflection;
-using CodeSharp.Executor.Common.Behaviors;
 using FluentValidation;
 using MediatR;
+using System.Reflection;
 
 namespace CodeSharp.Executor;
 
@@ -17,10 +17,12 @@ public static class DependencyInjection
         // Configure options
         serviceCollection.Configure<ApplicationOptions>(configuration.GetSection(ApplicationOptions.OptionsKey));
 
+        serviceCollection.AddHealthChecks();
+
         var assembly = Assembly.GetCallingAssembly();
 
         serviceCollection.AddValidatorsFromAssembly(assembly);
-        
+
         serviceCollection.AddMediatR(config =>
         {
             config.RegisterServicesFromAssembly(assembly);
