@@ -16,6 +16,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E77C54DD-F884-4629-A326-FD049A25CB22}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeSharp.Core.Tests", "tests\CodeSharp.Core.Tests\CodeSharp.Core.Tests.csproj", "{DFA33AD0-51B0-487B-9D8C-AC0087B5B940}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sample", "sample\sample.csproj", "{EABE539A-C8DB-4231-A570-50C80ADED59D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,6 +44,10 @@ Global
 		{DFA33AD0-51B0-487B-9D8C-AC0087B5B940}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFA33AD0-51B0-487B-9D8C-AC0087B5B940}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFA33AD0-51B0-487B-9D8C-AC0087B5B940}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EABE539A-C8DB-4231-A570-50C80ADED59D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EABE539A-C8DB-4231-A570-50C80ADED59D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EABE539A-C8DB-4231-A570-50C80ADED59D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EABE539A-C8DB-4231-A570-50C80ADED59D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
