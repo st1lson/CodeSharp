@@ -5,7 +5,7 @@ namespace CodeSharp.Samples.WebAPI;
 
 public class MyContext : CodeSharpDbContext
 {
-    public MyContext(DbContextOptions<MyContext> options) : base(options)
+    public MyContext(DbContextOptions options) : base(options)
     {
     }
 }

@@ -1,8 +1,14 @@
 using CodeSharp.AspNetCore;
 using CodeSharp.EntityFramework.AspNetCore;
 using CodeSharp.Samples.WebAPI;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<MyContext>(options =>
+{
+    options.UseSqlServer("Server=localhost\\MSSQLSERVER01;Initial Catalog=codesharp-playground;Integrated Security=True;TrustServerCertificate=True");
+});
 
 // Add services to the container.
 builder.Services
