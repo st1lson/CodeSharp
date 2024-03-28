@@ -1,5 +1,4 @@
-﻿using CodeSharp.Core.Services;
-using CodeSharp.Samples.WebAPI.Models;
+﻿using CodeSharp.Samples.WebAPI.Models;
 using CodeSharp.Samples.WebAPI.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +7,7 @@ namespace CodeSharp.Samples.WebAPI.Controllers;
 [Route("api/[controller]")]
 public class TestingController : ControllerBase
 {
-    private readonly ITestingService _testingService;
+    private readonly ITestService<Test, TestLog, Guid> _testingService;
 
     private static readonly Test _test = new()
     {
@@ -18,7 +17,7 @@ public class TestingController : ControllerBase
         TestsCode = "using CodeSharp.Playground;\n\nnamespace CodeSharp.Tests;\n\npublic class BinaryTreeTests\n{\n    [Theory]\n    [InlineData(new int[] { 5 }, new int[] { 5 })]\n    [InlineData(new int[] { 1, 2, 3, 4, 5, 6, 7 }, new int[] { 1, 2, 3, 4, 5, 6, 7 })]\n    [InlineData(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }, new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 })]\n    [InlineData(new int[] { 1 }, new int[] { 1 })]\n    [InlineData(new int[] { 1, 2 }, new int[] { 1, 2 })]\n    [InlineData(new int[] { 1, 2, 3 }, new int[] { 1, 2, 3 })]\n    [InlineData(new int[] { 1, 2, 3, 4 }, new int[] { 1, 2, 3, 4 })]\n    [InlineData(new int[] { 1, 2, 3, 4, 5 }, new int[] { 1, 2, 3, 4, 5 })]\n    [InlineData(new int[] { 1, 2, 3, 4, 5, 6 }, new int[] { 1, 2, 3, 4, 5, 6 })]\n    public void BreadthFirstTraversal_ShouldReturnCorrectTraversalOrder(int[] inputValues, int[] expectedTraversal)\n    {\n        // Arrange\n        var root = CreateTreeFromArray(inputValues);\n        var binaryTree = new BinaryTree<int>(root);\n\n        // Act\n        var result = binaryTree.BreadthFirstTraversal();\n\n        // Assert\n        Assert.Equal(expectedTraversal, result);\n    }\n\n    [Fact]\n    public void BreadthFirstTraversal_EmptyTree_ShouldReturnEmptyList()\n    {\n        // Arrange\n        var binaryTree = new BinaryTree<int>(null);\n\n        // Act\n        var result = binaryTree.BreadthFirstTraversal();\n\n        // Assert\n        Assert.Empty(result);\n    }\n\n    private static TreeNode<int>? CreateTreeFromArray(int[] values)\n    {\n        if (values.Length == 0)\n        {\n            return default;\n        }\n\n        var root = new TreeNode<int>(values[0]);\n        var queue = new Queue<TreeNode<int>>();\n        queue.Enqueue(root);\n        var i = 1;\n\n        while (i < values.Length)\n        {\n            var current = queue.Dequeue();\n\n            var leftValue = (i < values.Length) ? values[i++] : (int?)null;\n            if (leftValue.HasValue)\n            {\n                current.Left = new TreeNode<int>(leftValue.Value);\n                queue.Enqueue(current.Left);\n            }\n\n            var rightValue = (i < values.Length) ? values[i++] : (int?)null;\n            if (rightValue.HasValue)\n            {\n                current.Right = new TreeNode<int>(rightValue.Value);\n                queue.Enqueue(current.Right);\n            }\n        }\n\n        return root;\n    }\n}"
     };
 
-    public TestingController(ITestingService testingService)
+    public TestingController(ITestService<Test, TestLog, Guid> testingService)
     {
         _testingService = testingService;
     }

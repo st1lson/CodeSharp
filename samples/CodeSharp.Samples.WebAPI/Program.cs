@@ -1,9 +1,13 @@
+using CodeSharp.AspNetCore;
+using CodeSharp.EntityFramework.AspNetCore;
 using CodeSharp.Samples.WebAPI;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddCodeSharp();
+builder.Services
+    .AddCodeSharp()
+    .AddCodeSharpStores<MyContext>();
 
 builder.Services.AddCors(options =>
 {

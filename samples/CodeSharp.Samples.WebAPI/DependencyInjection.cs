@@ -1,28 +1,24 @@
-﻿using CodeSharp.Core.Docker.Models;
-using CodeSharp.Core.Docker.Providers;
-using CodeSharp.Core.Services;
-
-namespace CodeSharp.Samples.WebAPI;
+﻿namespace CodeSharp.Samples.WebAPI;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddCodeSharp(this IServiceCollection services)
-    {
-        services.AddScoped<IContainerPortProvider, ContainerPortProvider>();
-        services.AddScoped<IContainerEndpointProvider, ContainerEndpointProvider>();
-        services.AddScoped<IContainerHealthCheckProvider, HttpContainerHealthCheckProvider>();
-        services.AddScoped<IContainerNameProvider, RandomContainerNameProvider>();
+    //public static IServiceCollection AddCodeSharp(this IServiceCollection services)
+    //{
+    //    services.AddScoped<IContainerPortProvider, ContainerPortProvider>();
+    //    services.AddScoped<IContainerEndpointProvider, ContainerEndpointProvider>();
+    //    services.AddScoped<IContainerHealthCheckProvider, HttpContainerHealthCheckProvider>();
+    //    services.AddScoped<IContainerNameProvider, RandomContainerNameProvider>();
 
-        ContainerConfiguration configuration = new ContainerConfiguration
-        {
-            Image = Image.CreateImage("codesharp.executor:latest")
-        };
+    //    ContainerConfiguration configuration = new ContainerConfiguration
+    //    {
+    //        Image = Image.CreateImage("codesharp.executor:latest")
+    //    };
 
-        services.AddSingleton(configuration);
+    //    services.AddSingleton(configuration);
 
-        services.AddScoped<ICompilationService, CompilationService>();
-        services.AddScoped<ITestingService, TestingService>();
+    //    services.AddScoped<ICompilationService, CompilationService>();
+    //    services.AddScoped<ITestingService, TestingService>();
 
-        return services;
-    }
+    //    return services;
+    //}
 }
