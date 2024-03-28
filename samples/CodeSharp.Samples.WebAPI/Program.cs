@@ -31,6 +31,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.Services.InitDbData();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

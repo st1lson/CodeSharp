@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -9,10 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="CodeSharp.AspNetCore" Version="1.0.0" />
-	<PackageReference Include="CodeSharp.Core" Version="1.0.0" />
-	<PackageReference Include="CodeSharp.EntityFramework" Version="1.0.0" />
-	<PackageReference Include="CodeSharp.EntityFramework.AspNetCore" Version="1.0.0" />
 	<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.14" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.15">
       <PrivateAssets>all</PrivateAssets>

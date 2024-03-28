@@ -1,4 +1,5 @@
-﻿using CodeSharp.Core.Services;
+﻿using CodeSharp.Core.Models;
+using CodeSharp.Core.Services;
 using CodeSharp.Samples.WebAPI.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,9 +8,9 @@ namespace CodeSharp.Samples.WebAPI.Controllers;
 [Route("api/[controller]")]
 public class CompilationController : ControllerBase
 {
-    private readonly ICompilationService _compilationService;
+    private readonly ICompilationService<CompilationLog, Guid> _compilationService;
 
-    public CompilationController(ICompilationService compilationService)
+    public CompilationController(ICompilationService<CompilationLog, Guid> compilationService)
     {
         _compilationService = compilationService;
     }
