@@ -20,7 +20,7 @@ ICommunicationStrategy communicationStrategy = new HttpCommunicationStrategy(htt
 
 ContainerConfiguration configuration = new ContainerConfiguration
 {
-    Image = Image.CreateImage("codesharp.executor:latest")
+    Image = Image.Default
 };
 
 ICompileExecutor<CompilationResponse> compilationService = new CompileExecutor(
