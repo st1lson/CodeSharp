@@ -1,5 +1,7 @@
 ﻿using Carter;
 using CodeSharp.Executor.Common.Extensions;
+using CodeSharp.Executor.Constants;
+using CodeSharp.Executor.Contracts.Compilation;
 using CodeSharp.Executor.Contracts.Shared;
 using CodeSharp.Executor.Contracts.Testing;
 using CodeSharp.Executor.Infrastructure.Interfaces;
@@ -33,7 +35,7 @@ public static class TestCode
         private readonly IFileService _fileService;
         private readonly IProcessService _processService;
         private readonly ITestReportParser _reportParser;
-        private readonly ICompilationService _compilationService;
+        private readonly ICommandService _commandService;
         private readonly ICodeAnalysisService _codeAnalysisService;
 
         public Handler(
@@ -41,26 +43,47 @@ public static class TestCode
             IFileService fileService,
             IProcessService processService,
             ITestReportParser reportParser,
-            ICompilationService compilationService,
+            ICommandService commandService,
             ICodeAnalysisService codeAnalysisService)
         {
             _fileService = fileService;
             _processService = processService;
             _reportParser = reportParser;
-            _compilationService = compilationService;
+            _commandService = commandService;
             _applicationOptions = applicationOptions.Value;
             _codeAnalysisService = codeAnalysisService;
         }
 
         public async Task<ErrorOr<TestingResponse>> Handle(Command request, CancellationToken cancellationToken)
         {
-            await _fileService.ReplaceCodeToTestFileAsync(request.CodeToTest, cancellationToken);
+            var (codeToTest, testsCode, options) = request;
 
-            await _fileService.ReplaceTestsFileAsync(request.TestsCode, cancellationToken);
+            await _fileService.ReplaceCodeToTestFileAsync(codeToTest, cancellationToken);
 
-            var compilationResponse = await _compilationService.CompileTestsAsync(request.Options.MaxCompilationTime, request.Options.MaxRamUsage, cancellationToken);
+            await _fileService.ReplaceTestsFileAsync(testsCode, cancellationToken);
+
+
+            var compilationOptions = new ProcessExecutionOptions(
+                ExecutionConstants.ExecutorName,
+                _commandService.GetCompilationCommand(_applicationOptions.ConsoleProjectPath),
+                MaxDuration: options.MaxCompilationTime,
+                MaxRamUsageInMB: options.MaxRamUsage);
+
+            var compilationResult = await _processService.ExecuteProcessAsync(compilationOptions, cancellationToken);
 
             var analysisResponse = await _codeAnalysisService.AnalyzeAsync(cancellationToken);
+
+            if (!compilationResult.Success)
+            {
+                analysisResponse.Errors.Add(new CodeAnalysisIssue { Message = compilationResult.Error! });
+            }
+
+            var compilationResponse = new CompilationResponse
+            {
+                Success = compilationResult.Success,
+                Duration = compilationResult.Duration,
+                CodeReport = analysisResponse
+            };
 
             if (!compilationResponse.Success)
             {
@@ -70,8 +93,9 @@ public static class TestCode
                 };
             }
 
-            var executionOptions = new ProcessExecutionOptions("dotnet",
-                $"test {_applicationOptions.TestProjectPath} --configuration {_applicationOptions.TestConfigFilePath} --logger \"xunit;LogFilePath={_applicationOptions.TestReportFilePath}\"");
+            var executionOptions = new ProcessExecutionOptions(
+                ExecutionConstants.ExecutorName,
+                _commandService.GetTestCommand(_applicationOptions.TestProjectPath));
 
             await _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
 

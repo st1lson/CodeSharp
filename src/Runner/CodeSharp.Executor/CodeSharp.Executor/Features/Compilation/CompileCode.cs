@@ -1,5 +1,6 @@
 ﻿using Carter;
 using CodeSharp.Executor.Common.Extensions;
+using CodeSharp.Executor.Constants;
 using CodeSharp.Executor.Contracts.Compilation;
 using CodeSharp.Executor.Contracts.Shared;
 using CodeSharp.Executor.Infrastructure.Interfaces;
@@ -29,19 +30,19 @@ public static class CompileCode
     {
         private readonly IFileService _fileService;
         private readonly IProcessService _processService;
-        private readonly ICompilationService _compilationService;
+        private readonly ICommandService _commandService;
         private readonly ICodeAnalysisService _codeAnalysisService;
         private readonly ApplicationOptions _applicationOptions;
 
         public Handler(
             IFileService fileService,
-            ICompilationService compilationService,
+            ICommandService commandBuilder,
             ICodeAnalysisService codeAnalysisService,
             IProcessService processService,
             IOptions<ApplicationOptions> applicationOptions)
         {
             _fileService = fileService;
-            _compilationService = compilationService;
+            _commandService = commandBuilder;
             _codeAnalysisService = codeAnalysisService;
             _processService = processService;
             _applicationOptions = applicationOptions.Value;
@@ -49,9 +50,17 @@ public static class CompileCode
 
         public async Task<ErrorOr<CompilationResponse>> Handle(Command request, CancellationToken cancellationToken)
         {
-            await _fileService.ReplaceProgramFileAsync(request.Code, cancellationToken);
+            var (code, options) = request;
 
-            var compilationResult = await _compilationService.CompileExecutableAsync(request.Options.MaxCompilationTime, request.Options.MaxRamUsage, cancellationToken);
+            await _fileService.ReplaceProgramFileAsync(code, cancellationToken);
+
+            var compilationOptions = new ProcessExecutionOptions(
+                ExecutionConstants.ExecutorName,
+                _commandService.GetCompilationCommand(_applicationOptions.ConsoleProjectPath),
+                MaxDuration: options.MaxCompilationTime,
+                MaxRamUsageInMB: options.MaxRamUsage);
+
+            var compilationResult = await _processService.ExecuteProcessAsync(compilationOptions, cancellationToken);
 
             var analysisResponse = await _codeAnalysisService.AnalyzeAsync(cancellationToken);
 
@@ -72,7 +81,12 @@ public static class CompileCode
                 return compilationResponse;
             }
 
-            var runOptions = new ProcessExecutionOptions("dotnet", $"run --project {_applicationOptions.ConsoleProjectPath} --no-build");
+            var runOptions = new ProcessExecutionOptions(
+                ExecutionConstants.ExecutorName,
+                _commandService.GetRunCommand(_applicationOptions.ConsoleProjectPath),
+                MaxDuration: options.MaxExecutionTime,
+                MaxRamUsageInMB: options.MaxRamUsage,
+                Inputs: options.Inputs);
 
             var runResponse = await _processService.ExecuteProcessAsync(runOptions, cancellationToken);
             if (!runResponse.Success)
