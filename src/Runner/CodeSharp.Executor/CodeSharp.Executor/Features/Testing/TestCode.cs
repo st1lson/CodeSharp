@@ -65,7 +65,7 @@ public static class TestCode
 
             var compilationOptions = new ProcessExecutionOptions(
                 ExecutionConstants.ExecutorName,
-                _commandService.GetCompilationCommand(_applicationOptions.ConsoleProjectPath),
+                _commandService.GetCompilationCommand(_applicationOptions.TestProjectPath),
                 MaxDuration: options.MaxCompilationTime,
                 MaxRamUsageInMB: options.MaxRamUsage);
 

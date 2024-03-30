@@ -100,7 +100,7 @@ public static class CompileCode
 
             void AppendError(string message)
             {
-                if (analysisResponse is null)
+                if (analysisResponse is null || string.IsNullOrEmpty(message))
                 {
                     return;
                 }
