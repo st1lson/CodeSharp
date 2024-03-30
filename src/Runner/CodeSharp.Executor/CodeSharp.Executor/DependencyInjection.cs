@@ -36,7 +36,7 @@ public static class DependencyInjection
         serviceCollection.AddScoped<IFileService, FileService>();
         serviceCollection.AddScoped<IProcessService, ProcessService>();
         serviceCollection.AddScoped<ITestReportParser, XmlTestReportParser>();
-        serviceCollection.AddScoped<ICompilationService, CompilationService>();
+        serviceCollection.AddScoped<ICommandService, CSharpCommandService>();
         serviceCollection.AddScoped<ICodeAnalysisService, CodeAnalysisService>();
         serviceCollection.AddScoped<ICodeMetricsReportParser, CodeMetricsReportParser>();
         serviceCollection.AddScoped<ICodeAnalysisReportParser, CodeAnalysisReportParser>();

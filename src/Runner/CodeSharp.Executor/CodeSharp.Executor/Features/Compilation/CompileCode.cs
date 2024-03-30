@@ -9,7 +9,6 @@ using ErrorOr;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Options;
-using Error = ErrorOr.Error;
 
 namespace CodeSharp.Executor.Features.Compilation;
 
@@ -66,7 +65,7 @@ public static class CompileCode
 
             if (!compilationResult.Success)
             {
-                analysisResponse.Errors.Add(new CodeAnalysisIssue { Message = compilationResult.Error! });
+                AppendError(compilationResult.Error!);
             }
 
             var compilationResponse = new CompilationResponse
@@ -91,12 +90,23 @@ public static class CompileCode
             var runResponse = await _processService.ExecuteProcessAsync(runOptions, cancellationToken);
             if (!runResponse.Success)
             {
-                return Error.Failure($"Output: {runResponse.Output}\n Stack: {runResponse.Error}");
+                AppendError(runResponse.Error!);
             }
 
             compilationResponse.Output = runResponse.Output;
+            compilationResponse.Success = runResponse.Success;
 
             return compilationResponse;
+
+            void AppendError(string message)
+            {
+                if (analysisResponse is null)
+                {
+                    return;
+                }
+
+                analysisResponse.Errors.Add(new CodeAnalysisIssue { Message = message });
+            }
         }
     }
 }
