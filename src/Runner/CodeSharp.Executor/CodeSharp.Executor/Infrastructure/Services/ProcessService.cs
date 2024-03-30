@@ -1,6 +1,6 @@
-﻿using CodeSharp.Executor.Infrastructure.Interfaces;
+﻿using CodeSharp.Executor.Contracts.Shared;
+using CodeSharp.Executor.Infrastructure.Interfaces;
 using System.Diagnostics;
-using CodeSharp.Executor.Contracts.Shared;
 
 namespace CodeSharp.Executor.Infrastructure.Services;
 
@@ -14,6 +14,13 @@ public class ProcessService : IProcessService
 
         var stopwatch = new Stopwatch();
         stopwatch.Start();
+
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        if (executionOptions.MaxDuration.HasValue)
+        {
+            cts.CancelAfter(executionOptions.MaxDuration.Value);
+        }
+        var linkedToken = cts.Token;
 
         try
         {
@@ -47,7 +54,10 @@ public class ProcessService : IProcessService
             process.Start();
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
-            await process.WaitForExitAsync(cancellationToken);
+
+            var memoryMonitorTask = Task.Run(() => MemoryMonitor(process, executionOptions.MaxRamUsage ?? long.MaxValue, linkedToken), cancellationToken);
+
+            await process.WaitForExitAsync(linkedToken);
 
             stopwatch.Stop();
             result.Duration = stopwatch.Elapsed;
@@ -55,13 +65,41 @@ public class ProcessService : IProcessService
             result.Success = (process.ExitCode == 0);
             result.Output = outputWriter.ToString();
             result.Error = errorWriter.ToString();
+
+            await memoryMonitorTask;
+        }
+        catch (OperationCanceledException) when (cts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+        {
+            result.Error = "The process execution was terminated because it exceeded the maximum allowed execution time.";
         }
         catch (Exception ex)
         {
-            result.Success = false;
             result.Error = $"An error occurred: {ex.Message}";
+        }
+        finally
+        {
+            if (result.Duration == TimeSpan.Zero)
+            {
+                stopwatch.Stop();
+                result.Duration = stopwatch.Elapsed;
+            }
         }
 
         return result;
+    }
+
+    private static void MemoryMonitor(Process proc, long peakMemoryLimit, CancellationToken cancelToken)
+    {
+        while (!proc.HasExited)
+        {
+            if (proc.PeakPagedMemorySize64 > peakMemoryLimit)
+            {
+                proc.Kill();
+                throw new InvalidOperationException("Process exceeded memory limit.");
+            }
+
+            cancelToken.ThrowIfCancellationRequested();
+            Thread.Sleep(100);
+        }
     }
 }
