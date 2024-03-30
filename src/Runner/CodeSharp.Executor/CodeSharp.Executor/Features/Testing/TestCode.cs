@@ -4,16 +4,16 @@ using CodeSharp.Executor.Contracts.Shared;
 using CodeSharp.Executor.Contracts.Testing;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
-using MediatR;
 using ErrorOr;
 using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.Options;
 
 namespace CodeSharp.Executor.Features.Testing;
 
 public static class TestCode
 {
-    public record Command(string CodeToTest, string TestsCode) : IRequest<ErrorOr<TestingResponse>>;
+    public record Command(string CodeToTest, string TestsCode, TestingOptions Options) : IRequest<ErrorOr<TestingResponse>>;
 
     public sealed class Validator : AbstractValidator<Command>
     {
@@ -57,7 +57,7 @@ public static class TestCode
             await _fileService.ReplaceCodeToTestFileAsync(request.CodeToTest, cancellationToken);
 
             await _fileService.ReplaceTestsFileAsync(request.TestsCode, cancellationToken);
-            
+
             var compilationResponse = await _compilationService.CompileTestsAsync(cancellationToken);
 
             var analysisResponse = await _codeAnalysisService.AnalyzeAsync(cancellationToken);
@@ -90,7 +90,7 @@ public class TestCodeEndpoint : ICarterModule
     {
         app.MapPost("api/test", async (TestingRequest request, ISender sender) =>
         {
-            var command = new TestCode.Command(request.CodeToTest, request.TestsCode);
+            var command = new TestCode.Command(request.CodeToTest, request.TestsCode, request.Options);
 
             var result = await sender.Send(command);
 

@@ -3,5 +3,5 @@
 public class CompilationRequest
 {
     public required string Code { get; set; }
-    public bool Run { get; set; }
+    public required CompilationOptions Options { get; set; }
 }

@@ -31,7 +31,10 @@ public class CompilationService : ICompilationService
 
     private async Task<CompilationResponse> CompileAsync(string projectPath, CancellationToken cancellationToken)
     {
-        var executionOptions = new ProcessExecutionOptions("dotnet", $"build {projectPath} -nologo -noconsolelogger -flp1:logfile={_applicationOptions.ErrorsFilePath};errorsonly -flp2:logfile={_applicationOptions.CodeAnalysisFilePath};warningsonly");
+        var executionOptions = new ProcessExecutionOptions(
+            "dotnet",
+            $"build {projectPath} -nologo -noconsolelogger -flp1:logfile={_applicationOptions.ErrorsFilePath};errorsonly -flp2:logfile={_applicationOptions.CodeAnalysisFilePath};warningsonly",
+            MaxDuration: TimeSpan.FromMilliseconds(1));
 
         var compilationResponse = await _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
 

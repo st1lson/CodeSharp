@@ -4,9 +4,9 @@ using CodeSharp.Executor.Contracts.Compilation;
 using CodeSharp.Executor.Contracts.Shared;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
-using MediatR;
 using ErrorOr;
 using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.Options;
 using Error = ErrorOr.Error;
 
@@ -14,11 +14,7 @@ namespace CodeSharp.Executor.Features.Compilation;
 
 public static class CompileCode
 {
-    public record Command : IRequest<ErrorOr<CompilationResponse>>
-    {
-        public required string Code { get; init; }
-        public bool Run { get; init; }
-    }
+    public record Command(string Code, CompilationOptions Options) : IRequest<ErrorOr<CompilationResponse>>;
 
     public sealed class Validator : AbstractValidator<Command>
     {
@@ -61,13 +57,13 @@ public static class CompileCode
 
             compilationResponse.CodeReport = analysisResponse;
 
-            if (!request.Run || !compilationResponse.Success)
+            if (!request.Options.Run || !compilationResponse.Success)
             {
                 return compilationResponse;
             }
 
             var runOptions = new ProcessExecutionOptions("dotnet", $"run --project {_applicationOptions.ConsoleProjectPath} --no-build");
-            
+
             var runResponse = await _processService.ExecuteProcessAsync(runOptions, cancellationToken);
             if (!runResponse.Success)
             {
@@ -87,11 +83,7 @@ public class CompileCodeEndpoint : ICarterModule
     {
         app.MapPost("api/compile", async (CompilationRequest request, ISender sender) =>
         {
-            var command = new CompileCode.Command
-            {
-                Code = request.Code,
-                Run = request.Run
-            };
+            var command = new CompileCode.Command(request.Code, request.Options);
 
             var result = await sender.Send(command);
 
