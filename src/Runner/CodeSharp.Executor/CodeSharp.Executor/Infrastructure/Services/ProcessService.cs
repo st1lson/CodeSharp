@@ -13,6 +13,8 @@ public class ProcessService : IProcessService
     {
         var result = new ProcessExecution();
 
+        var hasInputs = executionOptions.Inputs is not null;
+
         var stopwatch = new Stopwatch();
         stopwatch.Start();
 
@@ -30,6 +32,7 @@ public class ProcessService : IProcessService
             process.StartInfo.Arguments = executionOptions.Arguments;
             process.StartInfo.RedirectStandardOutput = executionOptions.RedirectStandardOutput;
             process.StartInfo.RedirectStandardError = executionOptions.RedirectStandardError;
+            process.StartInfo.RedirectStandardInput = hasInputs;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.CreateNoWindow = executionOptions.CreateNoWindow;
 
@@ -55,10 +58,19 @@ public class ProcessService : IProcessService
             process.Start();
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
-            Task memoryMonitorTask = Task.CompletedTask;
+            var memoryMonitorTask = Task.CompletedTask;
             if (executionOptions.MaxRamUsageInMB.HasValue)
             {
                 memoryMonitorTask = Task.Run(() => MemoryMonitor(process, executionOptions.MaxRamUsageInMB.Value, linkedToken), cancellationToken);
+            }
+
+            if (hasInputs)
+            {
+                while (executionOptions.Inputs!.Count > 0)
+                {
+                    string input = executionOptions.Inputs.Dequeue();
+                    process.StandardInput.WriteLine(input);
+                }
             }
 
             await process.WaitForExitAsync(linkedToken);

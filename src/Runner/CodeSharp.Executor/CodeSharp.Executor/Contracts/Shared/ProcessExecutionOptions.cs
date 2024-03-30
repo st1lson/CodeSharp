@@ -7,4 +7,5 @@ public record ProcessExecutionOptions(
     bool RedirectStandardError = true,
     bool CreateNoWindow = true,
     long? MaxRamUsageInMB = null,
-    TimeSpan? MaxDuration = null);
+    TimeSpan? MaxDuration = null,
+    Queue<string>? Inputs = null);
