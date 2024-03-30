@@ -75,7 +75,7 @@ public static class TestCode
 
             if (!compilationResult.Success)
             {
-                analysisResponse.Errors.Add(new CodeAnalysisIssue { Message = compilationResult.Error! });
+                AppendError(compilationResult.Error!);
             }
 
             var compilationResponse = new CompilationResponse
@@ -95,15 +95,31 @@ public static class TestCode
 
             var executionOptions = new ProcessExecutionOptions(
                 ExecutionConstants.ExecutorName,
-                _commandService.GetTestCommand(_applicationOptions.TestProjectPath));
+                _commandService.GetTestCommand(_applicationOptions.TestProjectPath),
+                MaxDuration: options.MaxTestingTime,
+                MaxRamUsageInMB: options.MaxRamUsage);
 
-            await _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
+            var testingResult = await _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
+            if (!testingResult.Success)
+            {
+                AppendError(testingResult.Error!);
+            }
 
             var testingResponse = _reportParser.ParseTestReport();
 
             testingResponse.CodeReport = analysisResponse;
 
             return testingResponse;
+
+            void AppendError(string message)
+            {
+                if (analysisResponse is null || string.IsNullOrEmpty(message))
+                {
+                    return;
+                }
+
+                analysisResponse.Errors.Add(new CodeAnalysisIssue { Message = message });
+            }
         }
     }
 }
