@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using CodeSharp.Core.Contracts;
 using CodeSharp.Core.Executors;
+using CodeSharp.Core.Executors.Models.Testing;
 using CodeSharp.Core.Models;
 using CodeSharp.Core.Services;
 using NSubstitute;
@@ -22,6 +23,7 @@ public class TestServiceTests
         _testStore = Substitute.For<ITestStore<Test, Guid>>();
         _testExecutor = Substitute.For<ITestExecutor<TestLog>>();
         _testLogStore = Substitute.For<ITestLogStore<TestLog, Guid>>();
+
         _testService = new TestService<Test>(_testStore, _testExecutor, _testLogStore);
     }
 
@@ -45,8 +47,9 @@ public class TestServiceTests
         var test = _fixture.Create<Test>();
         var code = "Test code";
         var testLog = _fixture.Create<TestLog>();
+        var testingOptions = TestingOptions.Default;
 
-        _testExecutor.TestAsync(code, test.Tests, CancellationToken.None).Returns(testLog);
+        _testExecutor.TestAsync(code, test.Tests, testingOptions, CancellationToken.None).Returns(testLog);
 
         // Act
         var result = await _testService.ExecuteTestAsync(test, code);
@@ -64,9 +67,10 @@ public class TestServiceTests
         var test = _fixture.Create<Test>();
         var code = "Test code";
         var testLog = _fixture.Create<TestLog>();
+        var testingOptions = TestingOptions.Default;
 
         _testStore.GetByIdAsync(id, CancellationToken.None).Returns(test);
-        _testExecutor.TestAsync(code, test.Tests, CancellationToken.None).Returns(testLog);
+        _testExecutor.TestAsync(code, test.Tests, testingOptions, CancellationToken.None).Returns(testLog);
 
         // Act
         var result = await _testService.ExecuteTestByIdAsync(id, code);

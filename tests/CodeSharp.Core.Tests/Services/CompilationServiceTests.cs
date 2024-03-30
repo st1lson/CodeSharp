@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using CodeSharp.Core.Contracts;
 using CodeSharp.Core.Executors;
+using CodeSharp.Core.Executors.Models.Compilation;
 using CodeSharp.Core.Models;
 using CodeSharp.Core.Services;
 using NSubstitute;
@@ -29,8 +30,9 @@ public class CompilationServiceTests
         // Arrange
         var code = "Test code";
         var compilationLog = _fixture.Create<CompilationLog>();
+        var compilationOptions = CompilationOptions.Default;
 
-        _compileExecutor.CompileAsync(code, false, CancellationToken.None).Returns(compilationLog);
+        _compileExecutor.CompileAsync(code, compilationOptions, CancellationToken.None).Returns(compilationLog);
 
         // Act
         var result = await _compilationService.CompileAsync(code);
