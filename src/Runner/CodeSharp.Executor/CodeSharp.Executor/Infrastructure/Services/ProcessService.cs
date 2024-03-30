@@ -1,4 +1,5 @@
-﻿using CodeSharp.Executor.Contracts.Shared;
+﻿using CodeSharp.Executor.Common.Exceptions;
+using CodeSharp.Executor.Contracts.Shared;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using System.Diagnostics;
 
@@ -54,8 +55,11 @@ public class ProcessService : IProcessService
             process.Start();
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
-
-            var memoryMonitorTask = Task.Run(() => MemoryMonitor(process, executionOptions.MaxRamUsage ?? long.MaxValue, linkedToken), cancellationToken);
+            Task memoryMonitorTask = Task.CompletedTask;
+            if (executionOptions.MaxRamUsageInMB.HasValue)
+            {
+                memoryMonitorTask = Task.Run(() => MemoryMonitor(process, executionOptions.MaxRamUsageInMB.Value, linkedToken), cancellationToken);
+            }
 
             await process.WaitForExitAsync(linkedToken);
 
@@ -67,6 +71,10 @@ public class ProcessService : IProcessService
             result.Error = errorWriter.ToString();
 
             await memoryMonitorTask;
+        }
+        catch (MemoryLimitExceededException)
+        {
+            result.Error = "The process execution was terminated because it exceeded the maximum allowed memory usage.";
         }
         catch (OperationCanceledException) when (cts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
         {
@@ -90,12 +98,14 @@ public class ProcessService : IProcessService
 
     private static void MemoryMonitor(Process proc, long peakMemoryLimit, CancellationToken cancelToken)
     {
+        var peakMemoryLimitInBytes = peakMemoryLimit * 1024L * 1024L;
+
         while (!proc.HasExited)
         {
-            if (proc.PeakPagedMemorySize64 > peakMemoryLimit)
+            if (proc.PeakPagedMemorySize64 > peakMemoryLimitInBytes)
             {
                 proc.Kill();
-                throw new InvalidOperationException("Process exceeded memory limit.");
+                throw new MemoryLimitExceededException();
             }
 
             cancelToken.ThrowIfCancellationRequested();

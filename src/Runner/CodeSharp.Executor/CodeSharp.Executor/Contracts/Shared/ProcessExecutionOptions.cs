@@ -6,5 +6,5 @@ public record ProcessExecutionOptions(
     bool RedirectStandardOutput = true,
     bool RedirectStandardError = true,
     bool CreateNoWindow = true,
-    long? MaxRamUsage = null,
+    long? MaxRamUsageInMB = null,
     TimeSpan? MaxDuration = null);
