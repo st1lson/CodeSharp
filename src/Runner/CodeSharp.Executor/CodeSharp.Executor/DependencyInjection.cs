@@ -6,6 +6,8 @@ using CodeSharp.Executor.Infrastructure.Services;
 using CodeSharp.Executor.Options;
 using FluentValidation;
 using MediatR;
+using Microsoft.OpenApi.Any;
+using Microsoft.OpenApi.Models;
 using System.Reflection;
 
 namespace CodeSharp.Executor;
@@ -38,6 +40,15 @@ public static class DependencyInjection
         serviceCollection.AddScoped<ICodeAnalysisService, CodeAnalysisService>();
         serviceCollection.AddScoped<ICodeMetricsReportParser, CodeMetricsReportParser>();
         serviceCollection.AddScoped<ICodeAnalysisReportParser, CodeAnalysisReportParser>();
+
+        serviceCollection.AddSwaggerGen(options =>
+        {
+            options.MapType<TimeSpan>(() => new OpenApiSchema
+            {
+                Type = "string",
+                Example = new OpenApiString("00:00:00")
+            });
+        });
 
         return serviceCollection;
     }
