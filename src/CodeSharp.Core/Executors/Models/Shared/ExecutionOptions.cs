@@ -2,6 +2,6 @@
 
 public abstract class ExecutionOptions
 {
-    public int MaxCompilationTime { get; init; }
-    public int MaxRamUsage { get; init; }
+    public TimeSpan? MaxCompilationTime { get; init; }
+    public int? MaxRamUsage { get; init; }
 }

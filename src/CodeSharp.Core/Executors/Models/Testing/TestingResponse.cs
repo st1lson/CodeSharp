@@ -5,7 +5,11 @@ namespace CodeSharp.Core.Executors.Models.Testing;
 
 public class TestingResponse
 {
-    public bool Success => TestResults.All(tr => tr.Passed);
+    public bool Passed => TestResults.All(tr => tr.Passed) && CompiledSuccessfully && TestedSuccessfully;
+    public bool CompiledSuccessfully { get; set; }
+    public bool TestedSuccessfully { get; set; }
+    public TimeSpan CompilationDuration { get; set; }
+    public TimeSpan? TestingDuration { get; set; }
     public required IList<TestingResult> TestResults { get; init; } = new List<TestingResult>();
     public required CodeAnalysisReport CodeReport { get; init; }
 
