@@ -49,8 +49,10 @@ public class CompileExecutor<TResponse> : CodeExecutor, ICompileExecutor<TRespon
         _communicationStrategy = communicationStrategy ?? throw new ArgumentNullException(nameof(communicationStrategy));
     }
 
-    public async Task<TResponse> CompileAsync(string code, bool run, CancellationToken cancellationToken)
+    public async Task<TResponse> CompileAsync(string code, CompilationOptions? options = default, CancellationToken cancellationToken = default)
     {
+        options ??= CompilationOptions.Default;
+
         using var dockerContainer = new DockerContainer(_configuration, _containerNameProvider, _containerPortProvider, _containerHealthCheckProvider, _dockerClientFactory);
         await dockerContainer.StartAsync(cancellationToken);
 
@@ -60,16 +62,16 @@ public class CompileExecutor<TResponse> : CodeExecutor, ICompileExecutor<TRespon
         var compilationRequest = new CompilationRequest
         {
             Code = code,
-            Run = run
+            Options = options,
         };
 
         return await _communicationStrategy.SendRequestAsync<CompilationRequest, TResponse>(compileUrl, compilationRequest, cancellationToken);
     }
 
-    public async Task<TResponse> CompileFileAsync(string filePath, bool run, CancellationToken cancellationToken = default)
+    public async Task<TResponse> CompileFileAsync(string filePath, CompilationOptions? options = default, CancellationToken cancellationToken = default)
     {
         var code = await ReadCodeFromFileAsync(filePath, cancellationToken);
 
-        return await CompileAsync(code, run, cancellationToken);
+        return await CompileAsync(code, options, cancellationToken);
     }
 }

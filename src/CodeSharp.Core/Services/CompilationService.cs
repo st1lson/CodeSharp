@@ -1,5 +1,6 @@
 ﻿using CodeSharp.Core.Contracts;
 using CodeSharp.Core.Executors;
+using CodeSharp.Core.Executors.Models.Compilation;
 
 namespace CodeSharp.Core.Services;
 
@@ -27,14 +28,14 @@ public class CompilationService<TCompilationLog, TKey> : ICompilationService<TCo
         await _compilationLogStore.CreateAsync(compilationLog, cancellationToken);
     }
 
-    public async Task<TCompilationLog> CompileAsync(string code, bool run = false, CancellationToken cancellationToken = default)
+    public async Task<TCompilationLog> CompileAsync(string code, CompilationOptions? compilationOptions = default, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(code))
         {
             throw new ArgumentNullException(nameof(code));
         }
 
-        var compilationLog = await _compileExecutor.CompileAsync(code, run, cancellationToken);
+        var compilationLog = await _compileExecutor.CompileAsync(code, compilationOptions, cancellationToken);
         await _compilationLogStore.CreateAsync(compilationLog, cancellationToken);
 
         return compilationLog;
