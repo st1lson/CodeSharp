@@ -1,5 +1,4 @@
-﻿using CodeSharp.Executor.Contracts.Compilation;
-using CodeSharp.Executor.Contracts.Shared;
+﻿using CodeSharp.Executor.Contracts.Shared;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
 using Microsoft.Extensions.Options;
@@ -19,29 +18,24 @@ public class CompilationService : ICompilationService
         _applicationOptions = applicationOptions.Value;
     }
 
-    public Task<CompilationResponse> CompileTestsAsync(CancellationToken cancellationToken)
+    public Task<ProcessExecution> CompileTestsAsync(TimeSpan? maxDuration = default, long? maxRamUsage = default, CancellationToken cancellationToken = default)
     {
-        return CompileAsync(_applicationOptions.TestProjectPath, cancellationToken);
+        return CompileAsync(_applicationOptions.TestProjectPath, maxDuration, maxRamUsage, cancellationToken);
     }
 
-    public Task<CompilationResponse> CompileExecutableAsync(CancellationToken cancellationToken)
+    public Task<ProcessExecution> CompileExecutableAsync(TimeSpan? maxDuration = default, long? maxRamUsage = default, CancellationToken cancellationToken = default)
     {
-        return CompileAsync(_applicationOptions.ConsoleProjectPath, cancellationToken);
+        return CompileAsync(_applicationOptions.ConsoleProjectPath, maxDuration, maxRamUsage, cancellationToken);
     }
 
-    private async Task<CompilationResponse> CompileAsync(string projectPath, CancellationToken cancellationToken)
+    private Task<ProcessExecution> CompileAsync(string projectPath, TimeSpan? maxDuration = default, long? maxRamUsage = default, CancellationToken cancellationToken = default)
     {
         var executionOptions = new ProcessExecutionOptions(
             "dotnet",
             $"build {projectPath} -nologo -noconsolelogger -flp1:logfile={_applicationOptions.ErrorsFilePath};errorsonly -flp2:logfile={_applicationOptions.CodeAnalysisFilePath};warningsonly",
-            MaxDuration: TimeSpan.FromMilliseconds(1));
+            MaxDuration: maxDuration,
+            MaxRamUsageInMB: maxRamUsage);
 
-        var compilationResponse = await _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
-
-        return new CompilationResponse
-        {
-            Duration = compilationResponse.Duration,
-            Success = compilationResponse.Success
-        };
+        return _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
     }
 }

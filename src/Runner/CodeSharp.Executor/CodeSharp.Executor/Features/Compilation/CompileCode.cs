@@ -51,11 +51,21 @@ public static class CompileCode
         {
             await _fileService.ReplaceProgramFileAsync(request.Code, cancellationToken);
 
-            var compilationResponse = await _compilationService.CompileExecutableAsync(cancellationToken);
+            var compilationResult = await _compilationService.CompileExecutableAsync(request.Options.MaxCompilationTime, request.Options.MaxRamUsage, cancellationToken);
 
             var analysisResponse = await _codeAnalysisService.AnalyzeAsync(cancellationToken);
 
-            compilationResponse.CodeReport = analysisResponse;
+            if (!compilationResult.Success)
+            {
+                analysisResponse.Errors.Add(new CodeAnalysisIssue { Message = compilationResult.Error! });
+            }
+
+            var compilationResponse = new CompilationResponse
+            {
+                Success = compilationResult.Success,
+                Duration = compilationResult.Duration,
+                CodeReport = analysisResponse
+            };
 
             if (!request.Options.Run || !compilationResponse.Success)
             {
@@ -67,7 +77,7 @@ public static class CompileCode
             var runResponse = await _processService.ExecuteProcessAsync(runOptions, cancellationToken);
             if (!runResponse.Success)
             {
-                return Error.Failure($"Output: {runResponse.Output}\nError: {runResponse.Error}");
+                return Error.Failure($"Output: {runResponse.Output}\n Stack: {runResponse.Error}");
             }
 
             compilationResponse.Output = runResponse.Output;

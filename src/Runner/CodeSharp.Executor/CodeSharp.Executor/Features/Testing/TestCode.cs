@@ -58,7 +58,7 @@ public static class TestCode
 
             await _fileService.ReplaceTestsFileAsync(request.TestsCode, cancellationToken);
 
-            var compilationResponse = await _compilationService.CompileTestsAsync(cancellationToken);
+            var compilationResponse = await _compilationService.CompileTestsAsync(request.Options.MaxCompilationTime, request.Options.MaxRamUsage, cancellationToken);
 
             var analysisResponse = await _codeAnalysisService.AnalyzeAsync(cancellationToken);
 
