@@ -93,13 +93,13 @@ public static class TestCode
                 };
             }
 
-            var executionOptions = new ProcessExecutionOptions(
+            var testingOptions = new ProcessExecutionOptions(
                 ExecutionConstants.ExecutorName,
                 _commandService.GetTestCommand(_applicationOptions.TestProjectPath),
                 MaxDuration: options.MaxTestingTime,
                 MaxRamUsageInMB: options.MaxRamUsage);
 
-            var testingResult = await _processService.ExecuteProcessAsync(executionOptions, cancellationToken);
+            var testingResult = await _processService.ExecuteProcessAsync(testingOptions, cancellationToken);
             if (!testingResult.Success)
             {
                 AppendError(testingResult.Error!);

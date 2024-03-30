@@ -61,7 +61,7 @@ public class ProcessService : IProcessService
             var memoryMonitorTask = Task.CompletedTask;
             if (executionOptions.MaxRamUsageInMB.HasValue)
             {
-                memoryMonitorTask = Task.Run(() => MemoryMonitor(process, executionOptions.MaxRamUsageInMB.Value, linkedToken), cancellationToken);
+                memoryMonitorTask = Task.Run(() => MemoryMonitor(process, executionOptions.MaxRamUsageInMB.Value, linkedToken), linkedToken);
             }
 
             if (hasInputs)
@@ -108,19 +108,19 @@ public class ProcessService : IProcessService
         return result;
     }
 
-    private static void MemoryMonitor(Process proc, long peakMemoryLimit, CancellationToken cancelToken)
+    private static void MemoryMonitor(Process process, long peakMemoryLimit, CancellationToken cancelationToken)
     {
         var peakMemoryLimitInBytes = peakMemoryLimit * 1024L * 1024L;
 
-        while (!proc.HasExited)
+        while (!process.HasExited)
         {
-            if (proc.PeakPagedMemorySize64 > peakMemoryLimitInBytes)
+            if (process.PeakPagedMemorySize64 > peakMemoryLimitInBytes)
             {
-                proc.Kill();
+                process.Kill();
                 throw new MemoryLimitExceededException();
             }
 
-            cancelToken.ThrowIfCancellationRequested();
+            cancelationToken.ThrowIfCancellationRequested();
             Thread.Sleep(100);
         }
     }
