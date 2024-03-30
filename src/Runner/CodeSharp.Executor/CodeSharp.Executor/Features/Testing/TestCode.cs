@@ -1,7 +1,6 @@
 ﻿using Carter;
 using CodeSharp.Executor.Common.Extensions;
 using CodeSharp.Executor.Constants;
-using CodeSharp.Executor.Contracts.Compilation;
 using CodeSharp.Executor.Contracts.Shared;
 using CodeSharp.Executor.Contracts.Testing;
 using CodeSharp.Executor.Infrastructure.Interfaces;
@@ -78,19 +77,16 @@ public static class TestCode
                 AppendError(compilationResult.Error!);
             }
 
-            var compilationResponse = new CompilationResponse
+            var testingResponse = new TestingResponse
             {
-                Success = compilationResult.Success,
-                Duration = compilationResult.Duration,
+                CompiledSuccessfully = compilationResult.Success,
+                CompilationDuration = compilationResult.Duration,
                 CodeReport = analysisResponse
             };
 
-            if (!compilationResponse.Success)
+            if (!testingResponse.CompiledSuccessfully)
             {
-                return new TestingResponse
-                {
-                    CodeReport = analysisResponse
-                };
+                return testingResponse;
             }
 
             var testingOptions = new ProcessExecutionOptions(
@@ -100,14 +96,14 @@ public static class TestCode
                 MaxRamUsageInMB: options.MaxRamUsage);
 
             var testingResult = await _processService.ExecuteProcessAsync(testingOptions, cancellationToken);
+            testingResponse.TestedSuccessfully = testingResult.Success;
+            testingResponse.TestingDuration = testingResult.Duration;
             if (!testingResult.Success)
             {
                 AppendError(testingResult.Error!);
             }
 
-            var testingResponse = _reportParser.ParseTestReport();
-
-            testingResponse.CodeReport = analysisResponse;
+            testingResponse.TestResults = _reportParser.ParseTestReport();
 
             return testingResponse;
 

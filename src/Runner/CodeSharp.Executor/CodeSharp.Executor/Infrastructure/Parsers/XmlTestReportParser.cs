@@ -1,9 +1,9 @@
-using System.Xml.Linq;
 using CodeSharp.Executor.Constants;
 using CodeSharp.Executor.Contracts.Testing;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
 using Microsoft.Extensions.Options;
+using System.Xml.Linq;
 
 namespace CodeSharp.Executor.Infrastructure.Parsers;
 
@@ -16,16 +16,16 @@ public class XmlTestReportParser : ITestReportParser
         _applicationOptions = applicationOptions.Value;
     }
 
-    public TestingResponse ParseTestReport()
+    public IList<TestResult> ParseTestReport()
     {
-        var result = new TestingResponse();
+        var result = new List<TestResult>();
 
         try
         {
             var xmlFilePath = _applicationOptions.TestReportFilePath;
             var document = XDocument.Load(xmlFilePath);
 
-            result.TestResults = (
+            result = (
                 from test in document.Descendants(XmlReportConstants.TestElementName)
                 select new TestResult
                 {

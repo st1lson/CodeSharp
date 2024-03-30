@@ -70,12 +70,12 @@ public static class CompileCode
 
             var compilationResponse = new CompilationResponse
             {
-                Success = compilationResult.Success,
-                Duration = compilationResult.Duration,
+                CompiledSuccessfully = compilationResult.Success,
+                CompilationDuration = compilationResult.Duration,
                 CodeReport = analysisResponse
             };
 
-            if (!request.Options.Run || !compilationResponse.Success)
+            if (!request.Options.Run || !compilationResponse.CompiledSuccessfully)
             {
                 return compilationResponse;
             }
@@ -94,7 +94,8 @@ public static class CompileCode
             }
 
             compilationResponse.Output = runResponse.Output;
-            compilationResponse.Success = runResponse.Success;
+            compilationResponse.ExecutedSuccessfully = runResponse.Success;
+            compilationResponse.ExecutionDuration = runResponse.Duration;
 
             return compilationResponse;
 
