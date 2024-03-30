@@ -1,6 +1,4 @@
-﻿using CodeSharp.Core.Models;
-using CodeSharp.Core.Services;
-using CodeSharp.Samples.WebAPI.Models;
+﻿using CodeSharp.Samples.WebAPI.Models;
 using CodeSharp.Samples.WebAPI.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +17,7 @@ public class TestingController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetTest()
     {
-        var test = (await _testingService.GetTestsAsync()).FirstOrDefault();
+        var test = await _testingService.GetTestAsync(Guid.Parse("02465560-66C5-480B-8F80-A8F0AC692AC9"));
         if (test is null)
         {
             return BadRequest();
@@ -31,7 +29,7 @@ public class TestingController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Test([FromBody] TestingRequest request)
     {
-        var test = (await _testingService.GetTestsAsync()).FirstOrDefault();
+        var test = await _testingService.GetTestAsync(Guid.Parse("02465560-66C5-480B-8F80-A8F0AC692AC9"));
         if (test is null || test.Id != request.TestId)
         {
             return BadRequest();
