@@ -49,8 +49,10 @@ public class TestExecutor<TResponse> : CodeExecutor, ITestExecutor<TResponse>
         _communicationStrategy = communicationStrategy ?? throw new ArgumentNullException(nameof(communicationStrategy));
     }
 
-    public async Task<TResponse> TestAsync(string code, string testsCode, CancellationToken cancellationToken = default)
+    public async Task<TResponse> TestAsync(string code, string testsCode, TestingOptions? options = default, CancellationToken cancellationToken = default)
     {
+        options ??= TestingOptions.Default;
+
         using var dockerContainer = new DockerContainer(_configuration, _containerNameProvider, _containerPortProvider, _containerHealthCheckProvider, _dockerClientFactory);
         await dockerContainer.StartAsync(cancellationToken);
 
@@ -62,12 +64,13 @@ public class TestExecutor<TResponse> : CodeExecutor, ITestExecutor<TResponse>
         {
             CodeToTest = code,
             TestsCode = testsCode,
+            Options = options,
         };
 
         return await _communicationStrategy.SendRequestAsync<TestingRequest, TResponse>(testingUrl, testingRequest, cancellationToken);
     }
 
-    public async Task<TResponse> TestFileAsync(string filePath, string testsCode, CancellationToken cancellationToken = default)
+    public async Task<TResponse> TestFileAsync(string filePath, string testsCode, TestingOptions? options = default, CancellationToken cancellationToken = default)
     {
         const string requiredFileExtension = ".cs";
 
@@ -79,6 +82,6 @@ public class TestExecutor<TResponse> : CodeExecutor, ITestExecutor<TResponse>
 
         var code = await ReadCodeFromFileAsync(filePath, cancellationToken);
 
-        return await TestAsync(code, testsCode, cancellationToken);
+        return await TestAsync(code, testsCode, options, cancellationToken);
     }
 }

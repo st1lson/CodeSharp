@@ -1,5 +1,6 @@
 ﻿using CodeSharp.Core.Contracts;
 using CodeSharp.Core.Executors;
+using CodeSharp.Core.Executors.Models.Testing;
 using CodeSharp.Core.Models;
 
 namespace CodeSharp.Core.Services;
@@ -40,25 +41,25 @@ public class TestService<TTest, TTestLog, TKey> : ITestService<TTest, TTestLog, 
         return _testingStore.DeleteAsync(id, cancellationToken);
     }
 
-    public async Task<TTestLog> ExecuteTestAsync(TTest test, string code, CancellationToken cancellationToken = default)
+    public async Task<TTestLog> ExecuteTestAsync(TTest test, string code, TestingOptions? options = default, CancellationToken cancellationToken = default)
     {
         if (test is null)
         {
             throw new ArgumentNullException(nameof(test));
         }
 
-        var testingResult = await _testExecutor.TestAsync(code, test.Tests, cancellationToken);
+        var testingResult = await _testExecutor.TestAsync(code, test.Tests, options, cancellationToken);
 
         await _testLogStore.CreateAsync(testingResult, cancellationToken);
 
         return testingResult;
     }
 
-    public async Task<TTestLog> ExecuteTestByIdAsync(TKey id, string code, CancellationToken cancellationToken = default)
+    public async Task<TTestLog> ExecuteTestByIdAsync(TKey id, string code, TestingOptions? options = default, CancellationToken cancellationToken = default)
     {
         var test = await _testingStore.GetByIdAsync(id, cancellationToken) ?? throw new Exception("Test not found");
 
-        return await ExecuteTestAsync(test, code, cancellationToken);
+        return await ExecuteTestAsync(test, code, options, cancellationToken);
     }
 
     public Task<TTest?> GetTestAsync(TKey id, CancellationToken cancellationToken = default)
