@@ -31,7 +31,7 @@ public class CodeSharpBuilder
         AddContainerNameProvider<RandomContainerNameProvider>();
         AddContainerEndpointProvider<ContainerEndpointProvider>();
         AddContainerPortProvider<ContainerPortProvider>();
-        AddContainerHealthCheckProvider<HttpContainerHealthCheckProvider>();
+        AddHttpContainerHealthCheckProvider<HttpContainerHealthCheckProvider>();
         AddDockerClientFactory<DockerClientFactory>();
 
         // Services
@@ -62,6 +62,13 @@ public class CodeSharpBuilder
     public CodeSharpBuilder AddContainerHealthCheckProvider<THealthCheckProvider>() where THealthCheckProvider : IContainerHealthCheckProvider
     {
         RegisterImplementations(typeof(IContainerHealthCheckProvider), typeof(THealthCheckProvider));
+
+        return this;
+    }
+
+    public CodeSharpBuilder AddHttpContainerHealthCheckProvider<THealthCheckProvider>() where THealthCheckProvider : class, IContainerHealthCheckProvider
+    {
+        Services.AddHttpClient<IContainerHealthCheckProvider, THealthCheckProvider>();
 
         return this;
     }
