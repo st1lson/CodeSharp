@@ -9,24 +9,22 @@ namespace CodeSharp.Core.Tests.Docker.Providers;
 public class HttpContainerHealthCheckProviderTests
 {
     private readonly IContainerEndpointProvider _endpointProvider;
-    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly HttpClient _httpClient;
 
     public HttpContainerHealthCheckProviderTests()
     {
         _endpointProvider = Substitute.For<IContainerEndpointProvider>();
         _endpointProvider.GetHealthCheckEndpoint().Returns("http://localhost/healthz");
-        _httpClientFactory = Substitute.For<IHttpClientFactory>();
         var messageHandler = new MockHttpMessageHandler();
 
-        var client = new HttpClient(messageHandler);
-        _httpClientFactory.CreateClient().Returns(client);
+        _httpClient = new HttpClient(messageHandler);
     }
 
     [Fact]
     public async Task EnsureCreatedAsync_WhenSuccessful_Returns()
     {
         // Arrange
-        var provider = new HttpContainerHealthCheckProvider(_endpointProvider, _httpClientFactory);
+        var provider = new HttpContainerHealthCheckProvider(_endpointProvider, _httpClient);
         MockHttpMessageHandler.SetResponse(HttpStatusCode.OK);
 
         // Act & Assert
@@ -37,7 +35,7 @@ public class HttpContainerHealthCheckProviderTests
     public async Task EnsureCreatedAsync_WhenFailed_ThrowsHealthCheckFailedException()
     {
         // Arrange
-        var provider = new HttpContainerHealthCheckProvider(_endpointProvider, _httpClientFactory);
+        var provider = new HttpContainerHealthCheckProvider(_endpointProvider, _httpClient);
         MockHttpMessageHandler.SetResponse(HttpStatusCode.InternalServerError);
 
         // Act & Assert
