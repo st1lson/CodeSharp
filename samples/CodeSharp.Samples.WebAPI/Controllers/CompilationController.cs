@@ -1,7 +1,8 @@
-﻿using CodeSharp.Core.Models;
+﻿using CodeSharp.Core.Executors.Models.Compilation;
+using CodeSharp.Core.Models;
 using CodeSharp.Core.Services;
-using CodeSharp.Samples.WebAPI.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
+using CompilationRequest = CodeSharp.Samples.WebAPI.Models.Requests.CompilationRequest;
 
 namespace CodeSharp.Samples.WebAPI.Controllers;
 
@@ -18,7 +19,16 @@ public class CompilationController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CompileAsync([FromBody] CompilationRequest request)
     {
-        var compilationResult = await _compilationService.CompileAsync(request.Code, true);
+        var options = new CompilationOptions
+        {
+            Run = request.Run,
+            MaxCompilationTime = TimeSpan.FromMicroseconds((double)request.MaxCompilationTime!),
+            MaxExecutionTime = TimeSpan.FromMicroseconds((double)request.MaxExecutionTime!),
+            MaxRamUsage = request.MaxRamUsage,
+            Inputs = request.Inputs,
+        };
+
+        var compilationResult = await _compilationService.CompileAsync(request.Code, options);
 
         return Ok(compilationResult);
     }

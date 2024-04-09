@@ -1,4 +1,6 @@
-﻿using CodeSharp.Samples.WebAPI.Models;
+﻿using CodeSharp.Core.Models;
+using CodeSharp.Core.Services;
+using CodeSharp.Samples.WebAPI.Models;
 using CodeSharp.Samples.WebAPI.Models.Requests;
 using Microsoft.AspNetCore.Mvc;
 

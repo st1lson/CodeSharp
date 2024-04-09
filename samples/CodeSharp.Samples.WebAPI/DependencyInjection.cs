@@ -1,4 +1,5 @@
 ﻿using CodeSharp.Core.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CodeSharp.Samples.WebAPI;
 
@@ -10,6 +11,11 @@ public static class DependencyInjection
         var services = scope.ServiceProvider;
         var context = services.GetRequiredService<MyContext>();
 
+        var pendingMigrations = context.Database.GetPendingMigrations();
+        if (pendingMigrations.Any())
+        {
+            context.Database.Migrate();
+        }
 
         var testSampleExists = context.Tests.Any(t => t.Id == Guid.Parse("02465560-66C5-480B-8F80-A8F0AC692AC9"));
         if (!testSampleExists)
