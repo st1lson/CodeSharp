@@ -22,8 +22,8 @@ public class CompilationController : ControllerBase
         var options = new CompilationOptions
         {
             Run = request.Run,
-            MaxCompilationTime = TimeSpan.FromMicroseconds((double)request.MaxCompilationTime!),
-            MaxExecutionTime = TimeSpan.FromMicroseconds((double)request.MaxExecutionTime!),
+            MaxCompilationTime = TimeSpan.FromMilliseconds((double)request.MaxCompilationTime!),
+            MaxExecutionTime = TimeSpan.FromMilliseconds((double)request.MaxExecutionTime!),
             MaxRamUsage = request.MaxRamUsage,
             Inputs = request.Inputs,
         };
