@@ -126,7 +126,7 @@ const Compiler: React.FC = () => {
                     <label htmlFor="run" className="text-white ml-2">Run</label>
                 </div>
             </div>
-            <div className="flex flex-col gap-5 items-center">
+            <div className="flex flex-col gap-5 items-center mb-4">
                 ...
                 <button
                     className={`bg-blue-500 text-white px-6 py-3 rounded mt-4 ${
@@ -137,6 +137,23 @@ const Compiler: React.FC = () => {
                 >
                     {isLoading ? "Compiling..." : "Compile"}
                 </button>
+            </div>
+            <div className='flex flex-col gap-5 items-center'>
+				<div className='w-full'>
+                    {compilationResult ? (
+						<pre className='bg-gray-800 p-4 w-full'>
+                            <h3 className='text-xl mt-4 font-bold mb-2'>Compilation info:</h3>
+                            <p>{compilationResult.compiledSuccessfully ? 'Compiled successfully' : 'Compilation failed'} </p>
+                            <p>Compilation time: {compilationResult.compilationDuration}</p>
+                            {compilationResult.executedSuccessfully ? <p>{compilationResult.executedSuccessfully ? 'Executed successfully' : 'Execution failed'} </p> : null}
+                            {compilationResult.executionDuration ? <p>Execution time: {compilationResult.executionDuration}</p> : null}
+                            {compilationResult.output ? <p>Output: {compilationResult.output}</p> : null}
+                            {compilationResult && compilationResult.codeReport && (
+                                <CodeAnalysisTable codeReport={compilationResult.codeReport} />
+                            )}
+                        </pre>)
+                    : null }
+                </div>
             </div>
         </div>
     );

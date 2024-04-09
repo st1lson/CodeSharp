@@ -1,7 +1,9 @@
 export interface CompilationResponse {
-    success: boolean;
+    compiledSuccessfully: boolean;
+    executedSuccessfully: boolean;
+    compilationDuration: string;
+    executionDuration: string;
     output: string;
-    duration: string;
     codeReport: CodeReport;
 }
 
