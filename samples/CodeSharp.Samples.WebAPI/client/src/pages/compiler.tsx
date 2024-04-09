@@ -33,6 +33,12 @@ const Compiler: React.FC = () => {
         useState<CompilationResponse>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
+    const [run, setRun] = useState<boolean>(true);
+    const [maxCompilationTime, setMaxCompilationTime] = useState<string>('10');
+    const [maxRamUsage, setMaxRamUsage] = useState<string>('10');
+    const [maxExecutionTime, setMaxExecutionTime] = useState<string>('15');
+    const [inputs, setInputs] = useState<string>('');
+
     const handleCodeChange: OnChange = (newCode: string | undefined) => {
         if (!newCode) return;
 
@@ -42,7 +48,15 @@ const Compiler: React.FC = () => {
     const handleCompile = async () => {
         try {
             setIsLoading(true);
-            const response = await compile(code);
+            const compilationRequest = {
+                code,
+                maxCompilationTime: parseInt(maxCompilationTime, 10),
+                maxRamUsage: parseInt(maxRamUsage, 10),
+                maxExecutionTime: parseInt(maxExecutionTime, 10),
+                inputs: inputs.split(',').filter(input => input.trim()), // Split inputs by comma and remove empty values
+                run
+            };
+            const response = await compile(compilationRequest);
             setCompilationResult(response);
         } catch (error) {
             console.error("Compilation error:", error);
@@ -54,32 +68,68 @@ const Compiler: React.FC = () => {
     return (
         <div className="flex flex-col p-4 text-white">
             <div className="flex-grow mb-4">
-                <CodeEditor
-                    code={code}
-                    onChange={handleCodeChange}
-                    height="60vh"
-                />
+                <CodeEditor code={code} onChange={handleCodeChange} height="60vh" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col">
+                    <label htmlFor="maxCompilationTime" className="text-white mb-1">Max Compilation Time (seconds)</label>
+                    <input
+                        type="text"
+                        id="maxCompilationTime"
+                        value={maxCompilationTime}
+                        onChange={(e) => setMaxCompilationTime(e.target.value)}
+                        placeholder="Max Compilation Time"
+                        className="input rounded text-black"
+                    />
+                </div>
+                <div className="flex flex-col">
+                    <label htmlFor="maxRamUsage" className="text-white mb-1">Max RAM Usage (MB)</label>
+                    <input
+                        type="text"
+                        id="maxRamUsage"
+                        value={maxRamUsage}
+                        onChange={(e) => setMaxRamUsage(e.target.value)}
+                        placeholder="Max RAM Usage"
+                        className="input rounded text-black"
+                    />
+                </div>
+                <div className="flex flex-col">
+                    <label htmlFor="maxExecutionTime" className="text-white mb-1">Max Execution Time (seconds)</label>
+                    <input
+                        type="text"
+                        id="maxExecutionTime"
+                        value={maxExecutionTime}
+                        onChange={(e) => setMaxExecutionTime(e.target.value)}
+                        placeholder="Max Execution Time"
+                        className="input rounded text-black"
+                    />
+                </div>
+                <div className="flex flex-col">
+                    <label htmlFor="inputs" className="text-white mb-1">Inputs (comma-separated)</label>
+                    <input
+                        type="text"
+                        id="inputs"
+                        value={inputs}
+                        onChange={(e) => setInputs(e.target.value)}
+                        placeholder="Inputs"
+                        className="input rounded text-black"
+                    />
+                </div>
+                <div className="flex items-center">
+                    <input
+                        type="checkbox"
+                        id="run"
+                        checked={run}
+                        onChange={(e) => setRun(e.target.checked)}
+                        className="form-checkbox h-5 w-5 text-blue-600"
+                    />
+                    <label htmlFor="run" className="text-white ml-2">Run</label>
+                </div>
             </div>
             <div className="flex flex-col gap-5 items-center">
-                <div className="w-full">
-                    {compilationResult && compilationResult.output ? (
-                        <pre className="bg-gray-800 p-4 w-full">
-                            <h3 className="text-xl mt-4 font-bold mb-2">
-                                Output:
-                            </h3>
-                            {compilationResult.output}
-                            <h3 className="text-xl mt-4 font-bold mb-2">
-                                Duration:
-                            </h3>
-                            {compilationResult.duration}
-                            <CodeAnalysisTable
-                                codeReport={compilationResult.codeReport}
-                            />
-                        </pre>
-                    ) : null}
-                </div>
+                ...
                 <button
-                    className={`bg-blue-500 text-white px-6 py-3 rounded mt-4 md:mt-0 ${
+                    className={`bg-blue-500 text-white px-6 py-3 rounded mt-4 ${
                         isLoading ? "opacity-50 cursor-not-allowed" : ""
                     }`}
                     onClick={handleCompile}
