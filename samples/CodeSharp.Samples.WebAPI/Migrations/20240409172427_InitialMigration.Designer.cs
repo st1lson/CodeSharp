@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CodeSharp.Samples.WebAPI.Migrations
 {
     [DbContext(typeof(MyContext))]
-    [Migration("20240328194801_InitialMigration")]
+    [Migration("20240409172427_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -36,7 +36,16 @@ namespace CodeSharp.Samples.WebAPI.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
 
-                    b.Property<TimeSpan>("Duration")
+                    b.Property<TimeSpan>("CompilationDuration")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("CompiledSuccessfully")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("ExecutedSuccessfully")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeSpan?>("ExecutionDuration")
                         .HasColumnType("time");
 
                     b.Property<string>("Output")
@@ -81,10 +90,22 @@ namespace CodeSharp.Samples.WebAPI.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
 
+                    b.Property<TimeSpan>("CompilationDuration")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("CompiledSuccessfully")
+                        .HasColumnType("bit");
+
                     b.Property<string>("TestResults")
                         .IsRequired()
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
+
+                    b.Property<bool>("TestedSuccessfully")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeSpan?>("TestingDuration")
+                        .HasColumnType("time");
 
                     b.HasKey("Id");
 

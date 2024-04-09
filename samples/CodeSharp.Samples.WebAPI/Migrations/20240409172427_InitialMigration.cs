@@ -16,7 +16,10 @@ namespace CodeSharp.Samples.WebAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Duration = table.Column<TimeSpan>(type: "time", nullable: false),
+                    CompiledSuccessfully = table.Column<bool>(type: "bit", nullable: false),
+                    ExecutedSuccessfully = table.Column<bool>(type: "bit", nullable: true),
+                    CompilationDuration = table.Column<TimeSpan>(type: "time", nullable: false),
+                    ExecutionDuration = table.Column<TimeSpan>(type: "time", nullable: true),
                     Output = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CodeReport = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false)
                 },
@@ -30,6 +33,10 @@ namespace CodeSharp.Samples.WebAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CompiledSuccessfully = table.Column<bool>(type: "bit", nullable: false),
+                    TestedSuccessfully = table.Column<bool>(type: "bit", nullable: false),
+                    CompilationDuration = table.Column<TimeSpan>(type: "time", nullable: false),
+                    TestingDuration = table.Column<TimeSpan>(type: "time", nullable: true),
                     TestResults = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false),
                     CodeReport = table.Column<string>(type: "varchar(max)", unicode: false, nullable: false)
                 },
