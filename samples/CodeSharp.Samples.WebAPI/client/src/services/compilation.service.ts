@@ -1,13 +1,5 @@
-import { CompilationResponse } from '@/models/compilation';
+import { CompilationRequestParams, CompilationResponse } from '@/models/compilation';
 import api from './axios';
-
-interface CompilationRequestParams {
-	code: string;
-	maxCompilationTime: number;
-	maxRamUsage: number;
-	run: boolean;
-	maxExecutionTime: number;
-}
 
 export const compile = async (params: CompilationRequestParams): Promise<CompilationResponse> => {
 	const maxCompilationTimeInMilliseconds = params.maxCompilationTime * 1000;
@@ -18,7 +10,8 @@ export const compile = async (params: CompilationRequestParams): Promise<Compila
 		maxCompilationTime: maxCompilationTimeInMilliseconds,
 		maxRamUsage: params.maxRamUsage,
 		run: params.run,
-		maxExecutionTime: maxExecutionTimeInMilliseconds
+		maxExecutionTime: maxExecutionTimeInMilliseconds,
+		inputs: params.inputs
 	});
 
 	return response.data;

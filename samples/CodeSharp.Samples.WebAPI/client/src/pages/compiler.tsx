@@ -2,7 +2,7 @@ import { useState } from "react";
 import { OnChange } from "@monaco-editor/react";
 import { compile } from "@/services/compilation.service";
 import CodeEditor from "@/components/codeEditor";
-import { CompilationResponse } from "@/models/compilation";
+import { CompilationRequestParams, CompilationResponse } from "@/models/compilation";
 import CodeAnalysisTable from "@/components/codeAnalysisTable";
 
 const Compiler: React.FC = () => {
@@ -48,12 +48,12 @@ const Compiler: React.FC = () => {
     const handleCompile = async () => {
         try {
             setIsLoading(true);
-            const compilationRequest = {
+            const compilationRequest: CompilationRequestParams = {
                 code,
                 maxCompilationTime: parseInt(maxCompilationTime, 10),
                 maxRamUsage: parseInt(maxRamUsage, 10),
                 maxExecutionTime: parseInt(maxExecutionTime, 10),
-                inputs: inputs.split(',').filter(input => input.trim()), // Split inputs by comma and remove empty values
+                inputs: inputs.split(',').filter(input => input.trim()),
                 run
             };
             const response = await compile(compilationRequest);

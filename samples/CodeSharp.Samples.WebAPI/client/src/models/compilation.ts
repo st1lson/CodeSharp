@@ -1,3 +1,12 @@
+export interface CompilationRequestParams {
+    code: string;
+    maxCompilationTime: number;
+    maxRamUsage: number;
+    run: boolean;
+    maxExecutionTime: number;
+    inputs: string[];
+}
+
 export interface CompilationResponse {
     compiledSuccessfully: boolean;
     executedSuccessfully: boolean;
