@@ -1,5 +1,3 @@
-using CodeSharp.AspNetCore;
-using CodeSharp.EntityFramework.AspNetCore;
 using CodeSharp.Samples.WebAPI;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,9 +9,6 @@ builder.Services.AddDbContext<MyContext>(options =>
 });
 
 // Add services to the container.
-builder.Services
-    .AddCodeSharp()
-    .AddCodeSharpStores<MyContext>();
 
 builder.Services.AddCors(options =>
 {

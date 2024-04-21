@@ -1,9 +1,8 @@
-﻿using CodeSharp.EntityFramework.Contexts;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace CodeSharp.Samples.WebAPI;
 
-public class MyContext : CodeSharpDbContext
+public class MyContext : DbContext
 {
     public MyContext(DbContextOptions options) : base(options)
     {
