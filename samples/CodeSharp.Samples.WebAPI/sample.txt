@@ -11,7 +11,7 @@ public class MyContext : CodeSharpDbContext
 
 ======================================================================================================================================================
 
-dotnet ef migration add InitialMigration
+dotnet ef migrations add InitialMigration
 
 ======================================================================================================================================================
 
@@ -160,3 +160,44 @@ public class TestingController : ControllerBase
 }
 
 ======================================================================================================================================================
+
+Compilation
+
+using System;
+
+namespace CodeSharp.Runner
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Welcome to the Simple Calculator App!");
+            Console.WriteLine("Please enter the first number:");
+            double number1 = ReadNumberFromUser();
+
+            Console.WriteLine("Please enter the second number:");
+            double number2 = ReadNumberFromUser();
+            
+            double sum = number1 + number2;
+            
+            Console.WriteLine($"The sum of {number1} and {number2} is: {sum}");
+        }
+        
+        static double ReadNumberFromUser()
+        {
+            double number;
+            
+            while (true)
+            {
+                if (double.TryParse(Console.ReadLine(), out number))
+                {
+                    return number;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a valid number:");
+                }
+            }
+        }
+    }
+}
