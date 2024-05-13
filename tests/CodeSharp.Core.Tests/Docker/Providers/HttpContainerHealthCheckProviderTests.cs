@@ -27,8 +27,11 @@ public class HttpContainerHealthCheckProviderTests
         var provider = new HttpContainerHealthCheckProvider(_endpointProvider, _httpClient);
         MockHttpMessageHandler.SetResponse(HttpStatusCode.OK);
 
-        // Act & Assert
+        // Act
         await provider.EnsureCreatedAsync(CancellationToken.None);
+
+        // Assert
+        Assert.True(MockHttpMessageHandler.RequestMade, "Expected HTTP request was not made.");
     }
 
     [Fact]
@@ -46,6 +49,8 @@ public class HttpContainerHealthCheckProviderTests
     {
         private static HttpResponseMessage? _responseMessage;
 
+        public static bool RequestMade { get; private set; }
+
         public static void SetResponse(HttpStatusCode statusCode)
         {
             _responseMessage = new HttpResponseMessage(statusCode);
@@ -58,6 +63,7 @@ public class HttpContainerHealthCheckProviderTests
                 throw new InvalidOperationException("Response message not set.");
             }
 
+            RequestMade = true;
             return Task.FromResult(_responseMessage);
         }
     }
