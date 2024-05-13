@@ -9,5 +9,5 @@ public class TestLog : TestLog<Guid>
 
 public class TestLog<TKey> : TestingResponse, ITestLog<TKey>
 {
-    public TKey Id { get; }
+    public required TKey Id { get; set; }
 }

@@ -2,7 +2,7 @@
 
 namespace CodeSharp.Core.Docker.Models;
 
-public record Image(string Registry, string Name, string Tag)
+public partial record Image(string Registry, string Name, string Tag)
 {
     private const string DefaultTag = "latest";
 
@@ -10,16 +10,14 @@ public record Image(string Registry, string Name, string Tag)
 
     public static Image CreateImage(string imageString)
     {
-        const string pattern = @"^(?:(?<registry>[^/]+?)/)?(?<name>[^:/]+?)(?::(?<tag>.*))?$";
-
         const string registryKey = "registry";
         const string nameKey = "name";
         const string tagKey = "tag";
 
-        var match = Regex.Match(imageString, pattern);
+        var match = ImageRegex().Match(imageString);
         if (!match.Success)
         {
-            throw new ArgumentException(nameof(imageString));
+            throw new ArgumentException($"Invalid image string format. Expected format 'registry/name:tag'. Received: '{imageString}'", nameof(imageString));
         }
 
         string registry = match.Groups[registryKey].Value;
@@ -43,4 +41,7 @@ public record Image(string Registry, string Name, string Tag)
 
         return $"{Registry}/{Name}:{Tag}";
     }
+
+    [GeneratedRegex("^(?:(?<registry>[^/]+?)/)?(?<name>[^:/]+?)(?::(?<tag>.*))?$", RegexOptions.Compiled, 5000)]
+    private static partial Regex ImageRegex();
 }

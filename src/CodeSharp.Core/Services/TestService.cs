@@ -57,7 +57,7 @@ public class TestService<TTest, TTestLog, TKey> : ITestService<TTest, TTestLog, 
 
     public async Task<TTestLog> ExecuteTestByIdAsync(TKey id, string code, TestingOptions? options = default, CancellationToken cancellationToken = default)
     {
-        var test = await _testingStore.GetByIdAsync(id, cancellationToken) ?? throw new Exception("Test not found");
+        var test = await _testingStore.GetByIdAsync(id, cancellationToken) ?? throw new ArgumentException($"Failed to test with key {id}");
 
         return await ExecuteTestAsync(test, code, options, cancellationToken);
     }

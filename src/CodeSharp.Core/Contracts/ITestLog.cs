@@ -4,7 +4,7 @@ public interface ITestLog : ITestLog<Guid>
 {
 }
 
-public interface ITestLog<TKey>
+public interface ITestLog<out TKey>
 {
     TKey Id { get; }
     bool Passed { get; }

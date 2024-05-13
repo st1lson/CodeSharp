@@ -13,7 +13,7 @@ public static class ServiceCollectionExtensions
         where TTest : class
         where TTestLog : class
     {
-        var builder = new CodeSharpBuilder(services, typeof(CompilationLog), typeof(TTest), typeof(TTestLog));
+        var builder = new CodeSharpBuilder(services, typeof(TCompilationLog), typeof(TTest), typeof(TTestLog));
 
         services.AddSingleton(_ =>
         {
