@@ -186,7 +186,7 @@ public class CodeSharpBuilder
 
     protected static Type GetKeyType(Type entity)
     {
-        var idProperty = entity.GetProperties().FirstOrDefault(p => p.Name == "Id")
+        var idProperty = Array.Find(entity.GetProperties(), p => p.Name == "Id")
             ?? throw new InvalidOperationException($"The type {entity} must have a property named 'Id'.");
 
         return idProperty.PropertyType;
