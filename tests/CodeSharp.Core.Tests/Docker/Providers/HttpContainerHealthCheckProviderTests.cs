@@ -51,7 +51,7 @@ public class HttpContainerHealthCheckProviderTests
             _responseMessage = new HttpResponseMessage(statusCode);
         }
 
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
         {
             if (_responseMessage == null)
             {

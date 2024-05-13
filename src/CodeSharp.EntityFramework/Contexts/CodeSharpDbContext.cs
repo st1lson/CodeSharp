@@ -14,10 +14,10 @@ public class CodeSharpDbContext : DbContext
     public DbSet<TestLog> TestLogs => Set<TestLog>();
     public DbSet<CompilationLog> CompilationLogs => Set<CompilationLog>();
 
-    protected override void OnModelCreating(ModelBuilder builder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-        base.OnModelCreating(builder);
+        base.OnModelCreating(modelBuilder);
     }
 }

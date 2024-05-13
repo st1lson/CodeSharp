@@ -2,5 +2,5 @@
 
 public interface ICommunicationStrategy
 {
-    Task<TResponse> SendRequestAsync<TRequest, TResponse>(string endpoint, TRequest request, CancellationToken cancellationToken);
+    Task<TResponse> SendRequestAsync<TRequest, TResponse>(string endpoint, TRequest request, CancellationToken cancellationToken = default);
 }

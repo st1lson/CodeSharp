@@ -13,7 +13,7 @@ public class HttpCommunicationStrategy : ICommunicationStrategy
         _httpClient = httpClient;
     }
 
-    public async Task<TResponse> SendRequestAsync<TRequest, TResponse>(string endpoint, TRequest request, CancellationToken cancellationToken)
+    public async Task<TResponse> SendRequestAsync<TRequest, TResponse>(string endpoint, TRequest request, CancellationToken cancellationToken = default)
     {
         var httpResponse = await _httpClient.PostAsJsonAsync(endpoint, request, cancellationToken);
         if (!httpResponse.IsSuccessStatusCode)

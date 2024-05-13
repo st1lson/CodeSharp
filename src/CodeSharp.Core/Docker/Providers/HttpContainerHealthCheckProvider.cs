@@ -16,7 +16,7 @@ namespace CodeSharp.Core.Docker.Providers
             _httpClient = httpClient;
         }
 
-        public async Task EnsureCreatedAsync(CancellationToken cancellationToken)
+        public async Task EnsureCreatedAsync(CancellationToken cancellationToken = default)
         {
             var healthCheckEndpoint = _containerEndpointProvider.GetHealthCheckEndpoint();
             for (int i = 0; i < Retries; i++)
