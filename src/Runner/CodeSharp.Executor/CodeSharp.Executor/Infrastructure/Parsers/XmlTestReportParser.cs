@@ -38,7 +38,6 @@ public class XmlTestReportParser : ITestReportParser
         }
         catch (Exception ex)
         {
-            //TODO: Add result object to return errors
             Console.WriteLine($"Error parsing XML report: {ex.Message}");
         }
 

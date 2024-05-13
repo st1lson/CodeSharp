@@ -1,9 +1,9 @@
 ﻿using CodeSharp.Executor.Constants;
+using CodeSharp.Executor.Contracts.Shared;
 using CodeSharp.Executor.Infrastructure.Interfaces;
 using CodeSharp.Executor.Options;
 using Microsoft.Extensions.Options;
 using System.Text.RegularExpressions;
-using CodeSharp.Executor.Contracts.Shared;
 
 namespace CodeSharp.Executor.Infrastructure.Parsers;
 
@@ -16,7 +16,7 @@ public partial class CodeAnalysisReportParser : ICodeAnalysisReportParser
         _applicationOptions = applicationOptions.Value;
     }
 
-    public async Task<CodeAnalysisReport> ParseCodeAnalysisReportAsync(CancellationToken cancellationToken)
+    public async Task<CodeAnalysisReport> ParseCodeAnalysisReportAsync(CancellationToken cancellationToken = default)
     {
         var codeAnalysisResponse = new CodeAnalysisReport();
 
@@ -25,8 +25,7 @@ public partial class CodeAnalysisReportParser : ICodeAnalysisReportParser
 
         if (!File.Exists(codeAnalysisFilePath) || !File.Exists(errorsFilePath))
         {
-            // TODO: Handle exception
-            throw new Exception();
+            throw new FileNotFoundException("Failed to find the file");
         }
 
         string logContent = await File.ReadAllTextAsync(codeAnalysisFilePath, cancellationToken);
@@ -66,7 +65,7 @@ public partial class CodeAnalysisReportParser : ICodeAnalysisReportParser
     private static bool TryExtractCodeAnalysisIssue(string codeAnalysisLine, out CodeAnalysisIssue? issue)
     {
         issue = default;
-        
+
         var match = CodeAnalysisRegex().Match(codeAnalysisLine);
         if (!match.Success)
         {
