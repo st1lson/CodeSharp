@@ -31,12 +31,12 @@ public class TestService<TTest, TTestLog, TKey> : ITestService<TTest, TTestLog, 
         _testLogStore = testLogStore;
     }
 
-    public Task AddTestAsync(TTest test, CancellationToken cancellationToken = default)
+    public Task<TTest> AddTestAsync(TTest test, CancellationToken cancellationToken = default)
     {
         return _testingStore.CreateAsync(test, cancellationToken);
     }
 
-    public Task DeleteTestAsync(TKey id, CancellationToken cancellationToken = default)
+    public Task<TTest?> DeleteTestAsync(TKey id, CancellationToken cancellationToken = default)
     {
         return _testingStore.DeleteAsync(id, cancellationToken);
     }
@@ -72,7 +72,7 @@ public class TestService<TTest, TTestLog, TKey> : ITestService<TTest, TTestLog, 
         return _testingStore.GetAllAsync(cancellationToken);
     }
 
-    public Task UpdateTestAsync(TTest test, CancellationToken cancellationToken = default)
+    public Task<TTest> UpdateTestAsync(TTest test, CancellationToken cancellationToken = default)
     {
         return _testingStore.UpdateAsync(test, cancellationToken);
     }

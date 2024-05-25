@@ -14,7 +14,7 @@ public class TestLogStore<TTestLog> : TestLogStore<TTestLog, Guid, CodeSharpDbCo
 
 public class TestLogStore<TTestLog, TKey, TContext> :
     BaseStore<TTestLog, TContext>,
-    ITestLogStore<TTestLog,TKey>
+    ITestLogStore<TTestLog, TKey>
     where TTestLog : class, ITestLog<TKey>
     where TContext : DbContext
 {
@@ -22,22 +22,9 @@ public class TestLogStore<TTestLog, TKey, TContext> :
     {
     }
 
-    public Task CreateAsync(TTestLog item, CancellationToken cancellationToken = default)
+    public async Task<IList<TTestLog>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        DbSet.Add(item);
-        return SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task RemoveAsync(TKey id, CancellationToken cancellationToken = default)
-    {
-        var testLog = await DbSet.FindAsync(new object[] { id ?? throw new ArgumentNullException(nameof(id)) }, cancellationToken);
-        if (testLog is null)
-        {
-            return;
-        }
-        
-        DbSet.Remove(testLog);
-        await SaveChangesAsync(cancellationToken);
+        return await DbSet.ToListAsync(cancellationToken);
     }
 
     public async Task<TTestLog?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
@@ -45,8 +32,25 @@ public class TestLogStore<TTestLog, TKey, TContext> :
         return await DbSet.FindAsync(new object[] { id ?? throw new ArgumentNullException(nameof(id)) }, cancellationToken);
     }
 
-    public async Task<IList<TTestLog>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<TTestLog> CreateAsync(TTestLog item, CancellationToken cancellationToken = default)
     {
-        return await DbSet.ToListAsync(cancellationToken);
+        DbSet.Add(item);
+        await SaveChangesAsync(cancellationToken);
+
+        return item;
+    }
+
+    public async Task<TTestLog?> RemoveAsync(TKey id, CancellationToken cancellationToken = default)
+    {
+        var testLog = await DbSet.FindAsync(new object[] { id ?? throw new ArgumentNullException(nameof(id)) }, cancellationToken);
+        if (testLog is null)
+        {
+            return default;
+        }
+
+        DbSet.Remove(testLog);
+        await SaveChangesAsync(cancellationToken);
+
+        return testLog;
     }
 }

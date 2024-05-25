@@ -24,28 +24,9 @@ public class TestStore<TTest, TKey, TContext> :
     {
     }
 
-    public Task CreateAsync(TTest item, CancellationToken cancellationToken = default)
+    public async Task<IList<TTest>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        DbSet.Add(item);
-        return SaveChangesAsync(cancellationToken);
-    }
-
-    public Task UpdateAsync(TTest item, CancellationToken cancellationToken = default)
-    {
-        Context.Entry(item).State = EntityState.Modified;
-        return SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task DeleteAsync(TKey key, CancellationToken cancellationToken = default)
-    {
-        var item = await GetByIdAsync(key, cancellationToken);
-        if (item is null)
-        {
-            return;
-        }
-
-        DbSet.Remove(item);
-        await SaveChangesAsync(cancellationToken);
+        return await DbSet.ToListAsync(cancellationToken);
     }
 
     public async Task<TTest?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
@@ -53,8 +34,33 @@ public class TestStore<TTest, TKey, TContext> :
         return await DbSet.FindAsync(new object[] { id ?? throw new ArgumentNullException(nameof(id)) }, cancellationToken);
     }
 
-    public async Task<IList<TTest>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<TTest> CreateAsync(TTest item, CancellationToken cancellationToken = default)
     {
-        return await DbSet.ToListAsync(cancellationToken);
+        DbSet.Add(item);
+        await SaveChangesAsync(cancellationToken);
+
+        return item;
+    }
+
+    public async Task<TTest> UpdateAsync(TTest item, CancellationToken cancellationToken = default)
+    {
+        Context.Entry(item).State = EntityState.Modified;
+        await SaveChangesAsync(cancellationToken);
+
+        return item;
+    }
+
+    public async Task<TTest?> DeleteAsync(TKey key, CancellationToken cancellationToken = default)
+    {
+        var test = await GetByIdAsync(key, cancellationToken);
+        if (test is null)
+        {
+            return default;
+        }
+
+        DbSet.Remove(test);
+        await SaveChangesAsync(cancellationToken);
+
+        return test;
     }
 }

@@ -1,10 +1,10 @@
 ﻿namespace CodeSharp.Core.Contracts;
 
-public interface ITestStore<TItem, TKey> where TItem : ITest<TKey>
+public interface ITestStore<TTest, TKey> where TTest : ITest<TKey>
 {
-    Task CreateAsync(TItem item, CancellationToken cancellationToken = default);
-    Task UpdateAsync(TItem item, CancellationToken cancellationToken = default);
-    Task DeleteAsync(TKey key, CancellationToken cancellationToken = default);
-    Task<TItem?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default);
-    Task<IList<TItem>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<IList<TTest>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<TTest?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default);
+    Task<TTest> CreateAsync(TTest item, CancellationToken cancellationToken = default);
+    Task<TTest> UpdateAsync(TTest item, CancellationToken cancellationToken = default);
+    Task<TTest?> DeleteAsync(TKey key, CancellationToken cancellationToken = default);
 }

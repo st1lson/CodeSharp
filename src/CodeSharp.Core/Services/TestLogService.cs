@@ -18,7 +18,7 @@ public class TestLogService<TTestLog, TKey> : ITestLogService<TTestLog, TKey> wh
         _testLogStore = testLogStore;
     }
 
-    public Task AddTestLogAsync(TTestLog testLog, CancellationToken cancellationToken = default)
+    public Task<TTestLog> AddTestLogAsync(TTestLog testLog, CancellationToken cancellationToken = default)
     {
         return _testLogStore.CreateAsync(testLog, cancellationToken);
     }
@@ -33,7 +33,7 @@ public class TestLogService<TTestLog, TKey> : ITestLogService<TTestLog, TKey> wh
         return _testLogStore.GetAllAsync(cancellationToken);
     }
 
-    public Task RemoveTestLogAsync(TKey id, CancellationToken cancellationToken = default)
+    public Task<TTestLog?> RemoveTestLogAsync(TKey id, CancellationToken cancellationToken = default)
     {
         return _testLogStore.RemoveAsync(id, cancellationToken);
     }

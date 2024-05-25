@@ -18,7 +18,7 @@ public interface ITestService<TTest, TTestLog, TKey>
     Task<TTestLog> ExecuteTestByIdAsync(TKey id, string code, TestingOptions? options = default, CancellationToken cancellationToken = default);
     Task<IList<TTest>> GetTestsAsync(CancellationToken cancellationToken = default);
     Task<TTest?> GetTestAsync(TKey id, CancellationToken cancellationToken = default);
-    Task AddTestAsync(TTest test, CancellationToken cancellationToken = default);
-    Task UpdateTestAsync(TTest test, CancellationToken cancellationToken = default);
-    Task DeleteTestAsync(TKey id, CancellationToken cancellationToken = default);
+    Task<TTest> AddTestAsync(TTest test, CancellationToken cancellationToken = default);
+    Task<TTest> UpdateTestAsync(TTest test, CancellationToken cancellationToken = default);
+    Task<TTest?> DeleteTestAsync(TKey id, CancellationToken cancellationToken = default);
 }

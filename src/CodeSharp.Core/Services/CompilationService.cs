@@ -23,9 +23,9 @@ public class CompilationService<TCompilationLog, TKey> : ICompilationService<TCo
         _compilationLogStore = compilationLogStore;
     }
 
-    public async Task AddCompilationLogAsync(TCompilationLog compilationLog, CancellationToken cancellationToken = default)
+    public Task<TCompilationLog> AddCompilationLogAsync(TCompilationLog compilationLog, CancellationToken cancellationToken = default)
     {
-        await _compilationLogStore.CreateAsync(compilationLog, cancellationToken);
+        return _compilationLogStore.CreateAsync(compilationLog, cancellationToken);
     }
 
     public async Task<TCompilationLog> CompileAsync(string code, CompilationOptions? options = default, CancellationToken cancellationToken = default)
@@ -51,7 +51,7 @@ public class CompilationService<TCompilationLog, TKey> : ICompilationService<TCo
         return _compilationLogStore.GetAllAsync(cancellationToken);
     }
 
-    public Task RemoveCompilationLogAsync(TKey id, CancellationToken cancellationToken = default)
+    public Task<TCompilationLog?> RemoveCompilationLogAsync(TKey id, CancellationToken cancellationToken = default)
     {
         return _compilationLogStore.RemoveAsync(id, cancellationToken);
     }

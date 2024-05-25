@@ -22,10 +22,9 @@ public class CompilationLogStore<TCompilationLog, TKey, TContext> :
     {
     }
 
-    public Task CreateAsync(TCompilationLog item, CancellationToken cancellationToken = default)
+    public async Task<IList<TCompilationLog>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        DbSet.Add(item);
-        return SaveChangesAsync(cancellationToken);
+        return await DbSet.ToListAsync(cancellationToken);
     }
 
     public async Task<TCompilationLog?> GetByIdAsync(TKey id, CancellationToken cancellationToken = default)
@@ -33,21 +32,26 @@ public class CompilationLogStore<TCompilationLog, TKey, TContext> :
         return await DbSet.FindAsync(new object[] { id ?? throw new ArgumentNullException(nameof(id)) }, cancellationToken);
     }
 
-    public async Task<IList<TCompilationLog>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<TCompilationLog> CreateAsync(TCompilationLog item, CancellationToken cancellationToken = default)
     {
-        return await DbSet.ToListAsync(cancellationToken);
+        DbSet.Add(item);
+        await SaveChangesAsync(cancellationToken);
+
+        return item;
     }
 
-    public async Task RemoveAsync(TKey id, CancellationToken cancellationToken = default)
+    public async Task<TCompilationLog?> RemoveAsync(TKey id, CancellationToken cancellationToken = default)
     {
         var compilationLog = await GetByIdAsync(id, cancellationToken);
         if (compilationLog is null)
         {
-            return;
+            return default;
         }
 
         DbSet.Remove(compilationLog);
 
         await SaveChangesAsync(cancellationToken);
+
+        return compilationLog;
     }
 }
