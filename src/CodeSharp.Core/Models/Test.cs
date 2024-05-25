@@ -8,7 +8,7 @@ public class Test : Test<Guid>
 
 public class Test<TKey> : ITest<TKey>
 {
-    public required TKey Id { get; set; }
+    public TKey Id { get; set; } = default!;
     public required string Name { get; set; }
     public required string Description { get; set; }
     public required string Tests { get; set; }

@@ -9,7 +9,7 @@ public class CompilationLog : CompilationLog<Guid>
 
 public class CompilationLog<TKey> : CompilationResponse, ICompilationLog<TKey>
 {
-    public required TKey Id { get; set; }
+    public TKey Id { get; set; } = default!;
 
     public bool Success => ExecutedSuccessfully ?? CompiledSuccessfully;
 }
