@@ -35,7 +35,7 @@ public class CompilationServiceTests
         _compileExecutor.CompileAsync(code, compilationOptions, CancellationToken.None).Returns(compilationLog);
 
         // Act
-        var result = await _compilationService.CompileAsync(code);
+        var result = await _compilationService.CompileAsync(code, compilationOptions);
 
         // Assert
         await _compilationLogStore.Received(1).CreateAsync(compilationLog, CancellationToken.None);

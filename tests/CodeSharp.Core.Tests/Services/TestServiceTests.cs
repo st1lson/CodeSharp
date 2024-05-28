@@ -52,7 +52,7 @@ public class TestServiceTests
         _testExecutor.TestAsync(code, test.Tests, testingOptions, CancellationToken.None).Returns(testLog);
 
         // Act
-        var result = await _testService.ExecuteTestAsync(test, code);
+        var result = await _testService.ExecuteTestAsync(test, code, testingOptions);
 
         // Assert
         await _testLogStore.Received(1).CreateAsync(testLog, CancellationToken.None);
@@ -73,7 +73,7 @@ public class TestServiceTests
         _testExecutor.TestAsync(code, test.Tests, testingOptions, CancellationToken.None).Returns(testLog);
 
         // Act
-        var result = await _testService.ExecuteTestByIdAsync(id, code);
+        var result = await _testService.ExecuteTestByIdAsync(id, code, testingOptions);
 
         // Assert
         await _testLogStore.Received(1).CreateAsync(testLog, CancellationToken.None);
