@@ -58,7 +58,6 @@ public class TestExecutor<TResponse> : CodeExecutor, ITestExecutor<TResponse>
 
         await dockerContainer.EnsureCreatedAsync(cancellationToken);
         var testingUrl = _containerEndpointProvider.GetTestingEndpoint();
-        using var httpClient = new HttpClient();
 
         var testingRequest = new TestingRequest
         {
